@@ -2,7 +2,7 @@ import {
 	CompletionItemKind
 } from 'vscode-languageserver/node';
 
-const commandList = require("./../data/command_list.json")
+const commandList = require("./../data/command_list.json");
 
 export function autoCompletion(){
 	return (_textDocumentPosition) => {
@@ -15,11 +15,27 @@ export function autoCompletion(){
 						label: elem,
 						kind: CompletionItemKind.Text,
 						data: index
-				})
-		})
-		return listCommands
-	}
+				});
+		});
+		commandList.objects.forEach((elem) => {
+			listCommands.push({
+				label: elem,
+				kind: CompletionItemKind.Text,
+				data: listCommands.length
+
+			});
+		});
+		commandList.args.forEach((elem) => {
+			listCommands.push({
+				label: elem,
+				kind: CompletionItemKind.Text,
+				data: listCommands.length
+
+			});
+		});
+		return listCommands;
+	};
 
 }
 
-module.exports = {autoCompletion}
+module.exports = {autoCompletion};
