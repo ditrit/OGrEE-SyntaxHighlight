@@ -17,10 +17,15 @@
 		"vscode": "^1.75.0"
 	},
 	"activationEvents": [
-		"onLanguage:plaintext"
+		"onLanguage:ogreecli"
 	],
 	"main": "./client/out/extension",
 	"contributes": {
+		"languages": [{
+			"id": "ogreecli",
+			"aliases": ["cliogree", "OGrEECLI"],
+			"extensions": [".ocli"]
+		}],
 		"configuration": {
 			"type": "object",
 			"title": "Main configuration",
