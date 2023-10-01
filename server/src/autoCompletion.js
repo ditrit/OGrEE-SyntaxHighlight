@@ -12,9 +12,16 @@ export function autoCompletion(){
 		var listCommands = [];
 		commandList.commands.forEach((elem, index) => {
 			listCommands.push({
-						label: elem,
-						kind: CompletionItemKind.Text,
-						data: index
+						label: elem.keyword,
+						labelDetails: {
+							description : elem.quickText
+						},
+						kind: CompletionItemKind.Keyword,
+						sortText : elem.matchKeyword,
+						data: index,
+						//detail : "Advanced details",
+						documentation : elem.documentation,
+						insertText : elem.insertText
 				});
 		});
 		commandList.objects.forEach((elem) => {

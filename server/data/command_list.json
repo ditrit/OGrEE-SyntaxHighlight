@@ -1,5 +1,5 @@
 {
-    "commands": [
+    "ignored": [
         "ls",
         "get",
         "getu",
@@ -31,36 +31,59 @@
         "if",
         "alias"
     ],
+    "commands": [
+        {
+            "keyword": ".var",
+            "matchKeyword" : "var",
+            "quickText": "Declare variable",
+            "documentation": "",
+            "insertText": ".var:[name]=[value]"
+        },
+        {
+            "keyword": ".cmds",
+            "matchKeyword" : "cmds",
+            "quickText": "Load commands from file",
+            "documentation": "",
+            "insertText": ".cmds:[path]"
+        },
+        {
+            "keyword": "site",
+            "matchKeyword" : "site",
+            "quickText": "Create a Site",
+            "documentation": "",
+            "insertText": "+site:[name]"
+        }
+    ],
     "objects": [
         "domain",
-		"dm",
-		"site",
-		"si",
-		"bldg",
-		"building",
-		"bd",
-		"room",
-		"ro",
-		"rack",
-		"rk",
-		"device",
-		"dv",
-		"corridor",
-		"co",
-		"group",
-		"gr",
-		"orphan",
-		"user",
-		"role"
+        "dm",
+        "site",
+        "si",
+        "bldg",
+        "building",
+        "bd",
+        "room",
+        "ro",
+        "rack",
+        "rk",
+        "device",
+        "dv",
+        "corridor",
+        "co",
+        "group",
+        "gr",
+        "orphan",
+        "user",
+        "role"
     ],
     "args": [
         "selection",
-		"clear",
-		"grep",
-		"lsog",
-		"lsenterprise",
-		"pwd",
-		"exit",
-		"changepw"
+        "clear",
+        "grep",
+        "lsog",
+        "lsenterprise",
+        "pwd",
+        "exit",
+        "changepw"
     ]
 }
