@@ -24,7 +24,8 @@
 		"languages": [{
 			"id": "ogreecli",
 			"aliases": ["cliogree", "OGrEECLI"],
-			"extensions": [".ocli"]
+			"extensions": [".ocli"],
+			"configuration": "./language-configuration.json"
 		}],
 		"configuration": {
 			"type": "object",
