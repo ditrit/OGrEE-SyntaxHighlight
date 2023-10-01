@@ -37,21 +37,21 @@
             "matchKeyword" : "var",
             "quickText": "Declare variable",
             "documentation": "",
-            "insertText": ".var:[name]=[value]"
+            "insertText": ".var:${1:name}=${0:value}"
         },
         {
             "keyword": ".cmds",
             "matchKeyword" : "cmds",
             "quickText": "Load commands from file",
             "documentation": "",
-            "insertText": ".cmds:[path]"
+            "insertText": ".cmds:${0:path}"
         },
         {
             "keyword": "site",
             "matchKeyword" : "site",
             "quickText": "Create a Site",
             "documentation": "",
-            "insertText": "+site:[name]"
+            "insertText": "+site:${0:name}"
         }
     ],
     "objects": [

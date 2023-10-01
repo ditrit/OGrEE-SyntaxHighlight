@@ -1,5 +1,5 @@
 import {
-	CompletionItemKind
+	CompletionItemKind,InsertTextFormat
 } from 'vscode-languageserver/node';
 
 const commandList = require("./../data/command_list.json");
@@ -21,6 +21,7 @@ export function autoCompletion(){
 						data: index,
 						//detail : "Advanced details",
 						documentation : elem.documentation,
+						insertTextFormat : InsertTextFormat.Snippet,
 						insertText : elem.insertText
 				});
 		});
