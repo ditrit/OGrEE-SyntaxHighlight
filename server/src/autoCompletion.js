@@ -10,20 +10,22 @@ export function autoCompletion(){
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
 		var listCommands = [];
-		commandList.commands.forEach((elem, index) => {
-			listCommands.push({
-						label: elem.keyword,
-						labelDetails: {
-							description : elem.quickText
-						},
-						kind: CompletionItemKind.Keyword,
-						sortText : elem.matchKeyword,
-						data: index,
-						//detail : "Advanced details",
-						documentation : elem.documentation,
-						insertTextFormat : InsertTextFormat.Snippet,
-						insertText : elem.insertText
+		commandList.commands.forEach((elem) => {
+			elem.matchKeyword.forEach((match) => {
+				listCommands.push({
+					label: elem.keyword,
+					labelDetails: {
+						description : elem.quickText
+					},
+					kind: CompletionItemKind.Keyword,
+					sortText : match,
+					filterText : match,
+					//detail : "Advanced details",
+					documentation : elem.documentation,
+					insertTextFormat : InsertTextFormat.Snippet,
+					insertText : elem.insertText
 				});
+			})
 		});
 		commandList.objects.forEach((elem) => {
 			listCommands.push({

@@ -34,24 +34,32 @@
     "commands": [
         {
             "keyword": ".var",
-            "matchKeyword" : "var",
+            "matchKeyword" : ["var"],
             "quickText": "Declare variable",
             "documentation": "",
             "insertText": ".var:${1:name}=${0:value}"
         },
         {
             "keyword": ".cmds",
-            "matchKeyword" : "cmds",
+            "matchKeyword" : ["cmds"],
             "quickText": "Load commands from file",
             "documentation": "",
             "insertText": ".cmds:${0:path}"
         },
         {
             "keyword": "site",
-            "matchKeyword" : "site",
+            "matchKeyword" : ["site", "st"],
             "quickText": "Create a Site",
             "documentation": "",
             "insertText": "+site:${0:name}"
+        }
+        ,
+        {
+            "keyword": "rack",
+            "matchKeyword" : ["rack", "rk"],
+            "quickText": "Create a Rack",
+            "documentation": "",
+            "insertText": "+rack:${1:name}@$[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@[${6:width}, ${7:length}, ${0:height}]"
         }
     ],
     "objects": [
