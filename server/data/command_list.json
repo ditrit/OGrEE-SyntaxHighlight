@@ -432,7 +432,7 @@
             "matchKeyword" : ["ui.wireframe", "wireframe"],
             "quickText": "Enable/Disable wireframe mode",
             "documentation": "Enable/Disable wireframe mode\n[true|false]",
-            "insertText": "ui.wireframe=${1:true}"
+            "insertText": "ui.wireframe=${1:true|false}"
         }
         ,
         {
@@ -440,7 +440,7 @@
             "matchKeyword" : ["ui.debug", "debug"],
             "quickText": "Set if display debug panel",
             "documentation": "Set if display debug panel\n[true|false]",
-            "insertText": "ui.debug=${1:true}"
+            "insertText": "ui.debug=${1:true|false}"
         }
         ,
         {
@@ -448,7 +448,7 @@
             "matchKeyword" : ["ui.infos", "infos"],
             "quickText": "Set if display infos panel",
             "documentation": "Set if display infos panel\n[true|false]",
-            "insertText": "ui.infos=${1:true}"
+            "insertText": "ui.infos=${1:true|false}"
         }
         ,
         {
