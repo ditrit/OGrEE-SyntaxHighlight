@@ -23,7 +23,7 @@
 	"contributes": {
 		"languages": [{
 			"id": "ogreecli",
-			"aliases": ["cliogree", "OGrEECLI"],
+			"aliases": ["OGrEE CLI", "cliogree", "OGrEECLI"],
 			"extensions": [".ocli"],
 			"configuration": "./language-configuration.json"
 		}],
