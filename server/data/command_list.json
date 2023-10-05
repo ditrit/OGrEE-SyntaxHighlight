@@ -203,6 +203,55 @@
             "documentation": "[name] is the name of the device to delete",
             "insertText": "device:${0:name}"
         }
+        ,
+        {
+            "keyword": "+corridor",
+            "matchKeyword" : ["corridor", "co"],
+            "quickText": "Create a Corridor",
+            "documentation": "Corridor must be child of a room A corridor is a cold or warm corridor.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the corridor is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n<<front>>: [0, 0, 180]\n<<rear>>: [0, 0, 0]\n<<left>>: [0, 90, 0]\n<<right>>: [0, -90, 0]\n<<top>>: [90, 0, 0]\n<<bottom>>: [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[temperature] is cold or warm.",
+            "insertText": "corridor:${0:name}@${1|[x,y],[x,y,z]|}@${2|m,t,f|}@${3|[x y z],front,rear,left,right,top,bottom|}@${4|[width,length,height]|}@${0|cold,warm|}"
+        }
+        ,
+        {
+            "keyword": "-corridor",
+            "matchKeyword" : ["corridor", "co"],
+            "quickText": "Delete a Corridor",
+            "documentation": "[name] is the name of the corridor to delete",
+            "insertText": "corridor:${0:name}"
+        }
+        ,
+        {
+            "keyword": ":usableColor",
+            "matchKeyword" : ["usableColor"],
+            "quickText": "Set the usable color",
+            "documentation": "[color] is the color to use for datacenter",
+            "insertText": "usableColor=${0:color}"
+        }
+        ,
+        {
+            "keyword": ":reservedColor",
+            "matchKeyword" : ["reservedColor"],
+            "quickText": "Set the reserved color",
+            "documentation": "[color] is the color to use for datacenter",
+            "insertText": "reservedColor=${0:color}"
+        }
+        ,
+        {
+            "keyword" : "technicalColor",
+            "matchKeyword" : ["technicalColor"],
+            "quickText": "Set the technical color",
+            "documentation": "[color] is the color to use for datacenter",
+            "insertText": "technicalColor=${0:color}"
+        }
+        ,
+        {
+            "keyword": ":areas",
+            "matchKeyword" : ["areas"],
+            "quickText": "Set Set reserved and technical zones of a room",
+            "documentation": "Enables tiles edges display.\nYou can modify areas only if the room has no racks in it.\nTechnical area : typically a restricted zone where power panels and AC systems are installed. separated from <<IT space>> with either a wall or a wire mesh\nReserved area : some tiles around the room that must be kept free to move racks and walk (usually 2 or 3 tiles)\n[reserved] is a vector4: [front,back,right,left] (tile,tile,tile,tile)\n[technical] is a vector4: [front,back,right,left] (tile,tile,tile,tile)",
+            "insertText": "areas=$[${1:front},${2:back},${3:right},${4:left}]@$[${5:front},${6:back},${7:right},${0:left}]"
+        }
+            
     ],
     "objects": [
         "domain",
