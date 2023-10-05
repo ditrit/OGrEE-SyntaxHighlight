@@ -99,6 +99,54 @@
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to <<t>> (tiles), can also be m (meters) or f (feet)",
             "insertText": "+room:${1:name}@[${2:x},${3:y}]@${4:rotation}@$[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,+y,-x-y|}@${0:floorUnit}"
         }
+        ,
+        {
+            "keyword": "ui.delay",
+            "matchKeyword" : ["ui.delay", "delay"],
+            "quickText": "Set the delay before each command",
+            "documentation": "You can put delay before each command: up to 2 seconds.\n\n[time] is the time to wait in seconds",
+            "insertText": "ui.delay=${1:time}"
+        }
+        ,
+        {
+            "keyword": "ui.infos",
+            "matchKeyword" : ["ui.infos", "infos"],
+            "quickText": "Set if display infos panel",
+            "documentation": "Set if display infos panel\n[true|false]",
+            "insertText": "ui.debug=${1:true}"
+        }
+        ,
+        {
+            "keyword": "ui.highlight",
+            "matchKeyword" : ["ui.highlight", "highlight", "ui.hl", "hl"],
+            "quickText": "\"Toggle\" command to turn on/off the highlighting of an object",
+            "documentation": "This is a \"toggle\" command: use it to turn on/off the highlighting of an object.\nIf given object is hidden in its parent, the parent will be highlighted.\n[name] is the name of the object",
+            "insertText": "ui.highlight=${1:name}"
+        }
+        ,
+        {
+            "keyword": "camera.move",
+            "matchKeyword" : ["move", "camera.move"],
+            "quickText": "Move the camera",
+            "documentation": "Move the camera to the given point\n[position] is a Vector3 [x, y, z] : the new position of the camera\n[rotation] is a Vector2 [u, v]: the rotation of the camera",
+            "insertText": "camera.move=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]"
+        }
+        ,
+        {
+            "keyword": "camera.translate",
+            "matchKeyword" : ["translate", "camera.translate"],
+            "quickText": "Translate the camera",
+            "documentation": "Move the camera to the given destination. You can stack several destinations, the camera will move to each point in the given order.\n[position] is a Vector3 [x, y, z]: the position of the camera's destination\n[rotation] is a Vector2 [u, v]: the rotation of the camera's destination",
+            "insertText": "camera.translate=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]"
+        }
+        ,
+        {
+            "keyword": "camera.wait",
+            "matchKeyword" : ["camera.wait", "wait"],
+            "quickText": "Set the delay between two translations",
+            "documentation": "You can define a delay between two camera translations.\n[time] is the time to wait in seconds",
+            "insertText": "camera.wait=${1:time}"
+        }
     ],
     "objects": [
         "domain",
