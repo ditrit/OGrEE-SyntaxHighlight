@@ -323,6 +323,14 @@
             "documentation": "If the path is empty it will 'unfocus' all objects. This command will change the current path according to the given argument",
             "insertText": "> ${1:path/to/object}"
         }
+        ,
+        {
+            "keyword": "draw",
+            "matchKeyword" : ["draw"],
+            "quickText": "Draw an existing object on Unity",
+            "documentation": "Unity can't draw already existing objects unless instructed to do so.\n[n] an integer value of 0 or greater\nThe '-FLAG ARGUMENT' option is there to allow the user to optionally ignore the draw threshold automatically (the number of objects that can be drawn in Unity, defined as drawThreshold and found in .env file) which is useful for scripting. Usually if the number of objects to draw exceeds this threshold, then the user will be asked if they want to continue. The possible values for '-FLAG ARGUMENT' are '-f y' or '-f n' respectively. 'y' means yes and 'n' means no",
+            "insertText": "draw ${1:path/to/object} ${2:n} -f ${3:y}"
+        }
     ],
     "objects": [
         "domain",
