@@ -203,7 +203,7 @@
             "documentation": "[name] is the name of the device to delete",
             "insertText": "device:${0:name}"
         }
-        ,
+,
         {
             "keyword": "+corridor",
             "matchKeyword" : ["corridor", "co"],
@@ -428,11 +428,27 @@
         }
         ,
         {
+            "keyword": "ui.wireframe",
+            "matchKeyword" : ["ui.wireframe", "wireframe"],
+            "quickText": "Enable/Disable wireframe mode",
+            "documentation": "Enable/Disable wireframe mode\n[true|false]",
+            "insertText": "ui.wireframe=${1:true}"
+        }
+        ,
+        {
+            "keyword": "ui.debug",
+            "matchKeyword" : ["ui.debug", "debug"],
+            "quickText": "Set if display debug panel",
+            "documentation": "Set if display debug panel\n[true|false]",
+            "insertText": "ui.debug=${1:true}"
+        }
+        ,
+        {
             "keyword": "ui.infos",
             "matchKeyword" : ["ui.infos", "infos"],
             "quickText": "Set if display infos panel",
             "documentation": "Set if display infos panel\n[true|false]",
-            "insertText": "ui.debug=${1:true}"
+            "insertText": "ui.infos=${1:true}"
         }
         ,
         {
@@ -465,6 +481,14 @@
             "quickText": "Set the delay between two translations",
             "documentation": "You can define a delay between two camera translations.\n[time] is the time to wait in seconds",
             "insertText": "camera.wait=${1:time}"
+        }
+        ,
+        {
+            "keyword": "focus",
+            "matchKeyword" : ["focus", "> "],
+            "quickText": "You can indicate to Unity to focus on an object",
+            "documentation": "If the path is empty it will 'unfocus' all objects. This command will change the current path according to the given argument",
+            "insertText": "> ${1:path/to/object}"
         }
     ],
     "objects": [
