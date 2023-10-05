@@ -245,6 +245,173 @@
         }
         ,
         {
+            "keyword": ":separator",
+            "matchKeyword" : ["separator"],
+            "quickText": "Add separator to a room",
+            "documentation": "Add a separator (wired or plain wall) inside a room.\n[name] is an identifier for the separator\n[startPos] is a vector2: [x,y] (m,m)\n[endPos] is a vector2: [x,y] (m,m)\n[type] is the type of wall: wireframe or plain\nIt will add the given coordinates to [room].attributes[separators] witch is a list of all its separators parameters",
+            "insertText" : "separator=${1:name}@$[${2:startX},${3:startY}]@$[${4:endX},${5:endY}]@${0|wireframe,plain|}"
+        }
+        ,{
+            "keyword" : ":pillar",
+            "matchKeyword" : ["pillar"],
+            "quickText": "Add pillar to a room",
+            "documentation": "Add a pillar inside a room.\n[name] is an identifier for the pillar\n[centerXY] is a vector2: [x,y] (m,m)\n[sizeXY] is a vector2: [x,y] (m,m)\n[rotation] is the angle of the pillar, in degree\nIt will add the given coordinates to [room].attributes[pillars] witch is a list of all its pillars parameters",
+            "insertText": "pillar=${1:name}@$[${2:centerX},${3:centerY}]@$[${4:sizeX},${5:sizeY}]@${0:rotation}"
+        }
+        ,
+        {
+            "keyword": "selection",
+            "matchKeyword" : ["selection","_"],
+            "quickText" : "selection to modify objects attributes",
+            "documentation": "Works with single or multi selection.\n[name] can be selection or _ for modifying selected objects attributes",
+            "insertText" : "selection:${1:attribute}=${0:value}"
+        }
+        ,
+        {
+            "keyword": ":domain",
+            "matchKeyword": "domain",
+            "quickText": "recursively change object's domain and children's domain",
+            "documentation":"Object's domain can be changed recursively for changing all it's children's domains at the same time.",
+            "insertText": "domain=${0:value}@recursive"
+        }
+        ,
+        {
+            "keyword": ":description",
+            "matchKeyword" : ["description"],
+            "quickText": "Modify attribute if it is a list",
+            "documentation": "Object's description attribute is a list: you have to use an index to fill one.\nwhere [N] is an index, starting at 1",
+            "insertText": "description${1:N}=${0:value}"
+        }
+        ,
+        {
+            "keyword": ":label",
+            "matchKeyword" : ["label"],
+            "quickText": "Choose label by a string",
+            "documentation": "You can change the label by a string or with a choosen attribute:\n#[attribute] is one of the attribute of the object. If description, it will display all descriptions. To display a specific description, use description[N] where N is the index of the wanted description.",
+            "insertText": "label=#${0:string}"
+        }
+        ,
+        {
+            "keyword": ":label",
+            "matchKeyword" : ["label"],
+            "quickText": "Choose label with a choose attribute",
+            "documentation": "You can change the label by a string or with a choosen attribute:\n#[attribute] is one of the attribute of the object. If description, it will display all descriptions. To display a specific description, use description[N] where N is the index of the wanted description.",
+            "insertText": "label=${0:#attribute}"
+        }
+        ,
+        {
+            "keyword": ":labelFont",
+            "matchKeyword" : ["labelFont"],
+            "quickText": "Make the font bold",
+            "documentation":"",
+            "insertText": "labelFont=bold"
+        }
+        ,
+        {
+            "keyword": ":labelFont",
+            "matchKeyword" : ["labelFont"],
+            "quickText": "Make the font italic",
+            "documentation":"",
+            "insertText": "labelFont=italic"
+        }
+        ,
+        {
+            "keyword": ":labelFont",
+            "matchKeyword" : ["labelFont"],
+            "quickText": "Change font color",
+            "documentation":"",
+            "insertText": "labelFont=color@${0:color}"
+        }
+        ,
+        {
+            "keyword": ":labelBackground",
+            "matchKeyword" : ["labelBackground"],
+            "quickText": "Change label background color",
+            "documentation": "You can change the label's background color when it is hovering over the object.",
+            "insertText": "labelBackground=${0:color}"
+        }
+        ,
+        {
+            "keyword": ":titlesName",
+            "matchKeyword" : ["titlesName"],
+            "quickText": "Display or hide tiles name",
+            "documentation": "",
+            "insertText": "titlesName=${0:true|false}"
+        }
+        ,
+        {
+            "keyword" : ":titlesColor",
+            "matchKeyword" : ["titlesColor"],
+            "quickText": "Display or hide colors and textures",
+            "documentation": "",
+            "insertText": "titlesColor=${0:true|false}"
+        }
+        ,
+        {
+            "keyword": ":alpha",
+            "matchKeyword" : ["alpha"],
+            "quickText": "Display or hide rack's box",
+            "documentation": "Display or hide rack's box. This will also affect its label",
+            "insertText": "alpha=${0:true|false}"
+        }
+        ,
+        {
+            "keyword": ":U",
+            "matchKeyword" : ["U"],
+            "quickText": "Display or hide rack's U",
+            "documentation": "Display or hide rack's U helpers to simply identify objects in a rack.",
+            "insertText": "U=${0:true|false}"
+        }
+        ,
+        {
+            "keyword": ":slots",
+            "matchKeyword" : ["slots"],
+            "quickText": "Display or hide rack's slots",
+            "documentation": "",
+            "insertText": "slots=${0:true|false}"
+        }
+        ,
+        {
+            "keyword": ":localCS",
+            "matchKeyword" : ["localCS"],
+            "quickText": "Display or hide rack's local coordinate system",
+            "documentation": "",
+            "insertText": "localCS=${0:true|false}"
+        }
+        ,
+        {
+            "keyword" : ":alpha",
+            "matchKeyword" : ["alpha"],
+            "quickText": "Display or hide device's box",
+            "documentation": "Display or hide device's box. This will also affect its label",
+            "insertText": "alpha=${0:true|false}"
+        }
+        ,
+        {
+            "keyword": ":slots",
+            "matchKeyword" : ["slots"],
+            "quickText": "Display or hide device's slots",
+            "documentation": "",
+            "insertText": "slots=${0:true|false}"
+        }
+        ,
+        {
+            "keyword": ":localCS",
+            "matchKeyword" : ["localCS"],
+            "quickText": "Display or hide device's local coordinate system",
+            "documentation": "",
+            "insertText": "localCS=${0:true|false}"
+        }
+        ,
+        {
+            "keyword": ":content",
+            "matchKeyword" : ["content"],
+            "quickText": "Display or hide contained racks/devices",
+            "documentation": "",
+            "insertText": "content=${0:true|false}"
+        }
+        ,
+        {
             "keyword": ":areas",
             "matchKeyword" : ["areas"],
             "quickText": "Set Set reserved and technical zones of a room",
