@@ -269,7 +269,7 @@
         ,
         {
             "keyword": ":domain",
-            "matchKeyword": "domain",
+            "matchKeyword": ["domain"],
             "quickText": "recursively change object's domain and children's domain",
             "documentation":"Object's domain can be changed recursively for changing all it's children's domains at the same time.",
             "insertText": "domain=${0:value}@recursive"
