@@ -21,11 +21,11 @@ export function autoCompletion(){
 					sortText : match,
 					filterText : match,
 					//detail : "Advanced details",
-					documentation : elem.documentation,
+					documentation : elem.documentation, //{ kind : "markdown" ,value : elem.documentation},
 					insertTextFormat : InsertTextFormat.Snippet,
 					insertText : elem.insertText
 				});
-			})
+			});
 		});
 		commandList.objects.forEach((elem) => {
 			listCommands.push({
