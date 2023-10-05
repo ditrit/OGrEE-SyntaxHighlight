@@ -251,7 +251,54 @@
             "documentation": "Enables tiles edges display.\nYou can modify areas only if the room has no racks in it.\nTechnical area : typically a restricted zone where power panels and AC systems are installed. separated from <<IT space>> with either a wall or a wire mesh\nReserved area : some tiles around the room that must be kept free to move racks and walk (usually 2 or 3 tiles)\n[reserved] is a vector4: [front,back,right,left] (tile,tile,tile,tile)\n[technical] is a vector4: [front,back,right,left] (tile,tile,tile,tile)",
             "insertText": "areas=$[${1:front},${2:back},${3:right},${4:left}]@$[${5:front},${6:back},${7:right},${0:left}]"
         }
-            
+        ,
+        {
+            "keyword": "ui.delay",
+            "matchKeyword" : ["ui.delay", "delay"],
+            "quickText": "Set the delay before each command",
+            "documentation": "You can put delay before each command: up to 2 seconds.\n\n[time] is the time to wait in seconds",
+            "insertText": "ui.delay=${1:time}"
+        }
+        ,
+        {
+            "keyword": "ui.infos",
+            "matchKeyword" : ["ui.infos", "infos"],
+            "quickText": "Set if display infos panel",
+            "documentation": "Set if display infos panel\n[true|false]",
+            "insertText": "ui.debug=${1:true}"
+        }
+        ,
+        {
+            "keyword": "ui.highlight",
+            "matchKeyword" : ["ui.highlight", "highlight", "ui.hl", "hl"],
+            "quickText": "\"Toggle\" command to turn on/off the highlighting of an object",
+            "documentation": "This is a \"toggle\" command: use it to turn on/off the highlighting of an object.\nIf given object is hidden in its parent, the parent will be highlighted.\n[name] is the name of the object",
+            "insertText": "ui.highlight=${1:name}"
+        }
+        ,
+        {
+            "keyword": "camera.move",
+            "matchKeyword" : ["move", "camera.move"],
+            "quickText": "Move the camera",
+            "documentation": "Move the camera to the given point\n[position] is a Vector3 [x, y, z] : the new position of the camera\n[rotation] is a Vector2 [u, v]: the rotation of the camera",
+            "insertText": "camera.move=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]"
+        }
+        ,
+        {
+            "keyword": "camera.translate",
+            "matchKeyword" : ["translate", "camera.translate"],
+            "quickText": "Translate the camera",
+            "documentation": "Move the camera to the given destination. You can stack several destinations, the camera will move to each point in the given order.\n[position] is a Vector3 [x, y, z]: the position of the camera's destination\n[rotation] is a Vector2 [u, v]: the rotation of the camera's destination",
+            "insertText": "camera.translate=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]"
+        }
+        ,
+        {
+            "keyword": "camera.wait",
+            "matchKeyword" : ["camera.wait", "wait"],
+            "quickText": "Set the delay between two translations",
+            "documentation": "You can define a delay between two camera translations.\n[time] is the time to wait in seconds",
+            "insertText": "camera.wait=${1:time}"
+        }
     ],
     "objects": [
         "domain",
