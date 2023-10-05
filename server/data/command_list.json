@@ -203,7 +203,7 @@
             "documentation": "[name] is the name of the device to delete",
             "insertText": "device:${0:name}"
         }
-        ,
+,
         {
             "keyword": "+corridor",
             "matchKeyword" : ["corridor", "co"],
@@ -298,6 +298,14 @@
             "quickText": "Set the delay between two translations",
             "documentation": "You can define a delay between two camera translations.\n[time] is the time to wait in seconds",
             "insertText": "camera.wait=${1:time}"
+        }
+        ,
+        {
+            "keyword": "focus",
+            "matchKeyword" : ["focus", "> "],
+            "quickText": "You can indicate to Unity to focus on an object",
+            "documentation": "If the path is empty it will 'unfocus' all objects. This command will change the current path according to the given argument",
+            "insertText": "> ${1:path/to/object}"
         }
     ],
     "objects": [
