@@ -88,7 +88,7 @@
             "keyword": "rack",
             "matchKeyword" : ["rack", "rk"],
             "quickText": "Create a Rack",
-            "documentation": "",
+            "documentation": "Rack must be child of a room.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the rack is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n<<front>>: [0, 0, 180]\n<<rear>>: [0, 0, 0]\n<<left>>: [0, 90, 0]\n<<right>>: [0, -90, 0]\n<<top>>: [90, 0, 0]\n<<bottom>>: [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[template] is the name of the rack template",
             "insertText": "+rack:${1:name}@$[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@[${6:width}, ${7:length}, ${0:height}]"
         }
         ,
@@ -97,7 +97,55 @@
             "matchKeyword" : ["room", "ro"],
             "quickText": "Create a Room",
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to <<t>> (tiles), can also be m (meters) or f (feet)",
-            "insertText": "+room:${1:name}@[${2:x},${3:y}]@${4:rotation}@$[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,+y,-x-y|}@${0:floorUnit}"
+            "insertText": "+room:${1:name}@$[${2:x},${3:y}]@${4:rotation}@$[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,+y,-x-y|}@${0:floorUnit}"
+        }
+        ,
+        {
+            "keyword": "+device",
+            "matchKeyword" : ["device", "dv","+device","+dv"],
+            "quickText": "without parent rack slots : size",
+            "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not <<fullsize>>. This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
+            "insertText": "+device:${1:name}@${2:posU}@${0:sizeU}"
+        }
+        ,
+        {
+            "keyword": "+device",
+            "matchKeyword" : ["device", "dv","+device","+dv"],
+            "quickText": "without parent rack slots : template",
+            "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not <<fullsize>>. This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
+            "insertText": "+device:${1:name}@${2:posU}@${0:template}"
+        }
+        ,
+        {
+            "keyword": "+device",
+            "matchKeyword" : ["device", "dv","+device","+dv"],
+            "quickText": "with parent rack slots : size",
+            "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not <<fullsize>>. This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
+            "insertText": "+device:${1:name}@${2:slot}@${0:sizeU}"
+        }
+        ,
+        {
+            "keyword": "+device",
+            "matchKeyword" : ["device", "dv","+device","+dv"],
+            "quickText": "without parent rack slots : template",
+            "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not <<fullsize>>. This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
+            "insertText": "+device:${1:name}@${2:slot}@${0:template}"
+        }
+        ,
+        {
+            "keyword": "+device",
+            "matchKeyword" : ["device", "dv","+device","+dv"],
+            "quickText": "with parent rack slots : template, side",
+            "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not <<fullsize>>. This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
+            "insertText": "+device:${1:name}@${2:slot}@${3:template}@${0:side}"
+        }
+        ,
+        {
+            "keyword": "-device",
+            "matchKeyword" : ["device", "dv","-device","-dv"],
+            "quickText": "delete device",
+            "documentation": "[name] is the name of the device to delete",
+            "insertText": "-device:${0:name}"
         }
     ],
     "objects": [
