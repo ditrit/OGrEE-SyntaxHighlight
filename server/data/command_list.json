@@ -380,30 +380,6 @@
         }
         ,
         {
-            "keyword" : ":alpha",
-            "matchKeyword" : ["alpha"],
-            "quickText": "Display or hide device's box",
-            "documentation": "Display or hide device's box. This will also affect its label",
-            "insertText": "alpha=${0:true|false}"
-        }
-        ,
-        {
-            "keyword": ":slots",
-            "matchKeyword" : ["slots"],
-            "quickText": "Display or hide device's slots",
-            "documentation": "",
-            "insertText": "slots=${0:true|false}"
-        }
-        ,
-        {
-            "keyword": ":localCS",
-            "matchKeyword" : ["localCS"],
-            "quickText": "Display or hide device's local coordinate system",
-            "documentation": "",
-            "insertText": "localCS=${0:true|false}"
-        }
-        ,
-        {
             "keyword": ":content",
             "matchKeyword" : ["content"],
             "quickText": "Display or hide contained racks/devices",
@@ -495,8 +471,56 @@
             "keyword": "draw",
             "matchKeyword" : ["draw"],
             "quickText": "Draw an existing object on Unity",
+            "documentation": "Unity can't draw already existing objects unless instructed to do so.\n[k] an integer value of 0 or greater",
+            "insertText": "draw ${1:path/to/object} ${2:k}"
+        }
+        ,
+        {
+            "keyword": "draw",
+            "matchKeyword" : ["draw"],
+            "quickText": "Draw an existing object on Unity with -FLAG ARGUMENT",
             "documentation": "Unity can't draw already existing objects unless instructed to do so.\n[k] an integer value of 0 or greater\nThe '-FLAG ARGUMENT' option is there to allow the user to optionally ignore the draw threshold automatically (the number of objects that can be drawn in Unity, defined as drawThreshold and found in .env file) which is useful for scripting. Usually if the number of objects to draw exceeds this threshold, then the user will be asked if they want to continue. The possible values for '-FLAG ARGUMENT' are '-f y' or '-f n' respectively. 'y' means yes and 'n' means no",
             "insertText": "draw ${1:path/to/object} ${2:k} -f ${3:y}"
+        }
+        ,
+        {
+            "keyword": "undraw",
+            "matchKeyword" : ["undraw"],
+            "quickText": "Undraw an object",
+            "documentation": "undraw an existing object at the path path/to/object",
+            "insertText": "undraw ${1:path/to/object}"
+        }
+        ,
+        {
+            "keyword": "link",
+            "matchKeyword" : ["link:"],
+            "quickText": "Link a stray-device without slot",
+            "documentation": "If the parent is a device, the slot number must be specified. This command will fail if the stray-device or its hierarchy does not satisfy the schema requirements of device.",
+            "insertText": "link: ${1:PATH/TO/STRAY-DEVICE} @ ${2:PATH/TO/RACK/OR/DEVICE}"
+        }
+        ,
+        {
+            "keyword": "link",
+            "matchKeyword" : ["link:"],
+            "quickText": "Link a stray-device with slot",
+            "documentation": "If the parent is a device, the slot number must be specified. This command will fail if the stray-device or its hierarchy does not satisfy the schema requirements of device.",
+            "insertText": "link: ${1:PATH/TO/STRAY-DEVICE} @ ${2:PATH/TO/RACK/OR/DEVICE} @ ${3:Slot}"
+        }
+        ,
+        {
+            "keyword": "unlink",
+            "matchKeyword" : ["unlink:"],
+            "quickText": "Unlink a device without stray-device parent",
+            "documentation": "The schema requirements for stray-device are much less restrictive than other objects. The device must have size dimensions and a name. If this device or its hierarchy does not satisfy the stray-device schema requirement, this command will fail.",
+            "insertText": "unlink: ${1:PATH/TO/DEVICE}"
+        }
+        ,
+        {
+            "keyword": "unlink",
+            "matchKeyword" : ["unlink:"],
+            "quickText": "Unlink a device with stray-device parent",
+            "documentation": "The schema requirements for stray-device are much less restrictive than other objects. The device must have size dimensions and a name. If this device or its hierarchy does not satisfy the stray-device schema requirement, this command will fail.",
+            "insertText": "unlink: ${1:PATH/TO/DEVICE} @ ${2:PATH/TO/STRAY-DEVICE-PARENT}"
         }
     ],
     "objects": [
