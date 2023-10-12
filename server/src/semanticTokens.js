@@ -1,6 +1,8 @@
-export class SemanticTokensProvider extends SemanticTokensProvider{
-	provideDocumentSemanticTokens(document, token) {
-		const tokens = [{ line: 2, startChar: 10, length: 4, tokenType: "function", tokenModifiers: [] }];
-		return tokens;
-	}
+
+export function semanticTokenProvider(document){
+	let tokenList = [{line : 1, char : 2, length : 7, tokenType : 0, tokenModifiers : 0}];
+
+	return tokenList
 }
+
+module.exports = {semanticTokenProvider}

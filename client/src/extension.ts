@@ -23,17 +23,20 @@ const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
 const provider: vscode.DocumentSemanticTokensProvider = {
   provideDocumentSemanticTokens(
     document: vscode.TextDocument
-  ): vscode.ProviderResult<vscode.SemanticTokens> {
+  ): any {
     // analyze the document and return semantic tokens
 
-    const tokensBuilder = new vscode.SemanticTokensBuilder(legend);
-    // on line 1, characters 1-5 are a class declaration
-    tokensBuilder.push(
-      new vscode.Range(new vscode.Position(3, 1), new vscode.Position(3, 5)),
-      'class',
-      ['declaration']
-    );
-    return tokensBuilder.build();
+	const tokensBuilder = new vscode.SemanticTokensBuilder(legend);
+	client.sendRequest("custom/semanticTokens", document).then(data => {
+		(<Array<any>> data).forEach((token) => {
+			console.log("TOKEN RECU", token)
+			tokensBuilder.push(token.line, token.char, token.length, token.tokenType, token.tokenModifiers);
+		});
+	});
+	//semanticTokenProvider(document).forEach((token) => {tokensBuilder.push(token.line, token.char, token.length, token.tokenType, token.tokenModifiers)});
+	//tokensBuilder.push(2, 1, 5, 4, 1);
+	console.log("FIN", tokensBuilder)
+    return tokensBuilder;
   }
 };
 

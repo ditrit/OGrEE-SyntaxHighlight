@@ -28,7 +28,7 @@ import {
 //import {autoCompletion} from "./autoCompletion.js";
 import {autoCompletion} from "./autoCompletion.js";
 import {docColor} from "./syntaxHighlight.js";
-import {SemanticTokensProvider} from "./semanticTokens.js";
+import {semanticTokenProvider} from "./semanticTokens.js";
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -210,7 +210,7 @@ connection.onDidChangeWatchedFiles(_change => {
 // This handler provides the initial list of the completion items.
 connection.onCompletion(autoCompletion());
 
-
+connection.onRequest('custom/semanticTokens', (doc) => {return semanticTokenProvider(doc)})
 
 const selector = { language: 'ogreecli', scheme: 'file' };
 // vslanguages.registerDocumentSemanticTokensProvider(selector, SemanticTokensProvider, 
