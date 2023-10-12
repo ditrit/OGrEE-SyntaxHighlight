@@ -27,16 +27,19 @@ const provider: vscode.DocumentSemanticTokensProvider = {
     // analyze the document and return semantic tokens
 
 	const tokensBuilder = new vscode.SemanticTokensBuilder(legend);
-	client.sendRequest("custom/semanticTokens", document).then(data => {
+	return client.sendRequest("custom/semanticTokens", document).then(data => {
 		(<Array<any>> data).forEach((token) => {
 			console.log("TOKEN RECU", token)
 			tokensBuilder.push(token.line, token.char, token.length, token.tokenType, token.tokenModifiers);
 		});
+	}).then(() => {
+		console.log("FIN", tokensBuilder)
+		return tokensBuilder.build();
 	});
 	//semanticTokenProvider(document).forEach((token) => {tokensBuilder.push(token.line, token.char, token.length, token.tokenType, token.tokenModifiers)});
-	//tokensBuilder.push(2, 1, 5, 4, 1);
-	console.log("FIN", tokensBuilder)
-    return tokensBuilder;
+	// tokensBuilder.push(2, 1, 5, 4, 1);
+	// return tokensBuilder.build()
+    
   }
 };
 

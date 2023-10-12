@@ -67,7 +67,7 @@ connection.onInitialize((params: InitializeParams) => {
 			},
 			semanticTokensProvider: {
 				range : true,
-				full : true,
+				full : false,
 				legend : {
 					tokenTypes : ['comment', 'string', 'keyword', 'number', 'regexp', 'operator', 'namespace',
 					'type', 'struct', 'class', 'interface', 'enum', 'typeParameter', 'function',
