@@ -14,7 +14,11 @@ import {
 	CompletionItemKind,
 	TextDocumentPositionParams,
 	TextDocumentSyncKind,
-	InitializeResult
+	InitializeResult,
+	ColorPresentation,
+	ColorInformation,
+	Color,
+	Range
 } from 'vscode-languageserver/node';
 
 import {
@@ -23,6 +27,8 @@ import {
 
 //import {autoCompletion} from "./autoCompletion.js";
 import {autoCompletion} from "./autoCompletion.js";
+import {docColor} from "./syntaxHighlight.js";
+import {SemanticTokensProvider} from "./semanticTokens.js";
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -58,7 +64,19 @@ connection.onInitialize((params: InitializeParams) => {
 			// Tell the client that this server supports code completion.
 			completionProvider: {
 				resolveProvider: true
-			}
+			},
+			semanticTokensProvider: {
+				range : true,
+				full : true,
+				legend : {
+					tokenTypes : ['comment', 'string', 'keyword', 'number', 'regexp', 'operator', 'namespace',
+					'type', 'struct', 'class', 'interface', 'enum', 'typeParameter', 'function',
+					'method', 'decorator', 'macro', 'variable', 'parameter', 'property', 'label'],
+					tokenModifiers : ['declaration', 'documentation', 'readonly', 'static', 'abstract', 'deprecated',
+					'modification', 'async']
+				}
+			},
+			colorProvider: true
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -103,7 +121,7 @@ connection.onDidChangeConfiguration(change => {
 		documentSettings.clear();
 	} else {
 		globalSettings = <ExampleSettings>(
-			(change.settings.languageServerExample || defaultSettings)
+			(change.settings.languageServerOCLI || defaultSettings)
 		);
 	}
 
@@ -119,7 +137,7 @@ function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
 	if (!result) {
 		result = connection.workspace.getConfiguration({
 			scopeUri: resource,
-			section: 'languageServerExample'
+			section: 'languageServerOCLI'
 		});
 		documentSettings.set(resource, result);
 	}
@@ -191,6 +209,21 @@ connection.onDidChangeWatchedFiles(_change => {
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(autoCompletion());
+
+
+
+const selector = { language: 'ogreecli', scheme: 'file' };
+// vslanguages.registerDocumentSemanticTokensProvider(selector, SemanticTokensProvider, 
+// 	{tokenTypes : ['comment', 'string', 'keyword', 'number', 'regexp', 'operator', 'namespace', 'function'], 
+// 	tokenModifiers : ['declaration', 'documentation', 'readonly', 'static', 'abstract', 'deprecated', 'modification', 'async']})
+
+connection.onDocumentColor(docColor(documents));
+
+// Événement déclenché lorsque la présentation de couleur est demandée par l'éditeur client
+connection.onColorPresentation((params : any) => {
+    // Vous pouvez personnaliser la présentation de la couleur ici si nécessaire
+    return [ColorPresentation.create(params.color)];
+});
 
 // This handler resolves additional information for the item selected in
 // the completion list.
