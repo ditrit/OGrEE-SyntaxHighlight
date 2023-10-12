@@ -5,6 +5,7 @@
 
 import * as path from 'path';
 import { workspace, ExtensionContext } from 'vscode';
+import * as vscode from 'vscode';
 
 import {
 	LanguageClient,
@@ -14,6 +15,30 @@ import {
 } from 'vscode-languageclient/node';
 
 let client: LanguageClient;
+
+const tokenTypes = ['class', 'interface', 'enum', 'function', 'variable'];
+const tokenModifiers = ['declaration', 'documentation'];
+const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
+
+const provider: vscode.DocumentSemanticTokensProvider = {
+  provideDocumentSemanticTokens(
+    document: vscode.TextDocument
+  ): vscode.ProviderResult<vscode.SemanticTokens> {
+    // analyze the document and return semantic tokens
+
+    const tokensBuilder = new vscode.SemanticTokensBuilder(legend);
+    // on line 1, characters 1-5 are a class declaration
+    tokensBuilder.push(
+      new vscode.Range(new vscode.Position(3, 1), new vscode.Position(3, 5)),
+      'class',
+      ['declaration']
+    );
+    return tokensBuilder.build();
+  }
+};
+
+const selector = { language: 'ogreecli', scheme: 'file' };
+
 
 export function activate(context: ExtensionContext) {
 	// The server is implemented in node
@@ -28,6 +53,7 @@ export function activate(context: ExtensionContext) {
 		debug: {
 			module: serverModule,
 			transport: TransportKind.ipc,
+			options: { execArgv: ['--nolazy', '--inspect=6009'] }
 		}
 	};
 
@@ -48,6 +74,8 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
+
+	vscode.languages.registerDocumentSemanticTokensProvider(selector, provider, legend)
 
 	// Start the client. This will also launch the server
 	client.start();
