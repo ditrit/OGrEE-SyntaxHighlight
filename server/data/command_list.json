@@ -137,7 +137,7 @@
             "matchKeyword" : ["room", "ro"],
             "quickText": "Create a Room without template",
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to \"t\" (tiles), can also be m (meters) or f (feet)",
-            "insertText": "room:${1:name}@$[${2:x},${3:y}]@${4:rotation}@$[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,+y,-x-y|}@${0:floorUnit}"
+            "insertText": "room:${1:name}@$[${2:x},${3:y}]@${4:rotation}@$[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,-y,-x-y|}@${0:floorUnit}"
         }
         ,
         {
@@ -264,7 +264,7 @@
             "matchKeyword" : ["selection","_"],
             "quickText" : "selection to modify objects attributes",
             "documentation": "Works with single or multi selection.\n[name] can be selection or _ for modifying selected objects attributes",
-            "insertText" : "selection:${1:attribute}=${0:value}"
+            "insertText" : "_:${1:attribute}=${0:value}"
         }
         ,
         {

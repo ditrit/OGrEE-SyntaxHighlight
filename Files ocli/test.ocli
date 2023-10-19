@@ -1,0 +1,99 @@
++si:test2S
+    test2S:description=This is a demo...
+    test2S:address=1 rue bidule
+    test2S:zipcode=42000
+    test2S:city=Truc
+    test2S:country=FRANCE
+    test2S:gps=[1,2,0]
+    test2S:usableColor=5BDCFF
+    test2S:reservedColor=AAAAAA
+    test2S:technicalColor=D0FF78
+
+// Building test2B
+
++building:test2S/test2B@[0,0]@0@[10, 10, 10]
+    test2S/test2B:description=Building A
+    test2S/test2B:nbFloors=1
+
++ro:test2S/test2B/R0_EN@[6,6]@0@[4.2,5.4,1]@+x+y
++ro:test2S/test2B/R0_NW@[6,6]@90@[4.2,5.4,1]@+x+y
++ro:test2S/test2B/R0_WS@[6,6]@180@[4.2,5.4,1]@+x+y
++ro:test2S/test2B/R0_SE@[6,6]@-90@[4.2,5.4,1]@+x+y
+
++rk:test2S/test2B/R0_EN/TEST_EN@[ 1,1]@t@[0,0,180]@[60,120,42]
++rk:test2S/test2B/R0_NW/TEST_NW@[1 ,1]@t@[0,0,180]@[60,120,42]
++rk:test2S/test2B/R0_WS/TEST_WS@[1, 1]@t@[0,0,180]@[60,120,42]
++rk:test2S/test2B/R0_SE/TEST_SE@[1,1 ]@t@[0,0,180]@[60,120,42]
+
+
+// Building test2B2
+
++bd:test2S/test2B2@[-30,10]@0@[25,29.4,5]
+    test2S/test2B2:description=Building B
+    test2S/test2B2:nbFloors=1
+
++ro:test2S/test2B2/R1@[0,0]@90@[22.8,19.8,4]@+x+y
+    test2S/test2B2/R1:areas=[2,1,5,2]@[3,3,1,1]
+    test2S/test2B2/R1:description=First room
+
++ro:test2S/test2B2/R2@[22.8,19.8]@180@[9.6,22.8,3]@+x+y
+    test2S/test2B2/R2:areas=[3,1,1,3]@[5,0,0,0]
+    //test2S/test2B2/R2:description=Second room, owned by Marcus
+    test2S/test2B2/R2:tenant=Marcus
+
+// Racks for R1
+
++rk:test2S/test2B2/R1/A01@[1,1]@t@[0,0,180]@[60,120,42]
+    test2S/test2B2/R1/A01:description=Rack A01
+    test2S/test2B2/R1/A01:vendor=someVendor
+    test2S/test2B2/R1/A01:type=someType
+    test2S/test2B2/R1/A01:model=someModel
+    test2S/test2B2/R1/A01:serial=someSerial
+
++rk:test2S/test2B2/R1/A02@[2,1]@t@[0,0,180]@[60,120,42]
++rk:test2S/test2B2/R1/A03@[3,1]@t@[0,0,180]@[60,120,42]
++rk:test2S/test2B2/R1/A04@[4,1]@t@[0,0,180]@[60,120,42]
++rk:test2S/test2B2/R1/A05@[5,1]@t@[0,0,180]@[60,120,42]
+    test2S/test2B2/R1/A05:tenant=Billy
+
++rk:test2S/test2B2/R1/B05 @[8,6] @t@[0,0,0]@[60,120,42]
++rk:test2S/test2B2/R1/B09 @[9,6] @t@[0,0,0]@[60,120,42]
++rk:test2S/test2B2/R1/B010@[10,6]@t@[0,0,0]@[60,120,42]
++rk:test2S/test2B2/R1/B011@[11,6]@t@[0,0,0]@[60,120,42]
++rk:test2S/test2B2/R1/B012@[12,6]@t@[0,0,0]@[60,120,42]
+
++rk:test2S/test2B2/R1/C08 @[8,9] @t@[0,0,180]@[60,120,42]
++rk:test2S/test2B2/R1/C09 @[9,9] @t@[0,0,180]@[60,120,42]
++rk:test2S/test2B2/R1/C010@[10,9]@t@[0,0,180]@[60,120,42]
++rk:test2S/test2B2/R1/C011@[11,9]@t@[0,0,180]@[60,120,42]
++rk:test2S/test2B2/R1/C012@[12,9]@t@[0,0,180]@[60,120,42]
+
++rk:test2S/test2B2/R1/D01@[20,5]@t@[0,90,0]@[60,120,42]
+    test2S/test2B2/R1/D01:tenant=Marcus
++rk:test2S/test2B2/R1/D02@[20,6]@t@[0,90,0]@[60,120,42]
+    test2S/test2B2/R1/D02:tenant=Marcus
++rk:test2S/test2B2/R1/D03@[20,7]@t@[0,90,0]@[60,120,42]
+    test2S/test2B2/R1/D03:tenant=Marcus
+
++rk:test2S/test2B2/R1/E01@[23,5]@t@[0,-90,0]@[60,120,42]
+    test2S/test2B2/R1/E01:tenant=Marcus
++rk:test2S/test2B2/R1/E02@[23,6]@t@[0,-90,0]@[60,120,42]
+    test2S/test2B2/R1/E02:tenant=Marcus
++rk:test2S/test2B2/R1/E03@[23,7]@t@[0,-90,0]@[60,120,42]
+    test2S/test2B2/R1/E03:tenant=Marcus
+
+// Racks for R2
+
++rk:test2S/test2B2/R2/A01@[1,3]@t@[0,0,0]@[60,120,42]
++rk:test2S/test2B2/R2/A02@[2,3]@t@[0,0,0]@[60,120,42]
++rk:test2S/test2B2/R2/A03@[3,3]@t@[0,0,0]@[60,120,42]
++rk:test2S/test2B2/R2/A04@[4,3]@t@[0,0,0]@[60,120,42]
++rk:test2S/test2B2/R2/A05@[5,3]@t@[0,0,0]@[60,120,42]
+
++rk:test2S/test2B2/R2/B01@[1,5]@t@[0,0,180]@[60,120,42]
+    test2S/test2B2/R2/B01:tenant=Billy
+    test2S/test2B2/R2/B01:alpha=true
+
+// Edit description of several racks in R1
+={test2S/test2B2/R1/B05,test2S/test2B2/R1/B09,test2S/test2B2/R1/B010,test2S/test2B2/R1/B011,test2S/test2B2/R1/B012}
+_:description=Row B
