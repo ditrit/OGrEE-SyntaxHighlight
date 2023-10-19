@@ -1,5 +1,5 @@
 +si:test2S
-    test2S:description=This is a demo...
+    test2S:description="This is a demo..."
     test2S:address=1 rue bidule
     test2S:zipcode=42000
     test2S:city=Truc
@@ -8,12 +8,18 @@
     test2S:usableColor=5BDCFF
     test2S:reservedColor=AAAAAA
     test2S:technicalColor=D0FF78
+    test2S:label=#address
+    test2S:labelFont=bold
+    test2S:labelFont=italic
+    test2S:labelFont=color@FFFFFF
+
 
 // Building test2B
 
 +building:test2S/test2B@[0,0]@0@[10, 10, 10]
     test2S/test2B:description=Building A
     test2S/test2B:nbFloors=1
+    test2S/test2B:label="Bâtiment de test"
 
 +ro:test2S/test2B/R0_EN@[6,6]@0@[4.2,5.4,1]@+x+y
 +ro:test2S/test2B/R0_NW@[6,6]@90@[4.2,5.4,1]@+x+y
@@ -35,11 +41,15 @@
 +ro:test2S/test2B2/R1@[0,0]@90@[22.8,19.8,4]@+x+y
     test2S/test2B2/R1:areas=[2,1,5,2]@[3,3,1,1]
     test2S/test2B2/R1:description=First room
+    test2S/test2B2/R1:titlesName=true
+    test2S/test2B2/R1:titlesColor=true
 
 +ro:test2S/test2B2/R2@[22.8,19.8]@180@[9.6,22.8,3]@+x+y
     test2S/test2B2/R2:areas=[3,1,1,3]@[5,0,0,0]
-    //test2S/test2B2/R2:description=Second room, owned by Marcus
+    test2S/test2B2/R2:description="Second room, owned by Marcus"
     test2S/test2B2/R2:tenant=Marcus
+    test2S/test2B2/R2:separator=separator1@[25,20]@[30,25]@wireframe
+    test2S/test2B2/R2:pillar=pillar1@[25,25]@[1,1]@0
 
 // Racks for R1
 
@@ -90,10 +100,40 @@
 +rk:test2S/test2B2/R2/A04@[4,3]@t@[0,0,0]@[60,120,42]
 +rk:test2S/test2B2/R2/A05@[5,3]@t@[0,0,0]@[60,120,42]
 
++gr:test2S/test2B2/R2/groupeA@{A01, A02, A03, A04, A05}
+    test2S/test2B2/R2/groupeA:content=true
+
++dv:test2S/test2B2/R2/A01/D01@1@1
++dv:test2S/test2B2/R2/A02/D02@1@1
++dv:test2S/test2B2/R2/A03/D03@1@1
++dv:test2S/test2B2/R2/A04/D04@1@1
++dv:test2S/test2B2/R2/A05/D05@1@1
+
 +rk:test2S/test2B2/R2/B01@[1,5]@t@[0,0,180]@[60,120,42]
     test2S/test2B2/R2/B01:tenant=Billy
     test2S/test2B2/R2/B01:alpha=true
+    test2S/test2B2/R2/B01:U=true
+    test2S/test2B2/R2/B01:slots=true
+    test2S/test2B2/R2/B01:localCS=true
+    test2S/test2B2/R2/B01:labelBackground=FFFFFF
 
 // Edit description of several racks in R1
 ={test2S/test2B2/R1/B05,test2S/test2B2/R1/B09,test2S/test2B2/R1/B010,test2S/test2B2/R1/B011,test2S/test2B2/R1/B012}
 _:description=Row B
+
+.var:varTest=15
+print $varTest
+.var:varTest=20
+print $varTest
+
+ui.delay=5
+ui.wireframe=true
+ui.debug=true
+ui.infos=true
+ui.highlight=test2S/test2B2/R2/groupeA
+camera.move=[0, 0, 0]@[0, 0]
+camera.translate=[10, 0, 0]@[0, 0]
+camera.wait=5
+draw test2S/test2B2/R2/groupeA
+draw test2S/test2B2/R1
+undraw test2S/test2B2/R1

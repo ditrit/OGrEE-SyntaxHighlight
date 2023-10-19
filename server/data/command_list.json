@@ -35,7 +35,8 @@
             "quickText": "Declare variable",
             "documentation": "",
             "insertText": ".var:${1:name}=${0:value}"
-        },
+        }
+        ,
         {
             "keyword": ".cmds",
             "matchKeyword" : ["cmds"],
@@ -209,7 +210,7 @@
             "matchKeyword" : ["corridor", "co"],
             "quickText": "Create a Corridor",
             "documentation": "Corridor must be child of a room A corridor is a cold or warm corridor.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the corridor is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[temperature] is cold or warm.",
-            "insertText": "corridor:${0:name}@${1|[x,y],[x,y,z]|}@${2|m,t,f|}@${3|[x y z],front,rear,left,right,top,bottom|}@${4|[width,length,height]|}@${0|cold,warm|}"
+            "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}"
         }
         ,
         {
@@ -218,6 +219,22 @@
             "quickText": "Delete a Corridor",
             "documentation": "[name] is the name of the corridor to delete",
             "insertText": "corridor:${0:name}"
+        }
+        ,
+        {
+            "keyword": "+orphan device",
+            "matchKeyword" : ["orphan device", "device", "dv", "stray device"],
+            "quickText": "add a stray-device zz",
+            "documentation": "You can add stray-devices (devices that don't have a parent and/or don't follow the normal device data format), the bare minimum requiring to have a name and template. Note that it is possible for these devices to have subdevices.",
+            "insertText": "orphan device:${1:path/to/stray-device}@${2:template}"
+        }
+        ,
+        {
+            "keyword": "+group",
+            "matchKeyword" : ["group", "gr"],
+            "quickText": "Create a group",
+            "documentation": "Group must be child of a room or a rack If the group is a child of a room, it can contain racks and corridors. If the group is a child of a rack, it can contain devices. c1,c2,...,cN are the short names (eg. A01 instead of tn.si.bd.ro.A01)",
+            "insertText": "group:${1:name}@{${2:c1,c2,...}}"
         }
         ,
         {
@@ -249,14 +266,15 @@
             "matchKeyword" : ["separator"],
             "quickText": "Add separator to a room",
             "documentation": "Add a separator (wired or plain wall) inside a room.\n[name] is an identifier for the separator\n[startPos] is a vector2: [x,y] (m,m)\n[endPos] is a vector2: [x,y] (m,m)\n[type] is the type of wall: wireframe or plain\nIt will add the given coordinates to [room].attributes[separators] witch is a list of all its separators parameters",
-            "insertText" : "separator=${1:name}@$[${2:startX},${3:startY}]@$[${4:endX},${5:endY}]@${0|wireframe,plain|}"
+            "insertText" : "separator=${1:name}@[${2:startX},${3:startY}]@[${4:endX},${5:endY}]@${6|wireframe,plain|}"
         }
-        ,{
+        ,
+        {
             "keyword" : ":pillar",
             "matchKeyword" : ["pillar"],
             "quickText": "Add pillar to a room",
             "documentation": "Add a pillar inside a room.\n[name] is an identifier for the pillar\n[centerXY] is a vector2: [x,y] (m,m)\n[sizeXY] is a vector2: [x,y] (m,m)\n[rotation] is the angle of the pillar, in degree\nIt will add the given coordinates to [room].attributes[pillars] witch is a list of all its pillars parameters",
-            "insertText": "pillar=${1:name}@$[${2:centerX},${3:centerY}]@$[${4:sizeX},${5:sizeY}]@${0:rotation}"
+            "insertText": "pillar=${1:name}@[${2:centerX},${3:centerY}]@[${4:sizeX},${5:sizeY}]@${0:rotation}"
         }
         ,
         {
@@ -286,17 +304,17 @@
         {
             "keyword": ":label",
             "matchKeyword" : ["label"],
-            "quickText": "Choose label by a string",
+            "quickText": "Change label by a string using an attribute",
             "documentation": "You can change the label by a string or with a choosen attribute:\n#[attribute] is one of the attribute of the object. If description, it will display all descriptions. To display a specific description, use description[N] where N is the index of the wanted description.",
-            "insertText": "label=#${0:string}"
+            "insertText": "label=#${0:attribute}"
         }
         ,
         {
             "keyword": ":label",
             "matchKeyword" : ["label"],
-            "quickText": "Choose label with a choose attribute",
-            "documentation": "You can change the label by a string or with a choosen attribute:\n#[attribute] is one of the attribute of the object. If description, it will display all descriptions. To display a specific description, use description[N] where N is the index of the wanted description.",
-            "insertText": "label=${0:#attribute}"
+            "quickText": "Change label by a string without using an attribute",
+            "documentation": "Change the label by the string string",
+            "insertText": "label=${0:string}"
         }
         ,
         {
@@ -336,7 +354,7 @@
             "matchKeyword" : ["titlesName"],
             "quickText": "Display or hide tiles name",
             "documentation": "",
-            "insertText": "titlesName=${0:true|false}"
+            "insertText": "titlesName=${1|true,false|}"
         }
         ,
         {
@@ -344,7 +362,7 @@
             "matchKeyword" : ["titlesColor"],
             "quickText": "Display or hide colors and textures",
             "documentation": "",
-            "insertText": "titlesColor=${0:true|false}"
+            "insertText": "titlesColor=$${1|true,false|}"
         }
         ,
         {
@@ -352,7 +370,7 @@
             "matchKeyword" : ["alpha"],
             "quickText": "Display or hide rack's box",
             "documentation": "Display or hide rack's box. This will also affect its label",
-            "insertText": "alpha=${0:true|false}"
+            "insertText": "alpha=${1|true,false|}"
         }
         ,
         {
@@ -360,7 +378,7 @@
             "matchKeyword" : ["U"],
             "quickText": "Display or hide rack's U",
             "documentation": "Display or hide rack's U helpers to simply identify objects in a rack.",
-            "insertText": "U=${0:true|false}"
+            "insertText": "U=${1|true,false|}"
         }
         ,
         {
@@ -368,7 +386,7 @@
             "matchKeyword" : ["slots"],
             "quickText": "Display or hide rack's slots",
             "documentation": "",
-            "insertText": "slots=${0:true|false}"
+            "insertText": "slots=${1|true,false|}"
         }
         ,
         {
@@ -376,7 +394,7 @@
             "matchKeyword" : ["localCS"],
             "quickText": "Display or hide rack's local coordinate system",
             "documentation": "",
-            "insertText": "localCS=${0:true|false}"
+            "insertText": "localCS=${1|true,false|}"
         }
         ,
         {
@@ -384,7 +402,7 @@
             "matchKeyword" : ["content"],
             "quickText": "Display or hide contained racks/devices",
             "documentation": "",
-            "insertText": "content=${0:true|false}"
+            "insertText": "content=${1|true,false|}"
         }
         ,
         {
@@ -408,7 +426,7 @@
             "matchKeyword" : ["ui.wireframe", "wireframe"],
             "quickText": "Enable/Disable wireframe mode",
             "documentation": "Enable/Disable wireframe mode\n[true|false]",
-            "insertText": "ui.wireframe=${1:true|false}"
+            "insertText": "ui.wireframe=${1|true,false|}"
         }
         ,
         {
@@ -416,7 +434,7 @@
             "matchKeyword" : ["ui.debug", "debug"],
             "quickText": "Set if display debug panel",
             "documentation": "Set if display debug panel\n[true|false]",
-            "insertText": "ui.debug=${1:true|false}"
+            "insertText": "ui.debug=${1|true,false|}"
         }
         ,
         {
@@ -424,7 +442,7 @@
             "matchKeyword" : ["ui.infos", "infos"],
             "quickText": "Set if display infos panel",
             "documentation": "Set if display infos panel\n[true|false]",
-            "insertText": "ui.infos=${1:true|false}"
+            "insertText": "ui.infos=${1|true,false|}"
         }
         ,
         {
