@@ -16,9 +16,8 @@ import {
 
 let client: LanguageClient;
 
-const tokenTypes = ['variable', 'building'];
-const tokenModifiers = ['declaration', 'documentation'];
-const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
+const tokensConfig = require("../../server/data/semantic_tokens.json");
+const legend = new vscode.SemanticTokensLegend(tokensConfig.tokenTypes, tokensConfig.tokenModifiers);
 
 const provider: vscode.DocumentSemanticTokensProvider = {
   provideDocumentSemanticTokens(

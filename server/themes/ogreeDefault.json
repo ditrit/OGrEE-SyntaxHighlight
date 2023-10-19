@@ -36,6 +36,12 @@
 		}
 	  },
 	  {
+		"scope": ["*.deprecated"],
+		"settings": {
+			"fontStyle": "italic"
+		}
+	  },
+	  {
 		"scope": ["constant.numeric"],
 		"settings": {
 		  "foreground": "#B5CEA8"
