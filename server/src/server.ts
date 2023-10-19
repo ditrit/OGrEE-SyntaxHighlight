@@ -11,14 +11,9 @@ import {
 	InitializeParams,
 	DidChangeConfigurationNotification,
 	CompletionItem,
-	CompletionItemKind,
-	TextDocumentPositionParams,
 	TextDocumentSyncKind,
 	InitializeResult,
-	ColorPresentation,
-	ColorInformation,
-	Color,
-	Range
+	ColorPresentation
 } from 'vscode-languageserver/node';
 
 import {
@@ -211,9 +206,6 @@ connection.onCompletion(autoCompletion());
 connection.onRequest('custom/semanticTokens', (doc) => {return semanticTokenProvider(doc)})
 
 const selector = { language: 'ogreecli', scheme: 'file' };
-// vslanguages.registerDocumentSemanticTokensProvider(selector, SemanticTokensProvider, 
-// 	{tokenTypes : ['comment', 'string', 'keyword', 'number', 'regexp', 'operator', 'namespace', 'function'], 
-// 	tokenModifiers : ['declaration', 'documentation', 'readonly', 'static', 'abstract', 'deprecated', 'modification', 'async']})
 
 connection.onDocumentColor(docColor(documents));
 
