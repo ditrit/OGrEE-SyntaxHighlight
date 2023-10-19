@@ -16,7 +16,7 @@ import {
 
 let client: LanguageClient;
 
-const tokenTypes = ['class', 'interface', 'enum', 'function', 'variable'];
+const tokenTypes = ['variable', 'building'];
 const tokenModifiers = ['declaration', 'documentation'];
 const legend = new vscode.SemanticTokensLegend(tokenTypes, tokenModifiers);
 
@@ -36,9 +36,6 @@ const provider: vscode.DocumentSemanticTokensProvider = {
 		console.log("FIN", tokensBuilder)
 		return tokensBuilder.build();
 	});
-	//semanticTokenProvider(document).forEach((token) => {tokensBuilder.push(token.line, token.char, token.length, token.tokenType, token.tokenModifiers)});
-	// tokensBuilder.push(2, 1, 5, 4, 1);
-	// return tokensBuilder.build()
     
   }
 };

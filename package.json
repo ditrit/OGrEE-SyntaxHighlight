@@ -26,6 +26,33 @@
 	},
 	"main": "./client/out/extension",
 	"contributes": {
+		"semanticTokenScopes": [
+			{
+			  "scopes": {
+				"building": ["building"]
+			  }
+			}
+		  ],
+		"themes": [
+			{
+			  "label": "OGrEE Default",
+			  "uiTheme": "vs-dark",
+			  "path": "./server/themes/ogreeDefault.json"
+			}
+		  ],
+		"semanticTokenTypes": [
+			{
+			  "id": "building",
+			  "superType": "class",
+			  "description": "An OGrEE buiding."
+			}
+		  ],
+		  "semanticTokenModifiers": [
+			{
+			  "id": "native",
+			  "description": "Annotates a symbol that is implemented natively"
+			}
+		  ],
 		"languages": [
 			{
 				"id": "ogreecli",

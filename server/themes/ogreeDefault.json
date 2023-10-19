@@ -1,0 +1,52 @@
+{
+	"name": "OGrEE Default color theme",
+	"type": "dark",
+  
+	"colors": {
+	  "building": "#ff1900",
+	  "background": "#1E1E1E",
+	  "comment": "#6A9955",
+	  "keyword": "#569CD6",
+	  "string": "#CE9178",
+	  "number": "#B5CEA8",
+	  "function": "#D16969",
+	  "operator": "#9CDCFE"
+	},
+	"semanticHighlighting" : true,
+	"semanticTokenColors":{
+		"building:ogreecli":"#ff1900"
+	},
+	"tokenColors": [
+		{
+			"scope": ["building"],
+			"settings": {
+			  "foreground": "#ff1900"
+			}
+		},
+	  {
+		"scope": ["comment", "comment.block.documentation"],
+		"settings": {
+		  "foreground": "#6A9955"
+		}
+	  },
+	  {
+		"scope": ["string", "string.quoted.single", "string.quoted.double"],
+		"settings": {
+		  "foreground": "#CE9178"
+		}
+	  },
+	  {
+		"scope": ["constant.numeric"],
+		"settings": {
+		  "foreground": "#B5CEA8"
+		}
+	  },
+	  {
+		"scope": ["entity.name.function"],
+		"settings": {
+		  "foreground": "#D16969"
+		}
+	  }
+	]
+  }
+  

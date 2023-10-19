@@ -65,18 +65,16 @@ connection.onInitialize((params: InitializeParams) => {
 			completionProvider: {
 				resolveProvider: true
 			},
-			semanticTokensProvider: {
-				range : true,
-				full : false,
-				legend : {
-					tokenTypes : ['comment', 'string', 'keyword', 'number', 'regexp', 'operator', 'namespace',
-					'type', 'struct', 'class', 'interface', 'enum', 'typeParameter', 'function',
-					'method', 'decorator', 'macro', 'variable', 'parameter', 'property', 'label'],
-					tokenModifiers : ['declaration', 'documentation', 'readonly', 'static', 'abstract', 'deprecated',
-					'modification', 'async']
-				}
-			},
-			colorProvider: true
+			// semanticTokensProvider: {
+			// 	range : false,
+			// 	full : false
+			// 	// legend : {
+			// 	// 	tokenTypes : ['building', 'variable'],
+			// 	// 	tokenModifiers : ['declaration', 'documentation', 'readonly', 'static', 'abstract', 'deprecated',
+			// 	// 	'modification', 'async']
+			// 	// }
+			// },
+			// colorProvider: true
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
