@@ -1,26 +1,11 @@
 {
 	"name": "OGrEE Default color theme",
 	"type": "dark",
-	"colors": {
-		"building": "#ff1900",
-		"background": "#1E1E1E",
-		"comment": "#6A9955",
-		"keyword": "#569CD6",
-		"string": "#CE9178",
-		"number": "#B5CEA8",
-		"function": "#D16969",
-		"integer": "#9CDCFE",
-		"bebou": "#ff00ff"
-	},
 	"semanticHighlighting": true,
-	"semanticTokenColors": {
-		"building:ogreecli": "#ff1900",
-		"ogreecli:bebou": "#ff00ff"
-	},
 	"tokenColors": [
 		{
 			"scope": [
-				"building"
+				"unknown"
 			],
 			"settings": {
 				"foreground": "#ff1900"
@@ -47,10 +32,10 @@
 		},
 		{
 			"scope": [
-				"bebou"
+				"macro"
 			],
 			"settings": {
-				"foreground": "#00ff00"
+				"foreground": "#ffff00"
 			}
 		},
 		{
@@ -63,18 +48,20 @@
 		},
 		{
 			"scope": [
-				"entity.name.integer"
+				"entity.name.bebou"
 			],
 			"settings": {
-				"foreground": "#B5CEA8"
+				"foreground": "#00ff00",
+				"fontStyle":"underline",
+				"background" : "ffb000"
 			}
 		},
 		{
 			"scope": [
-				"entity.name.function"
+				"entity.name.function.macro"
 			],
 			"settings": {
-				"foreground": "#00ff00"
+				"foreground": "#B5CEA8"
 			}
 		}
 	]

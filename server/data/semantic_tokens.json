@@ -1,7 +1,9 @@
 { "tokenTypes" : [
+	"unknown",
 	"comment",
 	"keyword",
 	"string",
+	"integer",
 	"number",
 	"regexp",
 	"operator",
@@ -19,7 +21,9 @@
 	"parameter",
 	"property",
 	"label",
-	"bebou"
+	"bebou",
+	"byte",
+	"number"
 ],
 "tokenModifiers" : [
 	"declaration",
