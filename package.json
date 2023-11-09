@@ -85,7 +85,7 @@
 						"messages",
 						"verbose"
 					],
-					"default": "off",
+					"default": "on",
 					"description": "Traces the communication between VS Code and the language server."
 				}
 			},

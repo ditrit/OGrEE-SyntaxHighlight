@@ -205,7 +205,6 @@ connection.onCompletion(autoCompletion());
 
 connection.onRequest('custom/semanticTokens', (doc) => {return semanticTokenProvider(doc)})
 
-const selector = { language: 'ogreecli', scheme: 'file' };
 
 connection.onDocumentColor(docColor(documents));
 
