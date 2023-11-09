@@ -3,6 +3,7 @@ import {
 } from 'vscode-languageserver/node';
 
 const commandList = require("./../data/command_list.json");
+//need to parse commmand list for easier use during document parsing
 
 export function autoCompletion(){
 	return (_textDocumentPosition) => {
