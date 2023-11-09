@@ -18,7 +18,8 @@
 	"variable",
 	"parameter",
 	"property",
-	"label"
+	"label",
+	"bebou"
 ],
 "tokenModifiers" : [
 	"declaration",
