@@ -54,14 +54,18 @@ function handle_variable(var_type: any, variable: any): any {
 	}
 	if (var_type == "=") {
 
-		for (var i = 0; i < variable_names.length; i++) {
+		for(var i = 0; i < variable_names.length; i++) {
 			if (variable_names[i] == variable) return "var exist"
 		}
 
 		return variable + " is not defined"
+
+
 	}
 	if (var_type == "-") {
-		for (var i = 0; i < variable_names.length; i++) {
+
+
+		for(var i = 0; i < variable_names.length; i++) {
 			if (variable_names[i] == variable) {
 				variable_names.splice(i, 1);
 				return "var removed"
@@ -78,6 +82,8 @@ const commandList = ["+tenant:[+name]@[=color]"]
 
 export function parseDocument(textDocument: TextDocument, settings: any): Diagnostic[] {
 
+	variable_names = []
+
 	const text = textDocument.getText();
 	
 	const diagnostics: Diagnostic[] = [];
@@ -89,7 +95,9 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 	let end_separator = "\n";
 	let start_separator = "\n" //treat first line like a new line
 	let next_command_index = 0;
-
+	
+	//the parser is in this loop
+	//the code is HORRIBLE for now, it should really be moved into it's own class (even multiple class probably) cuz variable names are getting terrible
 	while (true) {
 
 		//look for next instruction
@@ -146,13 +154,14 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 						};
 	
 						diagnostics.push(diagnostic);
-						//command = command.substring(0,command.indexOf("[")) // start checking for the first var, if it exist
 						
 						let command_sub_end_separator = "]";
 						let command_sub_start_separator = "]";
 						
 						let current_sub_command_index = 0;
 
+
+						//next line has been delimited, exclusing comments, so now trying to match what's left against the command list, which really should be loaded from json but i'll add it later
 						while (1) {
 
 							command_sub_start_separator = command_sub_end_separator; //searching for new cmd, so end separator is now start
@@ -169,6 +178,11 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 								//check in document
 								const variable_end_position = text.indexOf(variable_end_delimiter, current_index);
 
+
+								//also need to check if we're adding, consomming or just using a variable, so checking for "+/=/- at the start of var name"
+								const var_type = command.substring(current_sub_command_index, current_sub_command_index+1)
+
+
 								if (variable_end_delimiter == "") {
 									//means variable is at the end of command
 									//ignore variable_end_position, it's gonna be garbage anyway
@@ -179,9 +193,11 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 											start: textDocument.positionAt(current_index),
 											end: textDocument.positionAt(next_command_index)
 										},
-										message: "last var",
+										message: handle_variable(var_type, text.substring(current_index, next_command_index)),
 										source: 'Ogree_parser'
 									};
+
+									
 				
 									diagnostics.push(diagnostic);
 									break;
@@ -194,14 +210,14 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 										start: textDocument.positionAt(current_index),
 										end: textDocument.positionAt(variable_end_position)
 									},
-									message: "var",
+									message: handle_variable(var_type, text.substring(current_index, variable_end_position)),
 									source: 'Ogree_parser'
 								};
 			
 								diagnostics.push(diagnostic);
 
 								//update document index
-								current_index = variable_end_position + (variable_end_delimiter_index - next_sub_command_index);
+								current_index = variable_end_position + (variable_end_delimiter_index - next_sub_command_index)-1;
 								//update comand index
 								current_sub_command_index = variable_end_delimiter_index + get_next_part(next_sub_command_index + command_sub_end_separator.length, command, ["["]).separator.length;
 								continue;
@@ -220,6 +236,7 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 				} 
 
 				if (cmd_found == 0) {
+					//means every command was checked but none matched with this
 					const diagnostic: Diagnostic = {
 						severity: DiagnosticSeverity.Error,
 						range: {
@@ -239,7 +256,6 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 		if (current_index >= text.length) break; //if EOF stop
 
 	}
-
 	return diagnostics;
 	// Send the computed diagnostics to VSCode.
 	//connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
