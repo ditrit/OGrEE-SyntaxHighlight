@@ -194,7 +194,7 @@ function handle_variable(var_type: any, variable: any): any {
 			if (variable_names[i] == variable) {
 				variable_names.splice(i, 1);
 				return "var removed"
-			}
+			}variable_names
 		}
 		return variable + " is not defined"
 
@@ -435,7 +435,7 @@ connection.onDidChangeWatchedFiles(_change => {
 });
 
 // This handler provides the initial list of the completion items.
-connection.onCompletion(autoCompletion());
+connection.onCompletion(autoCompletion(variable_names));
 
 // This handler resolves additional information for the item selected in
 // the completion list.
