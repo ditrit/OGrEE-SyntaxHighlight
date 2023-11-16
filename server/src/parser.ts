@@ -17,6 +17,13 @@ export function getVariables() {
 	return variableNames;
 }
 
+/**
+ * Parses a text document and returns an array of diagnostics.
+ * 
+ * @param textDocument The text document to parse.
+ * @param settings The settings to use for parsing.
+ * @returns An array of diagnostics.
+ */
 export function parseDocument(textDocument: TextDocument, settings: any): Diagnostic[] {
 	variableNames = [];
 	const text = textDocument.getText();
@@ -56,6 +63,13 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 	return diagnostics;
 }
 
+/**
+ * Parses a comment and returns a diagnostic object.
+ * @param currentIndex The index of the current character.
+ * @param nextCommandIndex The index of the next command.
+ * @param textDocument The text document to parse.
+ * @returns A diagnostic object.
+ */
 function parseComment(currentIndex: number, nextCommandIndex: number, textDocument: TextDocument): Diagnostic {
 	const diagnostic: Diagnostic = {
 		severity: DiagnosticSeverity.Information,
@@ -69,6 +83,16 @@ function parseComment(currentIndex: number, nextCommandIndex: number, textDocume
 	return diagnostic;
 }
 
+/**
+ * Parses a command from a given text and returns whether a command was found or not.
+ * @param currentIndex The current index in the text.
+ * @param nextCommandIndex The index of the next command in the text.
+ * @param nextCommand The next command to parse.
+ * @param text The text to parse.
+ * @param diagnostics An array of diagnostics to add any errors or warnings found during parsing.
+ * @param textDocument The text document to parse.
+ * @returns Whether a command was found or not.
+ */
 function parseCommand(currentIndex: number, nextCommandIndex: number, nextCommand: string, text: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
 	for (let command of commandList) {
 		if (nextCommand.indexOf(command.substring(0,command.indexOf("["))) == 0) {
@@ -117,6 +141,13 @@ function parseCommand(currentIndex: number, nextCommandIndex: number, nextComman
 	return false;
 }
 
+/**
+ * Parses a found command and returns a diagnostic object.
+ * @param currentIndex The index of the current command.
+ * @param nextCommandIndex The index of the next command.
+ * @param textDocument The text document to parse.
+ * @returns A diagnostic object.
+ */
 function parseFoundCommand(currentIndex: number, nextCommandIndex: number, textDocument: TextDocument): Diagnostic {
 	const diagnostic: Diagnostic = {
 		severity: DiagnosticSeverity.Information,
@@ -130,6 +161,15 @@ function parseFoundCommand(currentIndex: number, nextCommandIndex: number, textD
 	return diagnostic;
 }
 
+/**
+ * Parses a variable based on its type and returns a Diagnostic object.
+ * @param varType The type of the variable (+, =, or -).
+ * @param currentIndex The index of the current position in the text document.
+ * @param nextCommandIndex The index of the next command in the text document.
+ * @param variable The name of the variable to be parsed.
+ * @param textDocument The TextDocument object representing the text document being parsed.
+ * @returns A Diagnostic object representing the result of the parsing operation.
+ */
 function parseVariable(varType: any, currentIndex: number, nextCommandIndex: number, variable: string, textDocument: TextDocument): Diagnostic {
 	if (varType == "+") {
 		variableNames.push(variable);
@@ -203,6 +243,14 @@ function parseVariable(varType: any, currentIndex: number, nextCommandIndex: num
 	};
 }
 
+/**
+ * Parses an unrecognized command and returns a diagnostic object.
+ * @param currentIndex The index of the current command.
+ * @param nextCommandIndex The index of the next command.
+ * @param nextCommand The next command to be parsed.
+ * @param textDocument The text document being parsed.
+ * @returns A diagnostic object representing the unrecognized command error.
+ */
 function parseUnrecognizedCommand(currentIndex: number, nextCommandIndex: number, nextCommand: string, textDocument: TextDocument): Diagnostic {
 	const diagnostic: Diagnostic = {
 		severity: DiagnosticSeverity.Error,
@@ -216,6 +264,14 @@ function parseUnrecognizedCommand(currentIndex: number, nextCommandIndex: number
 	return diagnostic;
 }
 
+/**
+ * Parses a command and returns a diagnostic if no variable is found.
+ * @param currentIndex The starting index of the command.
+ * @param nextCommandIndex The ending index of the command.
+ * @param command The command to parse.
+ * @param textDocument The text document to parse the command from.
+ * @returns A diagnostic object indicating that no variable was found in the command.
+ */
 function parseNoVariableFound(currentIndex: number, nextCommandIndex: number, command: string, textDocument: TextDocument): Diagnostic {
 	const diagnostic: Diagnostic = {
 		severity: DiagnosticSeverity.Error,
@@ -229,13 +285,14 @@ function parseNoVariableFound(currentIndex: number, nextCommandIndex: number, co
 	return diagnostic;
 }
 
-function readUntil(text: string, seq: string) {
-	const index = text.indexOf(seq);
-	if (index == -1) return text;
-	const returnString = text.substring(0, index);
-	return returnString;
-}
 
+/**
+ * Returns the index and separator of the next delimiter in the given text, starting from the given index.
+ * @param currentIndex The index to start searching from.
+ * @param text The text to search for delimiters in.
+ * @param delimitersList The list of delimiters to search for.
+ * @returns An object containing the index and separator of the next delimiter.
+ */
 function getNextPart(currentIndex: any, text: string, delimitersList: any) {
 	let nextCommandIndexPotential = 0;
 	let nextCommandIndex = text.length;
