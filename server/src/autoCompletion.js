@@ -5,7 +5,7 @@ import {
 const commandList = require("./../data/command_list.json");
 //need to parse commmand list for easier use during document parsing
 
-export function autoCompletion(variableName){
+export function autoCompletion(){
 	return (_textDocumentPosition) => {
 		// The pass parameter contains the position of the text document in
 		// which code complete got requested. For the example we ignore this
@@ -44,13 +44,6 @@ export function autoCompletion(variableName){
 
 			});
 		});
-		variableName.forEach((elem) => {
-			listCommands.push({
-				label: elem,
-				kind: CompletionItemKind.Variable,
-
-			})
-		})
 		return listCommands;
 	};
 
