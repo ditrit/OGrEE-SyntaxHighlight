@@ -8,66 +8,67 @@ import {
 } from 'vscode-languageserver-textdocument';
 
 
-function read_until(text: string, seq: string) {
+
+function readUntil(text: string, seq: string) {
 	const index = text.indexOf(seq);
 	if (index == -1) return text;
-	const return_string = text.substring(0, index);
+	const returnString = text.substring(0, index);
 
-	return return_string;
+	return returnString;
 
 }
 
 //return index of next delimiter
-function get_next_part(current_index: any, text: string, delimiters_list: any) {
+function getNextPart(currentIndex: any, text: string, delimitersList: any) {
 
-	let next_command_index_potential = 0;
-	let next_command_index = text.length;
-	let end_separator = "";
+	let nextCommandIndexPotential = 0;
+	let nextCommandIndex = text.length;
+	let endSeparator = "";
 
-	for (const delimiter of delimiters_list) {
-		next_command_index_potential = text.indexOf(delimiter, current_index);
-		if (next_command_index_potential != -1 && next_command_index_potential < next_command_index) {
-			next_command_index = next_command_index_potential;
-			end_separator = delimiter;
+	for (const delimiter of delimitersList) {
+		nextCommandIndexPotential = text.indexOf(delimiter, currentIndex);
+		if (nextCommandIndexPotential != -1 && nextCommandIndexPotential < nextCommandIndex) {
+			nextCommandIndex = nextCommandIndexPotential;
+			endSeparator = delimiter;
 		}
 
 	}
 
-	return { index: next_command_index, separator: end_separator };
+	return { index: nextCommandIndex, separator: endSeparator };
 
 }
 
 export function getVariables(){
-	return variable_names;
+	return variableNames;
 }
 
-var variable_names: string[] = []
+var variableNames: string[] = []
 
 
 //handle what to do with the variable that was encountered in the document
-function handle_variable(var_type: any, variable: any): any {
+function handleVariable(varType: any, variable: any): any {
 
-	if (var_type == "+") {
+	if (varType == "+") {
 		//store var in array
-		variable_names.push(variable);
+		variableNames.push(variable);
 		return "var stored"
 	}
-	if (var_type == "=") {
+	if (varType == "=") {
 
-		for(var i = 0; i < variable_names.length; i++) {
-			if (variable_names[i] == variable) return "var exist"
+		for(var i = 0; i < variableNames.length; i++) {
+			if (variableNames[i] == variable) return "var exist"
 		}
 
 		return variable + " is not defined"
 
 
 	}
-	if (var_type == "-") {
+	if (varType == "-") {
 
 
-		for(var i = 0; i < variable_names.length; i++) {
-			if (variable_names[i] == variable) {
-				variable_names.splice(i, 1);
+		for(var i = 0; i < variableNames.length; i++) {
+			if (variableNames[i] == variable) {
+				variableNames.splice(i, 1);
 				return "var removed"
 			}
 		}
@@ -77,53 +78,53 @@ function handle_variable(var_type: any, variable: any): any {
 
 }
 
-const command_separators = ["\n", "//"];
+const commandSeparators = ["\n", "//"];
 const commandList = ["+tenant:[+name]@[=color]"]
 
 export function parseDocument(textDocument: TextDocument, settings: any): Diagnostic[] {
 
-	variable_names = []
+	variableNames = []
 
 	const text = textDocument.getText();
 	
 	const diagnostics: Diagnostic[] = [];
-	let current_index = 0;
+	let currentIndex = 0;
 
-	current_index = 0;
-	let variable_list = [];
+	currentIndex = 0;
+	let variableList = [];
 	
-	let end_separator = "\n";
-	let start_separator = "\n" //treat first line like a new line
-	let next_command_index = 0;
+	let endSeparator = "\n";
+	let startSeparator = "\n" //treat first line like a new line
+	let nextCommandIndex = 0;
 	
 	//the parser is in this loop
 	//the code is HORRIBLE for now, it should really be moved into it's own class (even multiple class probably) cuz variable names are getting terrible
-	while (true) {
+	while (currentIndex < text.length) {
 
 		//look for next instruction
-		start_separator = end_separator; //searching for new cmd, so end separator is now start
-		let next_command_index = get_next_part(current_index, text, command_separators).index;
-		end_separator = get_next_part(current_index, text, command_separators).separator;
+		startSeparator = endSeparator; //searching for new cmd, so end separator is now start
+		let nextCommandIndex = getNextPart(currentIndex, text, commandSeparators).index;
+		endSeparator = getNextPart(currentIndex, text, commandSeparators).separator;
 
 		//find next command, remove eventual starting whitespaces if newline
-		let next_command = text.substring(current_index, next_command_index);
+		let nextCommand = text.substring(currentIndex, nextCommandIndex);
 		
-		if (start_separator == "\n") {
-			const command_length = next_command.length;
-			next_command = next_command.trimStart();
-			current_index += command_length - next_command.length;
+		if (startSeparator == "\n") {
+			const commandLength = nextCommand.length;
+			nextCommand = nextCommand.trimStart();
+			currentIndex += commandLength - nextCommand.length;
 		}
 
-		if (next_command != "") {
+		if (nextCommand != "") {
 
 			//test the separator for comments
-			if (start_separator == "//") {
+			if (startSeparator == "//") {
 
 				const diagnostic: Diagnostic = {
 					severity: DiagnosticSeverity.Information,
 					range: {
-						start: textDocument.positionAt(current_index-2),
-						end: textDocument.positionAt(next_command_index)
+						start: textDocument.positionAt(currentIndex-2),
+						end: textDocument.positionAt(nextCommandIndex)
 					},
 					message: `this is a comment`,
 					source: 'Ogree_parser'
@@ -134,20 +135,20 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 			} else {
 
 				//test if command in command list
-				let cmd_found = 0;
+				let cmdFound = 0;
 				for (let command of commandList) {
 					
 					
 
-					if (next_command.indexOf(command.substring(0,command.indexOf("["))) == 0) {
+					if (nextCommand.indexOf(command.substring(0,command.indexOf("["))) == 0) {
 						//command found!
-						cmd_found = 1;
+						cmdFound = 1;
 
 						const diagnostic: Diagnostic = {
 							severity: DiagnosticSeverity.Information,
 							range: {
-								start: textDocument.positionAt(current_index),
-								end: textDocument.positionAt(next_command_index)
+								start: textDocument.positionAt(currentIndex),
+								end: textDocument.positionAt(nextCommandIndex)
 							},
 							message: "command found",
 							source: 'Ogree_parser'
@@ -155,51 +156,53 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 	
 						diagnostics.push(diagnostic);
 						
-						let command_sub_end_separator = "]";
-						let command_sub_start_separator = "]";
+						let commandSubEndSeparator = "]";
+						let commandSubStartSeparator = "]";
 						
-						let current_sub_command_index = 0;
+						let currentSubCommandIndex = 0;
 
+						let foundVariable = false;
 
 						//next line has been delimited, exclusing comments, so now trying to match what's left against the command list, which really should be loaded from json but i'll add it later
-						while (1) {
+						while (currentSubCommandIndex < command.length && !foundVariable) {
 
-							command_sub_start_separator = command_sub_end_separator; //searching for new cmd, so end separator is now start
-							//give the end of the next command, starting at command_sub_index and ending at next_command_sub_index
-							let next_sub_command_index = get_next_part(current_sub_command_index, command, ["[", "]"]).index;
-							command_sub_end_separator = get_next_part(current_sub_command_index, command, ["[", "]"]).separator;
+							commandSubStartSeparator = commandSubEndSeparator; //searching for new cmd, so end separator is now start
+							//give the end of the next command, starting at commandSubIndex and ending at nextCommandSubIndex
+							let nextSubCommandIndex = getNextPart(currentSubCommandIndex, command, ["[", "]"]).index;
+							commandSubEndSeparator = getNextPart(currentSubCommandIndex, command, ["[", "]"]).separator;
 
 							//handle what part of the command we are looking at rn
 							//if end separator is ], get variable name(until next separator ?)
-							if (command_sub_end_separator == "]") {
+							if (commandSubEndSeparator == "]") {
 								//means we're chekcing a variable, so get the end of command delimiter
-								const variable_end_delimiter_index = get_next_part(next_sub_command_index + command_sub_end_separator.length, command, ["["]).index;
-								const variable_end_delimiter = command.substring(next_sub_command_index+command_sub_end_separator.length, variable_end_delimiter_index);
+								const variableEndDelimiterIndex = getNextPart(nextSubCommandIndex + commandSubEndSeparator.length, command, ["["]).index;
+								const variableEndDelimiter = command.substring(nextSubCommandIndex+commandSubEndSeparator.length, variableEndDelimiterIndex);
 								//check in document
-								const variable_end_position = text.indexOf(variable_end_delimiter, current_index);
+								const variableEndPosition = text.indexOf(variableEndDelimiter, currentIndex);
 
 
 								//also need to check if we're adding, consomming or just using a variable, so checking for "+/=/- at the start of var name"
-								const var_type = command.substring(current_sub_command_index, current_sub_command_index+1)
+								const varType = command.substring(currentSubCommandIndex, currentSubCommandIndex+1)
 
 
-								if (variable_end_delimiter == "") {
+								if (variableEndDelimiter == "") {
 									//means variable is at the end of command
-									//ignore variable_end_position, it's gonna be garbage anyway
+									//ignore variableEndPosition, it's gonna be garbage anyway
 
 									const diagnostic: Diagnostic = {
 										severity: DiagnosticSeverity.Warning,
 										range: {
-											start: textDocument.positionAt(current_index),
-											end: textDocument.positionAt(next_command_index)
+											start: textDocument.positionAt(currentIndex),
+											end: textDocument.positionAt(nextCommandIndex)
 										},
-										message: handle_variable(var_type, text.substring(current_index, next_command_index)),
+										message: handleVariable(varType, text.substring(currentIndex, nextCommandIndex)),
 										source: 'Ogree_parser'
 									};
 
 									
 				
 									diagnostics.push(diagnostic);
+									foundVariable = true;
 									break;
 
 								}
@@ -207,27 +210,40 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 								const diagnostic: Diagnostic = {
 									severity: DiagnosticSeverity.Warning,
 									range: {
-										start: textDocument.positionAt(current_index),
-										end: textDocument.positionAt(variable_end_position)
+										start: textDocument.positionAt(currentIndex),
+										end: textDocument.positionAt(variableEndPosition)
 									},
-									message: handle_variable(var_type, text.substring(current_index, variable_end_position)),
+									message: handleVariable(varType, text.substring(currentIndex, variableEndPosition)),
 									source: 'Ogree_parser'
 								};
 			
 								diagnostics.push(diagnostic);
 
 								//update document index
-								current_index = variable_end_position + (variable_end_delimiter_index - next_sub_command_index)-1;
+								currentIndex = variableEndPosition + (variableEndDelimiterIndex - nextSubCommandIndex)-1;
 								//update comand index
-								current_sub_command_index = variable_end_delimiter_index + get_next_part(next_sub_command_index + command_sub_end_separator.length, command, ["["]).separator.length;
+								currentSubCommandIndex = variableEndDelimiterIndex + getNextPart(nextSubCommandIndex + commandSubEndSeparator.length, command, ["["]).separator.length;
 								continue;
 							}
-							if (command_sub_end_separator == "[") {
-								current_index += next_sub_command_index - current_sub_command_index;
+							if (commandSubEndSeparator == "[") {
+								currentIndex += nextSubCommandIndex - currentSubCommandIndex;
 							}						
 
-							current_sub_command_index = next_sub_command_index+command_sub_end_separator.length; //ignore separator in the main loop, will be treated in cmd loop
-							if (current_sub_command_index >= command.length) break;
+							currentSubCommandIndex = nextSubCommandIndex+commandSubEndSeparator.length; //ignore separator in the main loop, will be treated in cmd loop
+						}
+
+						if (!foundVariable) {
+							const diagnostic: Diagnostic = {
+								severity: DiagnosticSeverity.Error,
+								range: {
+									start: textDocument.positionAt(currentIndex),
+									end: textDocument.positionAt(nextCommandIndex)
+								},
+								message: "no variable found in command: " + command,
+								source: 'Ogree_parser'
+							};
+
+							diagnostics.push(diagnostic);
 						}
 
 						break;
@@ -235,15 +251,15 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 
 				} 
 
-				if (cmd_found == 0) {
+				if (cmdFound == 0) {
 					//means every command was checked but none matched with this
 					const diagnostic: Diagnostic = {
 						severity: DiagnosticSeverity.Error,
 						range: {
-							start: textDocument.positionAt(current_index),
-							end: textDocument.positionAt(next_command_index)
+							start: textDocument.positionAt(currentIndex),
+							end: textDocument.positionAt(nextCommandIndex)
 						},
-						message: "unrocognized command: " + next_command,
+						message: "unrocognized command: " + nextCommand,
 						source: 'Ogree_parser'
 					};
 
@@ -252,13 +268,12 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 			}
 		}
 
-		current_index = next_command_index+end_separator.length; //ignore separator in the main loop, will be treated in cmd loop
-		if (current_index >= text.length) break; //if EOF stop
-
+		currentIndex = nextCommandIndex+endSeparator.length; //ignore separator in the main loop, will be treated in cmd loop
 	}
 	return diagnostics;
 	// Send the computed diagnostics to VSCode.
 	//connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
+
 
 module.exports = { parseDocument }
