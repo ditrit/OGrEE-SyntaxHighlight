@@ -1,3 +1,4 @@
+
 import {
 	Diagnostic,
 	DiagnosticSeverity
@@ -7,242 +8,303 @@ import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
 
+const commandSeparators = ["\n", "//"];
+const commandList = ["+tenant:[+name]@[=color]"];
 
-function read_until(text: string, seq: string) {
-	const index = text.indexOf(seq);
-	if (index == -1) return text;
-	const return_string = text.substring(0, index);
+var variableNames: string[] = [];
 
-	return return_string;
-
+export function getVariables() {
+	return variableNames;
 }
 
-//return index of next delimiter
-function get_next_part(current_index: any, text: string, delimiters_list: any) {
-
-	let next_command_index_potential = 0;
-	let next_command_index = text.length;
-	let end_separator = "";
-
-	for (const delimiter of delimiters_list) {
-		next_command_index_potential = text.indexOf(delimiter, current_index);
-		if (next_command_index_potential != -1 && next_command_index_potential < next_command_index) {
-			next_command_index = next_command_index_potential;
-			end_separator = delimiter;
-		}
-
-	}
-
-	return { index: next_command_index, separator: end_separator };
-
-}
-
-export function getVariables(){
-	return variable_names;
-}
-
-var variable_names: string[] = []
-
-
-//handle what to do with the variable that was encountered in the document
-function handle_variable(var_type: any, variable: any): any {
-
-	if (var_type == "+") {
-		//store var in array
-		variable_names.push(variable);
-		return "var stored"
-	}
-	if (var_type == "=") {
-
-		for (var i = 0; i < variable_names.length; i++) {
-			if (variable_names[i] == variable) return "var exist"
-		}
-
-		return variable + " is not defined"
-	}
-	if (var_type == "-") {
-		for (var i = 0; i < variable_names.length; i++) {
-			if (variable_names[i] == variable) {
-				variable_names.splice(i, 1);
-				return "var removed"
-			}
-		}
-		return variable + " is not defined"
-
-	}
-
-}
-
-const command_separators = ["\n", "//"];
-const commandList = ["+tenant:[+name]@[=color]"]
-
+/**
+ * Parses a text document and returns an array of diagnostics.
+ * 
+ * @param textDocument The text document to parse.
+ * @param settings The settings to use for parsing.
+ * @returns An array of diagnostics.
+ */
 export function parseDocument(textDocument: TextDocument, settings: any): Diagnostic[] {
-
+	variableNames = [];
 	const text = textDocument.getText();
-	
 	const diagnostics: Diagnostic[] = [];
-	let current_index = 0;
+	let currentIndex = 0;
+	let variableList = [];
+	let endSeparator = "\n";
+	let startSeparator = "\n";
+	let nextCommandIndex = 0;
 
-	current_index = 0;
-	let variable_list = [];
-	
-	let end_separator = "\n";
-	let start_separator = "\n" //treat first line like a new line
-	let next_command_index = 0;
+	while (currentIndex < text.length) {
+		startSeparator = endSeparator;
+		nextCommandIndex = getNextPart(currentIndex, text, commandSeparators).index;
+		endSeparator = getNextPart(currentIndex, text, commandSeparators).separator;
+		let nextCommand = text.substring(currentIndex, nextCommandIndex);
 
-	while (true) {
-
-		//look for next instruction
-		start_separator = end_separator; //searching for new cmd, so end separator is now start
-		let next_command_index = get_next_part(current_index, text, command_separators).index;
-		end_separator = get_next_part(current_index, text, command_separators).separator;
-
-		//find next command, remove eventual starting whitespaces if newline
-		let next_command = text.substring(current_index, next_command_index);
-		
-		if (start_separator == "\n") {
-			const command_length = next_command.length;
-			next_command = next_command.trimStart();
-			current_index += command_length - next_command.length;
+		if (startSeparator == "\n") {
+			const commandLength = nextCommand.length;
+			nextCommand = nextCommand.trimStart();
+			currentIndex += commandLength - nextCommand.length;
 		}
 
-		if (next_command != "") {
-
-			//test the separator for comments
-			if (start_separator == "//") {
-
-				const diagnostic: Diagnostic = {
-					severity: DiagnosticSeverity.Information,
-					range: {
-						start: textDocument.positionAt(current_index-2),
-						end: textDocument.positionAt(next_command_index)
-					},
-					message: `this is a comment`,
-					source: 'Ogree_parser'
-				};
-				
-				diagnostics.push(diagnostic);
-
+		if (nextCommand != "") {
+			if (startSeparator == "//") {
+				diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
 			} else {
-
-				//test if command in command list
-				let cmd_found = 0;
-				for (let command of commandList) {
-					
-					
-
-					if (next_command.indexOf(command.substring(0,command.indexOf("["))) == 0) {
-						//command found!
-						cmd_found = 1;
-
-						const diagnostic: Diagnostic = {
-							severity: DiagnosticSeverity.Information,
-							range: {
-								start: textDocument.positionAt(current_index),
-								end: textDocument.positionAt(next_command_index)
-							},
-							message: "command found",
-							source: 'Ogree_parser'
-						};
-	
-						diagnostics.push(diagnostic);
-						//command = command.substring(0,command.indexOf("[")) // start checking for the first var, if it exist
-						
-						let command_sub_end_separator = "]";
-						let command_sub_start_separator = "]";
-						
-						let current_sub_command_index = 0;
-
-						while (1) {
-
-							command_sub_start_separator = command_sub_end_separator; //searching for new cmd, so end separator is now start
-							//give the end of the next command, starting at command_sub_index and ending at next_command_sub_index
-							let next_sub_command_index = get_next_part(current_sub_command_index, command, ["[", "]"]).index;
-							command_sub_end_separator = get_next_part(current_sub_command_index, command, ["[", "]"]).separator;
-
-							//handle what part of the command we are looking at rn
-							//if end separator is ], get variable name(until next separator ?)
-							if (command_sub_end_separator == "]") {
-								//means we're chekcing a variable, so get the end of command delimiter
-								const variable_end_delimiter_index = get_next_part(next_sub_command_index + command_sub_end_separator.length, command, ["["]).index;
-								const variable_end_delimiter = command.substring(next_sub_command_index+command_sub_end_separator.length, variable_end_delimiter_index);
-								//check in document
-								const variable_end_position = text.indexOf(variable_end_delimiter, current_index);
-
-								if (variable_end_delimiter == "") {
-									//means variable is at the end of command
-									//ignore variable_end_position, it's gonna be garbage anyway
-
-									const diagnostic: Diagnostic = {
-										severity: DiagnosticSeverity.Warning,
-										range: {
-											start: textDocument.positionAt(current_index),
-											end: textDocument.positionAt(next_command_index)
-										},
-										message: "last var",
-										source: 'Ogree_parser'
-									};
-				
-									diagnostics.push(diagnostic);
-									break;
-
-								}
-								
-								const diagnostic: Diagnostic = {
-									severity: DiagnosticSeverity.Warning,
-									range: {
-										start: textDocument.positionAt(current_index),
-										end: textDocument.positionAt(variable_end_position)
-									},
-									message: "var",
-									source: 'Ogree_parser'
-								};
-			
-								diagnostics.push(diagnostic);
-
-								//update document index
-								current_index = variable_end_position + (variable_end_delimiter_index - next_sub_command_index);
-								//update comand index
-								current_sub_command_index = variable_end_delimiter_index + get_next_part(next_sub_command_index + command_sub_end_separator.length, command, ["["]).separator.length;
-								continue;
-							}
-							if (command_sub_end_separator == "[") {
-								current_index += next_sub_command_index - current_sub_command_index;
-							}						
-
-							current_sub_command_index = next_sub_command_index+command_sub_end_separator.length; //ignore separator in the main loop, will be treated in cmd loop
-							if (current_sub_command_index >= command.length) break;
-						}
-
-						break;
-					}
-
-				} 
-
-				if (cmd_found == 0) {
-					const diagnostic: Diagnostic = {
-						severity: DiagnosticSeverity.Error,
-						range: {
-							start: textDocument.positionAt(current_index),
-							end: textDocument.positionAt(next_command_index)
-						},
-						message: "unrocognized command: " + next_command,
-						source: 'Ogree_parser'
-					};
-
-					diagnostics.push(diagnostic);
+				const commandFound = parseCommand(currentIndex, nextCommandIndex, nextCommand, text, diagnostics, textDocument);
+				if (!commandFound) {
+					diagnostics.push(parseUnrecognizedCommand(currentIndex, nextCommandIndex, nextCommand, textDocument));
 				}
 			}
 		}
 
-		current_index = next_command_index+end_separator.length; //ignore separator in the main loop, will be treated in cmd loop
-		if (current_index >= text.length) break; //if EOF stop
-
+		currentIndex = nextCommandIndex+endSeparator.length;
 	}
 
 	return diagnostics;
-	// Send the computed diagnostics to VSCode.
-	//connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
-module.exports = { parseDocument }
+/**
+ * Parses a comment and returns a diagnostic object.
+ * @param currentIndex The index of the current character.
+ * @param nextCommandIndex The index of the next command.
+ * @param textDocument The text document to parse.
+ * @returns A diagnostic object.
+ */
+function parseComment(currentIndex: number, nextCommandIndex: number, textDocument: TextDocument): Diagnostic {
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Information,
+		range: {
+			start: textDocument.positionAt(currentIndex-2),
+			end: textDocument.positionAt(nextCommandIndex)
+		},
+		message: `this is a comment`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Parses a command from a given text and returns whether a command was found or not.
+ * @param currentIndex The current index in the text.
+ * @param nextCommandIndex The index of the next command in the text.
+ * @param nextCommand The next command to parse.
+ * @param text The text to parse.
+ * @param diagnostics An array of diagnostics to add any errors or warnings found during parsing.
+ * @param textDocument The text document to parse.
+ * @returns Whether a command was found or not.
+ */
+function parseCommand(currentIndex: number, nextCommandIndex: number, nextCommand: string, text: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
+	for (let command of commandList) {
+		if (nextCommand.indexOf(command.substring(0,command.indexOf("["))) == 0) {
+			const commandFound = true;
+			diagnostics.push(parseFoundCommand(currentIndex, nextCommandIndex, textDocument));
+			let commandSubEndSeparator = "]";
+			let commandSubStartSeparator = "]";
+			let currentSubCommandIndex = 0;
+			let foundVariable = false;
+
+			while (currentSubCommandIndex < command.length && !foundVariable) {
+				commandSubStartSeparator = commandSubEndSeparator;
+				let nextSubCommandIndex = getNextPart(currentSubCommandIndex, command, ["[", "]"]).index;
+				commandSubEndSeparator = getNextPart(currentSubCommandIndex, command, ["[", "]"]).separator;
+
+				if (commandSubEndSeparator == "]") {
+					const variableEndDelimiterIndex = getNextPart(nextSubCommandIndex + commandSubEndSeparator.length, command, ["["]).index;
+					const variableEndDelimiter = command.substring(nextSubCommandIndex+commandSubEndSeparator.length, variableEndDelimiterIndex);
+					const variableEndPosition = text.indexOf(variableEndDelimiter, currentIndex);
+					const varType = command.substring(currentSubCommandIndex, currentSubCommandIndex+1)
+
+					if (variableEndDelimiter == "") {
+						diagnostics.push(parseVariable(varType, currentIndex, nextCommandIndex, text, textDocument));
+						foundVariable = true;
+						break;
+					}
+
+					diagnostics.push(parseVariable(varType, currentIndex, variableEndPosition, text, textDocument));
+					currentIndex = variableEndPosition + (variableEndDelimiterIndex - nextSubCommandIndex)-1;
+					currentSubCommandIndex = variableEndDelimiterIndex + getNextPart(nextSubCommandIndex + commandSubEndSeparator.length, command, ["["]).separator.length;
+					continue;
+				}
+				if (commandSubEndSeparator == "[") {
+					currentIndex += nextSubCommandIndex - currentSubCommandIndex;
+				}                        
+				currentSubCommandIndex = nextSubCommandIndex+commandSubEndSeparator.length;
+			}
+
+			if (!foundVariable) {
+				diagnostics.push(parseNoVariableFound(currentIndex, nextCommandIndex, command, textDocument));
+			}
+
+			return commandFound;
+		}
+	}
+	return false;
+}
+
+/**
+ * Parses a found command and returns a diagnostic object.
+ * @param currentIndex The index of the current command.
+ * @param nextCommandIndex The index of the next command.
+ * @param textDocument The text document to parse.
+ * @returns A diagnostic object.
+ */
+function parseFoundCommand(currentIndex: number, nextCommandIndex: number, textDocument: TextDocument): Diagnostic {
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Information,
+		range: {
+			start: textDocument.positionAt(currentIndex),
+			end: textDocument.positionAt(nextCommandIndex)
+		},
+		message: "command found",
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Parses a variable based on its type and returns a Diagnostic object.
+ * @param varType The type of the variable (+, =, or -).
+ * @param currentIndex The index of the current position in the text document.
+ * @param nextCommandIndex The index of the next command in the text document.
+ * @param variable The name of the variable to be parsed.
+ * @param textDocument The TextDocument object representing the text document being parsed.
+ * @returns A Diagnostic object representing the result of the parsing operation.
+ */
+function parseVariable(varType: any, currentIndex: number, nextCommandIndex: number, variable: string, textDocument: TextDocument): Diagnostic {
+	if (varType == "+") {
+		variableNames.push(variable);
+		return {
+			severity: DiagnosticSeverity.Warning,
+			range: {
+				start: textDocument.positionAt(currentIndex),
+				end: textDocument.positionAt(nextCommandIndex)
+			},
+			message: "var stored",
+			source: 'Ogree_parser'
+		};
+	}
+	if (varType == "=") {
+		for(var i = 0; i < variableNames.length; i++) {
+			if (variableNames[i] == variable) {
+				return {
+					severity: DiagnosticSeverity.Warning,
+					range: {
+						start: textDocument.positionAt(currentIndex),
+						end: textDocument.positionAt(nextCommandIndex)
+					},
+					message: "var exist",
+					source: 'Ogree_parser'
+				};
+			}
+		}
+		return {
+			severity: DiagnosticSeverity.Warning,
+			range: {
+				start: textDocument.positionAt(currentIndex),
+				end: textDocument.positionAt(nextCommandIndex)
+			},
+			message: variable + " is not defined",
+			source: 'Ogree_parser'
+		};
+	}
+	if (varType == "-") {
+		for(var i = 0; i < variableNames.length; i++) {
+			if (variableNames[i] == variable) {
+				variableNames.splice(i, 1);
+				return {
+					severity: DiagnosticSeverity.Warning,
+					range: {
+						start: textDocument.positionAt(currentIndex),
+						end: textDocument.positionAt(nextCommandIndex)
+					},
+					message: "var removed",
+					source: 'Ogree_parser'
+				};
+			}
+		}
+		return {
+			severity: DiagnosticSeverity.Warning,
+			range: {
+				start: textDocument.positionAt(currentIndex),
+				end: textDocument.positionAt(nextCommandIndex)
+			},
+			message: variable + " is not defined",
+			source: 'Ogree_parser'
+		};
+	}
+	return {
+		severity: DiagnosticSeverity.Warning,
+		range: {
+			start: textDocument.positionAt(currentIndex),
+			end: textDocument.positionAt(nextCommandIndex)
+		},
+		message: variable + "Parser error",
+		source: 'Ogree_parser'
+	};
+}
+
+/**
+ * Parses an unrecognized command and returns a diagnostic object.
+ * @param currentIndex The index of the current command.
+ * @param nextCommandIndex The index of the next command.
+ * @param nextCommand The next command to be parsed.
+ * @param textDocument The text document being parsed.
+ * @returns A diagnostic object representing the unrecognized command error.
+ */
+function parseUnrecognizedCommand(currentIndex: number, nextCommandIndex: number, nextCommand: string, textDocument: TextDocument): Diagnostic {
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(currentIndex),
+			end: textDocument.positionAt(nextCommandIndex)
+		},
+		message: "unrocognized command: " + nextCommand,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Parses a command and returns a diagnostic if no variable is found.
+ * @param currentIndex The starting index of the command.
+ * @param nextCommandIndex The ending index of the command.
+ * @param command The command to parse.
+ * @param textDocument The text document to parse the command from.
+ * @returns A diagnostic object indicating that no variable was found in the command.
+ */
+function parseNoVariableFound(currentIndex: number, nextCommandIndex: number, command: string, textDocument: TextDocument): Diagnostic {
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(currentIndex),
+			end: textDocument.positionAt(nextCommandIndex)
+		},
+		message: "no variable found in command: " + command,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+
+/**
+ * Returns the index and separator of the next delimiter in the given text, starting from the given index.
+ * @param currentIndex The index to start searching from.
+ * @param text The text to search for delimiters in.
+ * @param delimitersList The list of delimiters to search for.
+ * @returns An object containing the index and separator of the next delimiter.
+ */
+function getNextPart(currentIndex: any, text: string, delimitersList: any) {
+	let nextCommandIndexPotential = 0;
+	let nextCommandIndex = text.length;
+	let endSeparator = "";
+
+	for (const delimiter of delimitersList) {
+		nextCommandIndexPotential = text.indexOf(delimiter, currentIndex);
+		if (nextCommandIndexPotential != -1 && nextCommandIndexPotential < nextCommandIndex) {
+			nextCommandIndex = nextCommandIndexPotential;
+			endSeparator = delimiter;
+		}
+	}
+
+	return { index: nextCommandIndex, separator: endSeparator };
+}
