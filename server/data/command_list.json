@@ -214,7 +214,7 @@
             "matchKeyword" : ["corridor", "co"],
             "quickText": "Create a Corridor",
             "documentation": "Corridor must be child of a room A corridor is a cold or warm corridor.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the corridor is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[temperature] is cold or warm.",
-            "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}" //Try ${2|[${3;x},${4:y}],[${3:x},${4:y},${5:z}]|}
+            "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}"
         }
         ,
         {
