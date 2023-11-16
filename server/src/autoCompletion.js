@@ -31,6 +31,14 @@ export function autoCompletion(){
 				});
 			});
 		});
+		/*listVariables.forEach((elem) => {
+			listCommands.push({
+				label: elem,
+				kind: CompletionItemKind.Variable,
+				insertTextFormat: InsertTextFormat.Snippet,
+				insertText: elem
+			})
+		})*/
 		return listCommands;
 	};
 
