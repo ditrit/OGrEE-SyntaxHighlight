@@ -134,85 +134,13 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
-<<<<<<< HEAD
-function read_until(text: string, seq: string) {
-	const index = text.indexOf(seq);
-	if (index == -1) return text;
-	const return_string = text.substring(0, index);
-
-	return return_string;
-
-}
-
-//return index of next delimiter
-function get_next_part(current_index: any, text: string, delimiters_list: any) {
-
-	let next_command_index_potential = 0;
-	let next_command_index = text.length;
-	let end_separator = "";
-	
-	for (const delimiter of delimiters_list) {
-		next_command_index_potential = text.indexOf(delimiter, current_index);
-		if (next_command_index_potential != -1 && next_command_index_potential < next_command_index) {
-			next_command_index = next_command_index_potential;
-			end_separator = delimiter;
-		}
-
-	}
-
-	return {index: next_command_index, separator: end_separator};
-
-}
-
-var variable_names: string[] = []
-
-
-//handle what to do with the variable that was encountered in the document
-function handle_variable(var_type: any, variable: any): any {
-
-	if (var_type == "+") {
-		//store var in array
-		variable_names.push(variable);
-		return "var stored"
-	}
-	if (var_type == "=") {
-		
-		for(var i = 0; i < variable_names.length; i++) {
-			if (variable_names[i] == variable) return "var exist"
-		}
-
-		return variable + " is not defined"
-		
-
-	}
-	if (var_type == "-") {
-		
-		
-		for(var i = 0; i < variable_names.length; i++) {
-			if (variable_names[i] == variable) {
-				variable_names.splice(i, 1);
-				return "var removed"
-			}variable_names
-		}
-		return variable + " is not defined"
-
-	}
-
-}
-
-
-const command_separators = ["\n", "//"];
-const commandList = ["+tenant:[+name]@[=color]"]
-
-=======
->>>>>>> 5481ae77dbb70aedbbd20bcacd35535fd2ea33c9
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const diagnostics = parseDocument(textDocument, await getDocumentSettings(textDocument.uri));
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
 // This handler provides the initial list of the completion items.
-connection.onCompletion(autoCompletion(variable_names));
+connection.onCompletion(autoCompletion());
 
 // This handler resolves additional information for the item selected in
 // the completion list.
