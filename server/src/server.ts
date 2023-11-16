@@ -166,12 +166,51 @@ function get_next_part(current_index: any, text: string, delimiters_list: any) {
 
 }
 
+var variable_names: string[] = []
+
+
+//handle what to do with the variable that was encountered in the document
+function handle_variable(var_type: any, variable: any): any {
+
+	if (var_type == "+") {
+		//store var in array
+		variable_names.push(variable);
+		return "var stored"
+	}
+	if (var_type == "=") {
+		
+		for(var i = 0; i < variable_names.length; i++) {
+			if (variable_names[i] == variable) return "var exist"
+		}
+
+		return variable + " is not defined"
+		
+
+	}
+	if (var_type == "-") {
+		
+		
+		for(var i = 0; i < variable_names.length; i++) {
+			if (variable_names[i] == variable) {
+				variable_names.splice(i, 1);
+				return "var removed"
+			}
+		}
+		return variable + " is not defined"
+
+	}
+
+}
+
+
 const command_separators = ["\n", "//"];
 const commandList = ["+tenant:[+name]@[=color]"]
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	// In this simple example we get the settings for every validate run.
 	const settings = await getDocumentSettings(textDocument.uri);
+
+	variable_names = []
 
 	const text = textDocument.getText();
 	
@@ -184,7 +223,9 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	let end_separator = "\n";
 	let start_separator = "\n" //treat first line like a new line
 	let next_command_index = 0;
-
+	
+	//the parser is in this loop
+	//the code is HORRIBLE for now, it should really be moved into it's own class (even multiple class probably) cuz variable names are getting terrible
 	while (true) {
 
 		//look for next instruction
@@ -241,13 +282,14 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 						};
 	
 						diagnostics.push(diagnostic);
-						//command = command.substring(0,command.indexOf("[")) // start checking for the first var, if it exist
 						
 						let command_sub_end_separator = "]";
 						let command_sub_start_separator = "]";
 						
 						let current_sub_command_index = 0;
 
+
+						//next line has been delimited, exclusing comments, so now trying to match what's left against the command list, which really should be loaded from json but i'll add it later
 						while (1) {
 
 							command_sub_start_separator = command_sub_end_separator; //searching for new cmd, so end separator is now start
@@ -264,6 +306,11 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 								//check in document
 								const variable_end_position = text.indexOf(variable_end_delimiter, current_index);
 
+
+								//also need to check if we're adding, consomming or just using a variable, so checking for "+/=/- at the start of var name"
+								const var_type = command.substring(current_sub_command_index, current_sub_command_index+1)
+
+
 								if (variable_end_delimiter == "") {
 									//means variable is at the end of command
 									//ignore variable_end_position, it's gonna be garbage anyway
@@ -274,9 +321,11 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 											start: textDocument.positionAt(current_index),
 											end: textDocument.positionAt(next_command_index)
 										},
-										message: "last var",
+										message: handle_variable(var_type, text.substring(current_index, next_command_index)),
 										source: 'Ogree_parser'
 									};
+
+									
 				
 									diagnostics.push(diagnostic);
 									break;
@@ -289,14 +338,14 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 										start: textDocument.positionAt(current_index),
 										end: textDocument.positionAt(variable_end_position)
 									},
-									message: "var",
+									message: handle_variable(var_type, text.substring(current_index, variable_end_position)),
 									source: 'Ogree_parser'
 								};
 			
 								diagnostics.push(diagnostic);
 
 								//update document index
-								current_index = variable_end_position + (variable_end_delimiter_index - next_sub_command_index);
+								current_index = variable_end_position + (variable_end_delimiter_index - next_sub_command_index)-1;
 								//update comand index
 								current_sub_command_index = variable_end_delimiter_index + get_next_part(next_sub_command_index + command_sub_end_separator.length, command, ["["]).separator.length;
 								continue;
@@ -315,6 +364,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 				} 
 
 				if (cmd_found == 0) {
+					//means every command was checked but none matched with this
 					const diagnostic: Diagnostic = {
 						severity: DiagnosticSeverity.Error,
 						range: {
