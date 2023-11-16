@@ -2,6 +2,8 @@ import {
 	CompletionItemKind,InsertTextFormat
 } from 'vscode-languageserver/node';
 
+import { getVariables } from "./parser.js"
+
 const commandList = require("./../data/command_list.json");
 //need to parse commmand list for easier use during document parsing
 
@@ -11,6 +13,7 @@ export function autoCompletion(){
 		// which code complete got requested. For the example we ignore this
 		// info and always provide the same completion items.
 		var listCommands = [];
+		var listVariables = getVariables();
 		commandList.commands.forEach((elem) => {
 			elem.matchKeyword.forEach((match) => {
 				listCommands.push({
@@ -44,6 +47,14 @@ export function autoCompletion(){
 
 			});
 		});
+		/*listVariables.forEach((elem) => {
+			listCommands.push({
+				label: elem,
+				kind: CompletionItemKind.Variable,
+				insertTextFormat: InsertTextFormat.Snippet,
+				insertText: elem
+			})
+		})*/
 		return listCommands;
 	};
 
