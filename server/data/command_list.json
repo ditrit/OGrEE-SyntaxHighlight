@@ -70,7 +70,8 @@
             "matchKeyword" : ["site", "st"],
             "quickText": "Delete a Site",
             "documentation": "[name] is the name of the site to delete",
-            "insertText": "site:${0:name}"
+            "insertText": "site:${0:name}",
+            "detail": "+site:[Name]"
         }
         ,
         {
@@ -78,7 +79,8 @@
             "matchKeyword" : ["tenant", "tn"],
             "quickText": "Create a Tenant",
             "documentation": "Tenant will be created as a new root",
-            "insertText": "tenant:${1:name}@${0:color}"
+            "insertText": "tenant:${1:name}@${0:color}",
+            "detail" : "+tenant:[Name]@[color]"
         }
         ,
         {
@@ -86,7 +88,8 @@
             "matchKeyword" : ["tenant", "tn"],
             "quickText": "Delete a Tenant",
             "documentation": "[name] is the name of the tenant to delete",
-            "insertText": "tenant:${0:name}"
+            "insertText": "tenant:${0:name}",
+            "detail" : "-tenant:[name]"
         }
         ,
         {
@@ -94,7 +97,8 @@
             "matchKeyword" : ["building","bd"],
             "quickText": "Create a Building without template",
             "documentation": "Building must be child of a Site.\n [pos] is a Vector2 [x,y] (m,m)\n [rotation] is the rotation of the building around its lower left corner, in degree\n [size] is a Vector3 [width,length,height] (m,m,m)\n [template] is the name (slug) of the building template",
-            "insertText": "building:${1:name}@${2:pos}@${3:rotation}@[${4:width}, ${5:length}, ${0:height}]"
+            "insertText": "building:${1:name}@${2:pos}@${3:rotation}@[${4:width}, ${5:length}, ${0:height}]",
+            "detail": "+building:[name]@[pos]@[rotation]@[width,length,height]"
         }
         ,
         {
@@ -102,7 +106,8 @@
             "matchKeyword" : ["building","bd"],
             "quickText": "Create a Building with template",
             "documentation": "Building must be child of a Site.\n [pos] is a Vector2 [x,y] (m,m)\n [rotation] is the rotation of the building around its lower left corner, in degree\n [size] is a Vector3 [width,length,height] (m,m,m)\n [template] is the name (slug) of the building template",
-            "insertText": "building:${1:name}@${2:pos}@${3:rotation}@${0:template}"
+            "insertText": "building:${1:name}@${2:pos}@${3:rotation}@${0:template}",
+            "detail" : "+building:[name]@[pos]@[rotation]@[template]"
         }
         ,
         {
@@ -110,7 +115,8 @@
             "matchKeyword" : ["building","bd"],
             "quickText": "Delete a Building",
             "documentation": "[name] is the name of the building to delete",
-            "insertText": "building:${1:name}"
+            "insertText": "building:${1:name}",
+            "detail" : "-building:[name]"
         }
         ,
         {
@@ -118,7 +124,8 @@
             "matchKeyword" : ["rack", "rk"],
             "quickText": "Create a Rack with size",
             "documentation": "Rack must be child of a room.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the rack is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[template] is the name of the rack template",
-            "insertText": "rack:${1:name}@[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@[${6:width}, ${7:length}, ${0:height}]"
+            "insertText": "rack:${1:name}@[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@[${6:width}, ${7:length}, ${0:height}]",
+            "detail":"+rack:[name]@[x, y]@[|m,t,f|]@[orientation]@[width, length, height]"
         }
         ,
         {
@@ -126,7 +133,8 @@
             "matchKeyword" : ["rack", "rk"],
             "quickText": "Create a Rack with template",
             "documentation": "Rack must be child of a room.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the rack is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[template] is the name of the rack template",
-            "insertText": "rack:${1:name}@[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@${0:template}"
+            "insertText": "rack:${1:name}@[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@${0:template}",
+            "detail":"+rack:[name]@[x, y]@[|m,t,f|]@[orientation]@[template]"
         }
         ,
         {
@@ -134,7 +142,8 @@
             "matchKeyword" : ["rack", "rk"],
             "quickText": "Delete a Rack",
             "documentation": "[name] is the name of the rack to delete",
-            "insertText": "rack:${1:name}"
+            "insertText": "rack:${1:name}",
+            "detail" : "-rack:[name]"
         }
         ,
         {
@@ -142,7 +151,8 @@
             "matchKeyword" : ["room", "ro"],
             "quickText": "Create a Room without template",
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to \"t\" (tiles), can also be m (meters) or f (feet)",
-            "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,-y,-x-y|}@${0:floorUnit}"
+            "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,-y,-x-y|}@${0:floorUnit}",
+            "detail": "+room:[name]@[x, y]@[rotation]@[width, length, height]@[axisOrientation]@[floorUnit]"
         }
         ,
         {
@@ -150,7 +160,8 @@
             "matchKeyword" : ["room", "ro"],
             "quickText": "Create a Room wit template",
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to \"t\" (tiles), can also be m (meters) or f (feet)",
-            "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@${0:template}"
+            "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@${0:template}",
+            "detail": "+room:[name]@[x, y]@[rotation]@[template]"
         }
         ,
         {
@@ -158,7 +169,8 @@
             "matchKeyword" : ["room", "ro"],
             "quickText": "Delete a Room",
             "documentation": "[name] is the name of the room to delete",
-            "insertText": "room:${1:name}"
+            "insertText": "room:${1:name}",
+            "detail" : "-room:[name]"
         }
         ,
         {
@@ -166,7 +178,8 @@
             "matchKeyword" : ["device", "dv"],
             "quickText": "without parent rack slots : size",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
-            "insertText": "device:${1:name}@${2:posU}@${0:sizeU}"
+            "insertText": "device:${1:name}@${2:posU}@${0:sizeU}",
+            "detail": "+device:[name]@[posU]@[sizeU]"
         }
         ,
         {
@@ -174,7 +187,8 @@
             "matchKeyword" : ["device", "dv"],
             "quickText": "without parent rack slots : template",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
-            "insertText": "device:${1:name}@${2:posU}@${0:template}"
+            "insertText": "device:${1:name}@${2:posU}@${0:template}",
+            "detail": "+device:[name]@[posU]@[template]"
         }
         ,
         {
@@ -182,7 +196,8 @@
             "matchKeyword" : ["device", "dv"],
             "quickText": "with parent rack slots : size",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
-            "insertText": "device:${1:name}@${2:slot}@${0:sizeU}"
+            "insertText": "device:${1:name}@${2:slot}@${0:sizeU}",
+            "detail": "+device:[name]@[slot]@[sizeU]"
         }
         ,
         {
@@ -190,7 +205,8 @@
             "matchKeyword" : ["device", "dv"],
             "quickText": "without parent rack slots : template",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
-            "insertText": "device:${1:name}@${2:slot}@${0:template}"
+            "insertText": "device:${1:name}@${2:slot}@${0:template}",
+            "detail": "+device:[name]@[slot]@[template]"
         }
         ,
         {
@@ -198,7 +214,8 @@
             "matchKeyword" : ["device", "dv"],
             "quickText": "with parent rack slots : template, side",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
-            "insertText": "device:${1:name}@${2:slot}@${3:template}@${0:side}"
+            "insertText": "device:${1:name}@${2:slot}@${3:template}@${0:side}",
+            "detail": "+device:[name]@[slot]@[template]@[side]"
         }
         ,
         {
@@ -206,7 +223,8 @@
             "matchKeyword" : ["device", "dv"],
             "quickText": "delete device",
             "documentation": "[name] is the name of the device to delete",
-            "insertText": "device:${0:name}"
+            "insertText": "device:${0:name}",
+            "detail": "-device:[name]"
         }
         ,
         {
@@ -214,7 +232,8 @@
             "matchKeyword" : ["corridor", "co"],
             "quickText": "Create a Corridor",
             "documentation": "Corridor must be child of a room A corridor is a cold or warm corridor.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the corridor is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[temperature] is cold or warm.",
-            "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}"
+            "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}",
+            "detail": "+corridor:[name]@[pos]@[|m,t,f|]@[orientation]@[size]@[temperature]"
         }
         ,
         {
@@ -222,7 +241,8 @@
             "matchKeyword" : ["corridor", "co"],
             "quickText": "Delete a Corridor",
             "documentation": "[name] is the name of the corridor to delete",
-            "insertText": "corridor:${0:name}"
+            "insertText": "corridor:${0:name}",
+            "detail": "-corridor:[name]"
         }
         ,
         {
@@ -230,7 +250,8 @@
             "matchKeyword" : ["orphan device", "device", "dv", "stray device"],
             "quickText": "add a stray-device zz",
             "documentation": "You can add stray-devices (devices that don't have a parent and/or don't follow the normal device data format), the bare minimum requiring to have a name and template. Note that it is possible for these devices to have subdevices.",
-            "insertText": "orphan device:${1:path/to/stray-device}@${2:template}"
+            "insertText": "orphan device:${1:path/to/stray-device}@${2:template}",
+            "detail": "+orphan device:[path]@[template]"
         }
         ,
         {
@@ -238,7 +259,8 @@
             "matchKeyword" : ["group", "gr"],
             "quickText": "Create a group",
             "documentation": "Group must be child of a room or a rack If the group is a child of a room, it can contain racks and corridors. If the group is a child of a rack, it can contain devices. c1,c2,...,cN are the short names (eg. A01 instead of tn.si.bd.ro.A01)",
-            "insertText": "group:${1:name}@{${2:c1,c2,...}}"
+            "insertText": "group:${1:name}@{${2:c1,c2,...}}",
+            "detail": "+group:[name]@{[c1,c2,...,cN]}"
         }
         ,
         {
@@ -246,7 +268,8 @@
             "matchKeyword" : ["usableColor"],
             "quickText": "Set the usable color",
             "documentation": "[color] is the color to use for datacenter",
-            "insertText": "usableColor=${0:color}"
+            "insertText": "usableColor=${0:color}",
+            "detail": ":usableColor:[color]"
         }
         ,
         {
@@ -254,7 +277,8 @@
             "matchKeyword" : ["reservedColor"],
             "quickText": "Set the reserved color",
             "documentation": "[color] is the color to use for datacenter",
-            "insertText": "reservedColor=${0:color}"
+            "insertText": "reservedColor=${0:color}",
+            "detail": ":reservedColor:[color]"
         }
         ,
         {
@@ -262,7 +286,8 @@
             "matchKeyword" : ["technicalColor"],
             "quickText": "Set the technical color",
             "documentation": "[color] is the color to use for datacenter",
-            "insertText": "technicalColor=${0:color}"
+            "insertText": "technicalColor=${0:color}",
+            "detail": ":technicalColor:[color]"
         }
         ,
         {
@@ -270,7 +295,8 @@
             "matchKeyword" : ["separator"],
             "quickText": "Add separator to a room",
             "documentation": "Add a separator (wired or plain wall) inside a room.\n[name] is an identifier for the separator\n[startPos] is a vector2: [x,y] (m,m)\n[endPos] is a vector2: [x,y] (m,m)\n[type] is the type of wall: wireframe or plain\nIt will add the given coordinates to [room].attributes[separators] witch is a list of all its separators parameters",
-            "insertText" : "separator=${1:name}@[${2:startX},${3:startY}]@[${4:endX},${5:endY}]@${6|wireframe,plain|}"
+            "insertText" : "separator=${1:name}@[${2:startX},${3:startY}]@[${4:endX},${5:endY}]@${6|wireframe,plain|}",
+            "detail": ":separator:[name]@[startPos]@[endPos]@[type]"
         }
         ,
         {
@@ -278,7 +304,8 @@
             "matchKeyword" : ["pillar"],
             "quickText": "Add pillar to a room",
             "documentation": "Add a pillar inside a room.\n[name] is an identifier for the pillar\n[centerXY] is a vector2: [x,y] (m,m)\n[sizeXY] is a vector2: [x,y] (m,m)\n[rotation] is the angle of the pillar, in degree\nIt will add the given coordinates to [room].attributes[pillars] witch is a list of all its pillars parameters",
-            "insertText": "pillar=${1:name}@[${2:centerX},${3:centerY}]@[${4:sizeX},${5:sizeY}]@${0:rotation}"
+            "insertText": "pillar=${1:name}@[${2:centerX},${3:centerY}]@[${4:sizeX},${5:sizeY}]@${0:rotation}",
+            "detail": ":pillar:[name]@[centerXY]@[sizeXY]@[rotation]"
         }
         ,
         {
@@ -286,7 +313,8 @@
             "matchKeyword" : ["selection","_"],
             "quickText" : "selection to modify objects attributes",
             "documentation": "Works with single or multi selection.\n[name] can be selection or _ for modifying selected objects attributes",
-            "insertText" : "_:${1:attribute}=${0:value}"
+            "insertText" : "_:${1:attribute}=${0:value}",
+            "detail": "selection:[attribute]=[value]"
         }
         ,
         {
@@ -294,7 +322,8 @@
             "matchKeyword": ["domain"],
             "quickText": "recursively change object's domain and children's domain",
             "documentation":"Object's domain can be changed recursively for changing all it's children's domains at the same time.",
-            "insertText": "domain=${0:value}@recursive"
+            "insertText": "domain=${0:value}@recursive",
+            "detail": ":domain:[value]@recursive"
         }
         ,
         {
@@ -302,7 +331,8 @@
             "matchKeyword" : ["description"],
             "quickText": "Modify attribute if it is a list",
             "documentation": "Object's description attribute is a list: you have to use an index to fill one.\nwhere [N] is an index, starting at 1",
-            "insertText": "description${1:N}=${0:value}"
+            "insertText": "description${1:N}=${0:value}",
+            "detail": ":description[N]=[value]"
         }
         ,
         {
@@ -310,7 +340,8 @@
             "matchKeyword" : ["label"],
             "quickText": "Change label by a string using an attribute",
             "documentation": "You can change the label by a string or with a choosen attribute:\n#[attribute] is one of the attribute of the object. If description, it will display all descriptions. To display a specific description, use description[N] where N is the index of the wanted description.",
-            "insertText": "label=#${0:attribute}"
+            "insertText": "label=#${0:attribute}",
+            "detail": ":label:[attribute]"
         }
         ,
         {
@@ -318,7 +349,8 @@
             "matchKeyword" : ["label"],
             "quickText": "Change label by a string without using an attribute",
             "documentation": "Change the label by the string string",
-            "insertText": "label=${0:string}"
+            "insertText": "label=${0:string}",
+            "detail": ":label:[string]"
         }
         ,
         {
@@ -326,7 +358,8 @@
             "matchKeyword" : ["labelFont"],
             "quickText": "Make the font bold",
             "documentation":"",
-            "insertText": "labelFont=bold"
+            "insertText": "labelFont=bold",
+            "detail": ":labelFont:bold"
         }
         ,
         {
@@ -334,7 +367,8 @@
             "matchKeyword" : ["labelFont"],
             "quickText": "Make the font italic",
             "documentation":"",
-            "insertText": "labelFont=italic"
+            "insertText": "labelFont=italic",
+            "detail": ":labelFont:italic"
         }
         ,
         {
@@ -342,7 +376,8 @@
             "matchKeyword" : ["labelFont"],
             "quickText": "Change font color",
             "documentation":"",
-            "insertText": "labelFont=color@${0:color}"
+            "insertText": "labelFont=color@${0:color}",
+            "detail": ":labelFont:color@[color]"
         }
         ,
         {
@@ -350,7 +385,8 @@
             "matchKeyword" : ["labelBackground"],
             "quickText": "Change label background color",
             "documentation": "You can change the label's background color when it is hovering over the object.",
-            "insertText": "labelBackground=${0:color}"
+            "insertText": "labelBackground=${0:color}",
+            "detail": ":labelBackground:[color]"
         }
         ,
         {
@@ -358,7 +394,8 @@
             "matchKeyword" : ["titlesName"],
             "quickText": "Display or hide tiles name",
             "documentation": "",
-            "insertText": "titlesName=${1|true,false|}"
+            "insertText": "titlesName=${1|true,false|}",
+            "detail": ":titlesName:[|true,false|]"
         }
         ,
         {
@@ -366,7 +403,8 @@
             "matchKeyword" : ["titlesColor"],
             "quickText": "Display or hide colors and textures",
             "documentation": "",
-            "insertText": "titlesColor=${1|true,false|}"
+            "insertText": "titlesColor=${1|true,false|}",
+            "detail": ":titlesColor:[|true,false|]"
         }
         ,
         {
@@ -374,7 +412,8 @@
             "matchKeyword" : ["alpha"],
             "quickText": "Display or hide rack's box",
             "documentation": "Display or hide rack's box. This will also affect its label",
-            "insertText": "alpha=${1|true,false|}"
+            "insertText": "alpha=${1|true,false|}",
+            "detail": ":alpha:[|true,false|]"
         }
         ,
         {
@@ -382,7 +421,8 @@
             "matchKeyword" : ["U"],
             "quickText": "Display or hide rack's U",
             "documentation": "Display or hide rack's U helpers to simply identify objects in a rack.",
-            "insertText": "U=${1|true,false|}"
+            "insertText": "U=${1|true,false|}",
+            "detail": ":U:[|true,false|]"
         }
         ,
         {
@@ -390,7 +430,8 @@
             "matchKeyword" : ["slots"],
             "quickText": "Display or hide rack's slots",
             "documentation": "",
-            "insertText": "slots=${1|true,false|}"
+            "insertText": "slots=${1|true,false|}",
+            "detail": ":slots:[|true,false|]"
         }
         ,
         {
@@ -398,7 +439,8 @@
             "matchKeyword" : ["localCS"],
             "quickText": "Display or hide rack's local coordinate system",
             "documentation": "",
-            "insertText": "localCS=${1|true,false|}"
+            "insertText": "localCS=${1|true,false|}",
+            "detail": ":localCS:[|true,false|]"
         }
         ,
         {
@@ -406,7 +448,8 @@
             "matchKeyword" : ["content"],
             "quickText": "Display or hide contained racks/devices",
             "documentation": "",
-            "insertText": "content=${1|true,false|}"
+            "insertText": "content=${1|true,false|}",
+            "detail": ":content:[|true,false|]"
         }
         ,
         {
@@ -414,7 +457,8 @@
             "matchKeyword" : ["areas"],
             "quickText": "Set Set reserved and technical zones of a room",
             "documentation": "Enables tiles edges display.\nYou can modify areas only if the room has no racks in it.\nTechnical area : typically a restricted zone where power panels and AC systems are installed. separated from \"IT space\" with either a wall or a wire mesh\nReserved area : some tiles around the room that must be kept free to move racks and walk (usually 2 or 3 tiles)\n[reserved] is a vector4: [front,back,right,left] (tile,tile,tile,tile)\n[technical] is a vector4: [front,back,right,left] (tile,tile,tile,tile)",
-            "insertText": "areas=[${1:front},${2:back},${3:right},${4:left}]@[${5:front},${6:back},${7:right},${0:left}]"
+            "insertText": "areas=[${1:front},${2:back},${3:right},${4:left}]@[${5:front},${6:back},${7:right},${0:left}]",
+            "detail": ":areas:[reserved]@[technical]"
         }
         ,
         {
@@ -422,7 +466,8 @@
             "matchKeyword" : ["ui.delay", "delay"],
             "quickText": "Set the delay before each command",
             "documentation": "You can put delay before each command: up to 2 seconds.\n\n[time] is the time to wait in seconds",
-            "insertText": "ui.delay=${1:time}"
+            "insertText": "ui.delay=${1:time}",
+            "detail": "ui.delay:[time]"
         }
         ,
         {
@@ -430,7 +475,8 @@
             "matchKeyword" : ["ui.wireframe", "wireframe"],
             "quickText": "Enable/Disable wireframe mode",
             "documentation": "Enable/Disable wireframe mode\n[true|false]",
-            "insertText": "ui.wireframe=${1|true,false|}"
+            "insertText": "ui.wireframe=${1|true,false|}",
+            "detail": "ui.wireframe:[|true,false|]"
         }
         ,
         {
@@ -438,7 +484,8 @@
             "matchKeyword" : ["ui.debug", "debug"],
             "quickText": "Set if display debug panel",
             "documentation": "Set if display debug panel\n[true|false]",
-            "insertText": "ui.debug=${1|true,false|}"
+            "insertText": "ui.debug=${1|true,false|}",
+            "detail": "ui.debug:[|true,false|]"
         }
         ,
         {
@@ -446,7 +493,8 @@
             "matchKeyword" : ["ui.infos", "infos"],
             "quickText": "Set if display infos panel",
             "documentation": "Set if display infos panel\n[true|false]",
-            "insertText": "ui.infos=${1|true,false|}"
+            "insertText": "ui.infos=${1|true,false|}",
+            "detail": "ui.infos:[|true,false|]"
         }
         ,
         {
@@ -454,7 +502,8 @@
             "matchKeyword" : ["ui.highlight", "highlight", "ui.hl", "hl"],
             "quickText": "\"Toggle\" command to turn on/off the highlighting of an object",
             "documentation": "This is a \"toggle\" command: use it to turn on/off the highlighting of an object.\nIf given object is hidden in its parent, the parent will be highlighted.\n[name] is the name of the object",
-            "insertText": "ui.highlight=${1:name}"
+            "insertText": "ui.highlight=${1:name}",
+            "detail": "ui.highlight:[name]"
         }
         ,
         {
@@ -462,7 +511,8 @@
             "matchKeyword" : ["move", "camera.move"],
             "quickText": "Move the camera",
             "documentation": "Move the camera to the given point\n[position] is a Vector3 [x, y, z] : the new position of the camera\n[rotation] is a Vector2 [u, v]: the rotation of the camera",
-            "insertText": "camera.move=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]"
+            "insertText": "camera.move=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]",
+            "detail": "camera.move:[position]@[rotation]"
         }
         ,
         {
@@ -470,7 +520,8 @@
             "matchKeyword" : ["translate", "camera.translate"],
             "quickText": "Translate the camera",
             "documentation": "Move the camera to the given destination. You can stack several destinations, the camera will move to each point in the given order.\n[position] is a Vector3 [x, y, z]: the position of the camera's destination\n[rotation] is a Vector2 [u, v]: the rotation of the camera's destination",
-            "insertText": "camera.translate=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]"
+            "insertText": "camera.translate=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]",
+            "detail": "camera.translate:[position]@[rotation]"
         }
         ,
         {
@@ -478,7 +529,8 @@
             "matchKeyword" : ["camera.wait", "wait"],
             "quickText": "Set the delay between two translations",
             "documentation": "You can define a delay between two camera translations.\n[time] is the time to wait in seconds",
-            "insertText": "camera.wait=${1:time}"
+            "insertText": "camera.wait=${1:time}",
+            "detail": "camera.wait:[time]"
         }
         ,
         {
@@ -486,7 +538,8 @@
             "matchKeyword" : ["focus", "> "],
             "quickText": "You can indicate to Unity to focus on an object",
             "documentation": "If the path is empty it will 'unfocus' all objects. This command will change the current path according to the given argument",
-            "insertText": "> ${1:path/to/object}"
+            "insertText": "> ${1:path/to/object}",
+            "detail": "focus:[path]"
         }
         ,
         {
@@ -494,7 +547,8 @@
             "matchKeyword" : ["draw"],
             "quickText": "Draw an existing object on Unity",
             "documentation": "Unity can't draw already existing objects unless instructed to do so.\n[k] an integer value of 0 or greater",
-            "insertText": "draw ${1:path/to/object} ${2:k}"
+            "insertText": "draw ${1:path/to/object} ${2:k}",
+            "detail": "draw:[path]@[k]"
         }
         ,
         {
@@ -502,7 +556,8 @@
             "matchKeyword" : ["draw"],
             "quickText": "Draw an existing object on Unity with -FLAG ARGUMENT",
             "documentation": "Unity can't draw already existing objects unless instructed to do so.\n[k] an integer value of 0 or greater\nThe '-FLAG ARGUMENT' option is there to allow the user to optionally ignore the draw threshold automatically (the number of objects that can be drawn in Unity, defined as drawThreshold and found in .env file) which is useful for scripting. Usually if the number of objects to draw exceeds this threshold, then the user will be asked if they want to continue. The possible values for '-FLAG ARGUMENT' are '-f y' or '-f n' respectively. 'y' means yes and 'n' means no",
-            "insertText": "draw ${1:path/to/object} ${2:k} -f ${3:y}"
+            "insertText": "draw ${1:path/to/object} ${2:k} -f ${3:y}",
+            "detail": "draw:[path]@[k]@-f [y,n]"
         }
         ,
         {
@@ -510,7 +565,8 @@
             "matchKeyword" : ["undraw"],
             "quickText": "Undraw an object",
             "documentation": "undraw an existing object at the path path/to/object",
-            "insertText": "undraw ${1:path/to/object}"
+            "insertText": "undraw ${1:path/to/object}",
+            "detail": "undraw:[path]"
         }
         ,
         {
@@ -518,7 +574,8 @@
             "matchKeyword" : ["link:"],
             "quickText": "Link a stray-device without slot",
             "documentation": "If the parent is a device, the slot number must be specified. This command will fail if the stray-device or its hierarchy does not satisfy the schema requirements of device.",
-            "insertText": "link: ${1:PATH/TO/STRAY-DEVICE} @ ${2:PATH/TO/RACK/OR/DEVICE}"
+            "insertText": "link: ${1:PATH/TO/STRAY-DEVICE} @ ${2:PATH/TO/RACK/OR/DEVICE}",
+            "detail": "link:[path/to/stray-device]@[path/to/rack/or/device]"
         }
         ,
         {
@@ -526,7 +583,8 @@
             "matchKeyword" : ["link:"],
             "quickText": "Link a stray-device with slot",
             "documentation": "If the parent is a device, the slot number must be specified. This command will fail if the stray-device or its hierarchy does not satisfy the schema requirements of device.",
-            "insertText": "link: ${1:PATH/TO/STRAY-DEVICE} @ ${2:PATH/TO/RACK/OR/DEVICE} @ ${3:Slot}"
+            "insertText": "link: ${1:PATH/TO/STRAY-DEVICE} @ ${2:PATH/TO/RACK/OR/DEVICE} @ ${3:Slot}",
+            "detail": "link:[path/to/stray-device]@[path/to/rack/or/device]@[slot]"
         }
         ,
         {
@@ -534,7 +592,8 @@
             "matchKeyword" : ["unlink:"],
             "quickText": "Unlink a device without stray-device parent",
             "documentation": "The schema requirements for stray-device are much less restrictive than other objects. The device must have size dimensions and a name. If this device or its hierarchy does not satisfy the stray-device schema requirement, this command will fail.",
-            "insertText": "unlink: ${1:PATH/TO/DEVICE}"
+            "insertText": "unlink: ${1:PATH/TO/DEVICE}",
+            "detail": "unlink:[path/to/device]"
         }
         ,
         {
@@ -542,7 +601,8 @@
             "matchKeyword" : ["unlink:"],
             "quickText": "Unlink a device with stray-device parent",
             "documentation": "The schema requirements for stray-device are much less restrictive than other objects. The device must have size dimensions and a name. If this device or its hierarchy does not satisfy the stray-device schema requirement, this command will fail.",
-            "insertText": "unlink: ${1:PATH/TO/DEVICE} @ ${2:PATH/TO/STRAY-DEVICE-PARENT}"
+            "insertText": "unlink: ${1:PATH/TO/DEVICE} @ ${2:PATH/TO/STRAY-DEVICE-PARENT}",
+            "detail": "unlink:[path/to/device]@[path/to/stray-device-parent]"
         }
     ],
     "objects": [
