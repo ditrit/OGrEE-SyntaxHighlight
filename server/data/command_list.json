@@ -1,33 +1,4 @@
 {
-    "ignored": [
-        "ls",
-        "get",
-        "getu",
-        "getslot",
-        "undraw",
-        "draw",
-        "drawable",
-        "unset",
-        "env",
-        "+",
-        "-",
-        "=",
-        "len",
-        "link",
-        "unlink",
-        "print",
-        "printf",
-        "man",
-        "cd",
-        "tree",
-        "ui.",
-        "camera.",
-        ">",
-        "while",
-        "for",
-        "if",
-        "alias"
-    ],
     "commands": [
         {
             "keyword": ".var",
@@ -604,31 +575,5 @@
             "insertText": "unlink: ${1:PATH/TO/DEVICE} @ ${2:PATH/TO/STRAY-DEVICE-PARENT}",
             "detail": "unlink:[path/to/device]@[path/to/stray-device-parent]"
         }
-    ],
-    "objects": [
-        "domain",
-        "dm",
-        "si",
-        "bldg",
-        "rk",
-        "device",
-        "dv",
-        "corridor",
-        "co",
-        "group",
-        "gr",
-        "orphan",
-        "user",
-        "role"
-    ],
-    "args": [
-        "selection",
-        "clear",
-        "grep",
-        "lsog",
-        "lsenterprise",
-        "pwd",
-        "exit",
-        "changepw"
     ]
 }

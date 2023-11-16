@@ -31,30 +31,6 @@ export function autoCompletion(){
 				});
 			});
 		});
-		commandList.objects.forEach((elem) => {
-			listCommands.push({
-				label: elem,
-				kind: CompletionItemKind.Text,
-				data: listCommands.length
-
-			});
-		});
-		commandList.args.forEach((elem) => {
-			listCommands.push({
-				label: elem,
-				kind: CompletionItemKind.Text,
-				data: listCommands.length
-
-			});
-		});
-		/*listVariables.forEach((elem) => {
-			listCommands.push({
-				label: elem,
-				kind: CompletionItemKind.Variable,
-				insertTextFormat: InsertTextFormat.Snippet,
-				insertText: elem
-			})
-		})*/
 		return listCommands;
 	};
 
