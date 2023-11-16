@@ -37,6 +37,10 @@ function get_next_part(current_index: any, text: string, delimiters_list: any) {
 
 }
 
+export function getVariables(){
+	return variable_names;
+}
+
 var variable_names: string[] = []
 
 
