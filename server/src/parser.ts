@@ -9,6 +9,7 @@ import {
 } from 'vscode-languageserver-textdocument';
 
 const commandSeparators = ["\n", "//"];
+// TOO : add config file
 const commandList = ["+tenant:[+name]@[=color]"];
 
 var variableNames: string[] = [];
@@ -29,7 +30,6 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 	const text = textDocument.getText();
 	const diagnostics: Diagnostic[] = [];
 	let currentIndex = 0;
-	let variableList = [];
 	let endSeparator = "\n";
 	let startSeparator = "\n";
 	let nextCommandIndex = 0;
@@ -94,9 +94,10 @@ function parseComment(currentIndex: number, nextCommandIndex: number, textDocume
  * @returns Whether a command was found or not.
  */
 function parseCommand(currentIndex: number, nextCommandIndex: number, nextCommand: string, text: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
+	console.log("command", text)
+	console.log("nextCommand", nextCommand)
 	for (let command of commandList) {
 		if (nextCommand.indexOf(command.substring(0,command.indexOf("["))) == 0) {
-			const commandFound = true;
 			diagnostics.push(parseFoundCommand(currentIndex, nextCommandIndex, textDocument));
 			let commandSubEndSeparator = "]";
 			let commandSubStartSeparator = "]";
@@ -135,7 +136,7 @@ function parseCommand(currentIndex: number, nextCommandIndex: number, nextComman
 				diagnostics.push(parseNoVariableFound(currentIndex, nextCommandIndex, command, textDocument));
 			}
 
-			return commandFound;
+			return true;
 		}
 	}
 	return false;
@@ -171,6 +172,8 @@ function parseFoundCommand(currentIndex: number, nextCommandIndex: number, textD
  * @returns A Diagnostic object representing the result of the parsing operation.
  */
 function parseVariable(varType: any, currentIndex: number, nextCommandIndex: number, variable: string, textDocument: TextDocument): Diagnostic {
+	console.log("varType: " + varType);
+	console.log("variable", variable)
 	if (varType == "+") {
 		variableNames.push(variable);
 		return {
