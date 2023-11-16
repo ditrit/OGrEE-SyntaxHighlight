@@ -33,8 +33,9 @@
             "keyword": ".var",
             "matchKeyword" : ["var"],
             "quickText": "Declare variable",
-            "documentation": "",
-            "insertText": ".var:${1:name}=${0:value}"
+            "documentation": "Declare a variable with the initial value Value",
+            "insertText": ".var:${1:name}=${0:value}",
+            "detail": ".var:[Name]=[Value]"
         }
         ,
         {
@@ -42,7 +43,8 @@
             "matchKeyword" : ["cmds"],
             "quickText": "Load commands from file",
             "documentation": "[path] path of the file",
-            "insertText": ".cmds:${0:path}"
+            "insertText": ".cmds:${0:path}",
+            "detail": ".cmds:[path]"
         }
         ,
         {
@@ -50,7 +52,8 @@
             "matchKeyword" : ["template"],
             "quickText": "Load template from JSON",
             "documentation": "[path] path of the file",
-            "insertText": ".template:${0:path}"
+            "insertText": ".template:${0:path}",
+            "detail": ".template:[path]"
         }
         ,
         {
@@ -58,7 +61,8 @@
             "matchKeyword" : ["site", "st"],
             "quickText": "Create a Site",
             "documentation": "Site must be child of a Tenant",
-            "insertText": "site:${0:name}"
+            "insertText": "site:${0:name}",
+            "detail": "+site:[Name]"
         }
         ,
         {
@@ -90,7 +94,7 @@
             "matchKeyword" : ["building","bd"],
             "quickText": "Create a Building without template",
             "documentation": "Building must be child of a Site.\n [pos] is a Vector2 [x,y] (m,m)\n [rotation] is the rotation of the building around its lower left corner, in degree\n [size] is a Vector3 [width,length,height] (m,m,m)\n [template] is the name (slug) of the building template",
-            "insertText": "building:${1:name}@${2:pos}@${3:rotation}@$[${4:width}, ${5:length}, ${0:height}]"
+            "insertText": "building:${1:name}@${2:pos}@${3:rotation}@[${4:width}, ${5:length}, ${0:height}]"
         }
         ,
         {
@@ -114,7 +118,7 @@
             "matchKeyword" : ["rack", "rk"],
             "quickText": "Create a Rack with size",
             "documentation": "Rack must be child of a room.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the rack is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[template] is the name of the rack template",
-            "insertText": "rack:${1:name}@$[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@[${6:width}, ${7:length}, ${0:height}]"
+            "insertText": "rack:${1:name}@[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@[${6:width}, ${7:length}, ${0:height}]"
         }
         ,
         {
@@ -122,7 +126,7 @@
             "matchKeyword" : ["rack", "rk"],
             "quickText": "Create a Rack with template",
             "documentation": "Rack must be child of a room.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the rack is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[template] is the name of the rack template",
-            "insertText": "rack:${1:name}@$[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@${0:template}"
+            "insertText": "rack:${1:name}@[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@${0:template}"
         }
         ,
         {
@@ -138,7 +142,7 @@
             "matchKeyword" : ["room", "ro"],
             "quickText": "Create a Room without template",
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to \"t\" (tiles), can also be m (meters) or f (feet)",
-            "insertText": "room:${1:name}@$[${2:x},${3:y}]@${4:rotation}@$[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,-y,-x-y|}@${0:floorUnit}"
+            "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,-y,-x-y|}@${0:floorUnit}"
         }
         ,
         {
@@ -146,7 +150,7 @@
             "matchKeyword" : ["room", "ro"],
             "quickText": "Create a Room wit template",
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to \"t\" (tiles), can also be m (meters) or f (feet)",
-            "insertText": "room:${1:name}@$[${2:x},${3:y}]@${4:rotation}@${0:template}"
+            "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@${0:template}"
         }
         ,
         {
@@ -204,13 +208,13 @@
             "documentation": "[name] is the name of the device to delete",
             "insertText": "device:${0:name}"
         }
-,
+        ,
         {
             "keyword": "+corridor",
             "matchKeyword" : ["corridor", "co"],
             "quickText": "Create a Corridor",
             "documentation": "Corridor must be child of a room A corridor is a cold or warm corridor.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the corridor is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[temperature] is cold or warm.",
-            "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}"
+            "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}" //Try ${2|[${3;x},${4:y}],[${3:x},${4:y},${5:z}]|}
         }
         ,
         {
@@ -362,7 +366,7 @@
             "matchKeyword" : ["titlesColor"],
             "quickText": "Display or hide colors and textures",
             "documentation": "",
-            "insertText": "titlesColor=$${1|true,false|}"
+            "insertText": "titlesColor=${1|true,false|}"
         }
         ,
         {
@@ -410,7 +414,7 @@
             "matchKeyword" : ["areas"],
             "quickText": "Set Set reserved and technical zones of a room",
             "documentation": "Enables tiles edges display.\nYou can modify areas only if the room has no racks in it.\nTechnical area : typically a restricted zone where power panels and AC systems are installed. separated from \"IT space\" with either a wall or a wire mesh\nReserved area : some tiles around the room that must be kept free to move racks and walk (usually 2 or 3 tiles)\n[reserved] is a vector4: [front,back,right,left] (tile,tile,tile,tile)\n[technical] is a vector4: [front,back,right,left] (tile,tile,tile,tile)",
-            "insertText": "areas=$[${1:front},${2:back},${3:right},${4:left}]@$[${5:front},${6:back},${7:right},${0:left}]"
+            "insertText": "areas=[${1:front},${2:back},${3:right},${4:left}]@[${5:front},${6:back},${7:right},${0:left}]"
         }
         ,
         {

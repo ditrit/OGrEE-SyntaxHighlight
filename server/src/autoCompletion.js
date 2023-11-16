@@ -20,10 +20,10 @@ export function autoCompletion(){
 					kind: CompletionItemKind.Keyword,
 					sortText : match,
 					filterText : match,
-					//detail : "Advanced details",
+					detail : elem.detail,
 					documentation : elem.documentation, //{ kind : "markdown" ,value : elem.documentation},
 					insertTextFormat : InsertTextFormat.Snippet,
-					insertText : elem.insertText
+					insertText : elem.insertText,
 				});
 			});
 		});
