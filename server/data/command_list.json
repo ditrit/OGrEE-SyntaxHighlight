@@ -10,6 +10,69 @@
         }
         ,
         {
+            "keyword": "eval",
+            "matchKeyword" : ["eval"],
+            "quickText": "Evaluate the value of an expression with variables.",
+            "documentation": "Evaluate the value of an expression with variables.\nFor example with two variables var1 = 5 and var2 = 6, eval $var1 + $var2 will return 11.\nCan also be done with $(([expression]))",
+            "insertText": "eval ${0:expression}",
+            "detail": "eval [expression]"
+        }
+        ,
+        {
+            "keyword": "for",
+            "matchKeyword" : ["for"],
+            "quickText": "For Loop from start to end (included).",
+            "documentation": "For Loop from start (included) to end (included), with an increment of 1. We don't need to initialise the Variable used",
+            "insertText": "for ${1:Variable} in ${2:start}..${3:end} {${0:command1; command2; ...}}",
+            "detail": "for [Variable] in [start]..[end] {command1; command2;...}"
+        }
+        ,
+        {
+            "keyword": "while",
+            "matchKeyword" : ["while"],
+            "quickText": "While Loop",
+            "documentation": "While Loop. While the condition is true, do an other loop of the commands",
+            "insertText": "while ${1:condition} {${0:command1; command2; ...}}",
+            "detail": "while [condition] {command1; command2; ...}"
+        }
+        ,
+        {
+            "keyword": "if",
+            "matchKeyword" : ["if"],
+            "quickText": "If structure.",
+            "documentation": "If [condition] then do {command1; command2; ...}.",
+            "insertText": "if ${1:condition} {${0:command1; command2; ...}}",
+            "detail": "if [condition] {command1; command2; ...}"
+        }
+        ,
+        {
+            "keyword": "else",
+            "matchKeyword" : ["else"],
+            "quickText": "else part of an if/else structure.",
+            "documentation": "Must be just after an if structure. If [condition] is false, then do the {command1; command2; ...} after the else.",
+            "insertText": "else {${0:command1; command2; ...}}",
+            "detail": "else {command1; command2; ...}"
+        }
+        ,
+        {
+            "keyword": "elif",
+            "matchKeyword" : ["elif"],
+            "quickText": "elif part of an if/elif(/else) structure.",
+            "documentation": "Must be just after an if structure. If [If condition] is false, then if [elif condition] do the {command1; command2; ...} after the elif.",
+            "insertText": "elif ${1:condition} {${0:command1; command2; ...}}",
+            "detail": "elif [elif condition] {command1; command2; ...}"
+        }
+        ,
+        {
+            "keyword": "alias",
+            "matchKeyword" : ["alias", "function", "method"],
+            "quickText": "Create an alias with the name [name].",
+            "documentation": "Create an alias with the name [name], doing the commands [command1; command2; ...].",
+            "insertText": "alias ${1:[name]} {${0:command1; command2; ...}}",
+            "detail": "alias [name] {command1; command2; ...}"
+        }
+        ,
+        {
             "keyword": ".cmds",
             "matchKeyword" : ["cmds"],
             "quickText": "Load commands from file",
@@ -202,7 +265,7 @@
             "keyword": "+corridor",
             "matchKeyword" : ["corridor", "co"],
             "quickText": "Create a Corridor",
-            "documentation": "Corridor must be child of a room A corridor is a cold or warm corridor.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the corridor is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[temperature] is cold or warm.",
+            "documentation": "Corridor must be child of a room A corridor is a cold or warm corridor.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the corridor is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,cm)\n[temperature] is cold or warm.",
             "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}",
             "detail": "+corridor:[name]@[pos]@[|m,t,f|]@[orientation]@[size]@[temperature]"
         }
