@@ -10,10 +10,43 @@
 		"building": "building"
 		},
 		{
-		"floor": "building"
+		"corridor": "building"
 		},
 		{
 		"room": "building"
-		}
+		},
+		{
+		"pilar": "building"
+		},
+		{
+		"separator": "building"
+		},
+		{
+		"for": "operator"
+		},
+		{
+		"while": "operator"
+		},
+		{
+		"if": "operator"
+		},
+		{
+		"else": "operator"
+		},
+		{
+		"elif": "operator"
+		},
+		{
+		"rack": "device"
+		},
+		{
+		"device": "device"
+		},
+		{
+		"orphan device": "device"
+		},
+		{
+
+		
 	]
 }

@@ -61,6 +61,14 @@
 			"settings":{
 				"foreground": "#ffe900"
 			}
+		},
+		{
+			"scope": [
+				"entity.name.device"
+			],
+			"settings":{
+				"foreground": "#cccccc"
+			}
 		}
 	]
 }

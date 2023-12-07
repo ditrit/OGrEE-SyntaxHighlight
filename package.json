@@ -31,6 +31,11 @@
 			  "scopes": {
 				"building": ["entity.name.building"]
 			  }
+			},
+			{
+			  "scopes": {
+				"device": ["entity.name.device"]
+			  }
 			}
 		  ],
 		"themes": [
@@ -60,7 +65,12 @@
 			  "id": "building",
 			  "superType": "string",
 			  "description": "An OGrEE buiding."
-			}
+			},
+			{
+				"id": "device",
+				"superType": "string",
+				"description": "An OGrEE device."
+			  }
 		  ],
 		  "semanticTokenModifiers": [
 			{
