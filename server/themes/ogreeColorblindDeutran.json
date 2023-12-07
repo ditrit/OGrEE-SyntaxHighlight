@@ -1,5 +1,5 @@
 {
-	"name": "OGrEE Default colorblind (deutran) theme",
+	"name": "OGrEE colorblind (deutran) theme",
 	"type": "dark",
 	"semanticHighlighting": true,
 	"tokenColors": [
@@ -52,6 +52,22 @@
 			],
 			"settings": {
 				"foreground": "#9ca4b3"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.building"
+			],
+			"settings":{
+				"foreground": "#ffdb1c"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.device"
+			],
+			"settings":{
+				"foreground": "#cccccc"
 			}
 		}
 	]

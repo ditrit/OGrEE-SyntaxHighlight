@@ -6,9 +6,4 @@
 		"source.fixAll.eslint": true
 	},
 	"editor.semanticHighlighting.enabled": "configuredByTheme",
-	"editor.semanticTokenColorCustomizations": {
-		"[OGrEE Default]": {
-			"enabled": true
-		}
-	}
 }

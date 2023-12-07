@@ -1,5 +1,5 @@
 {
-	"name": "OGrEE Default colorblind (protan) theme",
+	"name": "OGrEE colorblind (protan) theme",
 	"type": "dark",
 	"semanticHighlighting": true,
 	"tokenColors": [
@@ -52,6 +52,22 @@
 			],
 			"settings": {
 				"foreground": "#adafb2"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.building"
+			],
+			"settings":{
+				"foreground": "#ffe900"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.device"
+			],
+			"settings":{
+				"foreground": "#cccccc"
 			}
 		}
 	]

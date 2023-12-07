@@ -1,5 +1,5 @@
 {
-	"name": "OGrEE Default colorblind (tritan) theme",
+	"name": "OGrEE colorblind (tritan) theme",
 	"type": "dark",
 	"semanticHighlighting": true,
 	"tokenColors": [
@@ -51,6 +51,22 @@
 				"entity.name.operator"
 			],
 			"settings": {
+				"foreground": "#cccccc"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.building"
+			],
+			"settings":{
+				"foreground": "#ff7383"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.device"
+			],
+			"settings":{
 				"foreground": "#cccccc"
 			}
 		}

@@ -5,6 +5,8 @@ import {
 	integer
 } from 'vscode-languageserver/node';
 
+import { encodeTokenType, encodeTokenModifiers } from './semanticTokens.js'
+
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
@@ -330,11 +332,12 @@ export function getVariables(){
  * @param settings The settings to use for parsing.
  * @returns An array of diagnostics.
  */
-export function parseDocument(textDocument: TextDocument, settings: any): Diagnostic[] {
+export function parseDocument(textDocument: TextDocument) {
 	listNameVar = new Map<string, any>();
 	listNameStruc = new Map<string, any>();
 	const text = textDocument.getText();
 	const diagnostics: Diagnostic[] = [];
+	const tokens : any = [];
 	let currentIndex = 0;
 	let endSeparator = "\n";
 	let startSeparator = "\n";
@@ -365,19 +368,24 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 		
 		if (nextCommand != "") {
 			if (startSeparator == "//") {
-				diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
+				//diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
+				tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "comment", [], true))
 			} else {
 				const commandFound = parseCommand(currentIndex, nextCommandIndex, nextCommand, text, diagnostics, textDocument);
 				if (!commandFound) {
 					diagnostics.push(parseUnrecognizedCommand(currentIndex, nextCommandIndex, nextCommand, textDocument));
+					tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "unknown", [], true))
 				}
 			}
 		}
 
 		currentIndex = nextCommandIndex+endSeparator.length;
 	}
+	return [diagnostics, tokens];
+}
 
-	return diagnostics;
+function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[], genericToken = false){
+	return {line : textDocument.positionAt(startIndex).line, char : textDocument.positionAt(startIndex).character, length : endIndex - startIndex, tokenType : encodeTokenType(tokenType, genericToken), tokenModifiers : encodeTokenModifiers([])}
 }
 
 /**

@@ -5,6 +5,14 @@
 	"tokenColors": [
 		{
 			"scope": [
+				"entity.name.structure"
+			],
+			"settings": {
+				"foreground": "#abdcef"
+			}
+		},
+		{
+			"scope": [
 				"unknown"
 			],
 			"settings": {
@@ -17,7 +25,8 @@
 				"comment.block.documentation"
 			],
 			"settings": {
-				"foreground": "#06A841"
+				"foreground": "#06A841",
+				"fontStyle": "italic"
 			}
 		},
 		{
@@ -51,6 +60,22 @@
 				"entity.name.operator"
 			],
 			"settings": {
+				"foreground": "#cccccc"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.building"
+			],
+			"settings":{
+				"foreground": "#fff500"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.device"
+			],
+			"settings":{
 				"foreground": "#cccccc"
 			}
 		}

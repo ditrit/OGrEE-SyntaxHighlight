@@ -6,7 +6,8 @@
 	"string",
 	"comment",
 	"operator",
-	""
+	"building",
+	"device"
 ],
 "tokenModifiers" : [
 	"declaration",
@@ -19,4 +20,51 @@
 	"modification",
 	"documentation",
 	"defaultLibrary"
+],
+"types":[
+	{
+	"site": "building"
+	},
+	{
+	"tenant": "building"
+	},
+	{
+	"building": "building"
+	},
+	{
+	"corridor": "building"
+	},
+	{
+	"room": "building"
+	},
+	{
+	"pilar": "building"
+	},
+	{
+	"separator": "building"
+	},
+	{
+	"for": "operator"
+	},
+	{
+	"while": "operator"
+	},
+	{
+	"if": "operator"
+	},
+	{
+	"else": "operator"
+	},
+	{
+	"elif": "operator"
+	},
+	{
+	"rack": "device"
+	},
+	{
+	"device": "device"
+	},
+	{
+	"orphan device": "device"
+	}
 ]}
