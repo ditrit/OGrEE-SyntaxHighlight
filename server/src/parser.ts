@@ -342,23 +342,23 @@ export function parseDocument(textDocument: TextDocument) {
 		if (nextCommand != "") {
 			if (startSeparator == "//") {
 				//diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
-				tokens.push({line : textDocument.positionAt(currentIndex).line, char : textDocument.positionAt(currentIndex).character, length : nextCommandIndex - currentIndex, tokenType : encodeTokenType("comment"), tokenModifiers : encodeTokenModifiers([])})
+				tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "comment", [], true))
 			} else {
 				const commandFound = parseCommand2(currentIndex, nextCommandIndex, nextCommand, text, diagnostics, textDocument);
 				if (!commandFound) {
 					diagnostics.push(parseUnrecognizedCommand(currentIndex, nextCommandIndex, nextCommand, textDocument));
+					tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "unknown", [], true))
 				}
 			}
 		}
 
 		currentIndex = nextCommandIndex+endSeparator.length;
 	}
-	//console.log(tokens)
 	return [diagnostics, tokens];
 }
 
-function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[]){
-	return {line : textDocument.positionAt(startIndex).line, char : textDocument.positionAt(startIndex).character, length : endIndex - startIndex, tokenType : encodeTokenType("comment"), tokenModifiers : encodeTokenModifiers([])}
+function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[], genericToken = false){
+	return {line : textDocument.positionAt(startIndex).line, char : textDocument.positionAt(startIndex).character, length : endIndex - startIndex, tokenType : encodeTokenType(tokenType, genericToken), tokenModifiers : encodeTokenModifiers([])}
 }
 
 /**

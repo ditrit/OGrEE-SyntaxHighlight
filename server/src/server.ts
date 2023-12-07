@@ -139,6 +139,8 @@ function getDocumentSettings(resource: string): Thenable<Settings> {
 	return result;
 }
 
+connection.onRequest('custom/semanticTokens', ([textDocument, text]) => {console.log(semanticTokens);return semanticTokens})//{return semanticTokenProvider(doc)})
+
 // Only keep settings for open documents
 documents.onDidClose(e => {
 	documentSettings.delete(e.document.uri);
@@ -158,9 +160,6 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(autoCompletion());
-
-connection.onRequest('custom/semanticTokens', ([textDocument, text]) => {return semanticTokens})//{return semanticTokenProvider(doc)})
-
 
 connection.onDocumentColor(docColor(documents));
 

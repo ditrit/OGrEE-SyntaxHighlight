@@ -25,7 +25,8 @@
 				"comment.block.documentation"
 			],
 			"settings": {
-				"foreground": "#06A841"
+				"foreground": "#06A841",
+				"fontStyle": "italic"
 			}
 		},
 		{
