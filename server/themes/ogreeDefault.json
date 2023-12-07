@@ -8,7 +8,7 @@
 				"unknown"
 			],
 			"settings": {
-				"foreground": "#ff1900"
+				"foreground": "#ff0000"
 			}
 		},
 		{
@@ -17,7 +17,7 @@
 				"comment.block.documentation"
 			],
 			"settings": {
-				"foreground": "#6A9955"
+				"foreground": "#06A841"
 			}
 		},
 		{
@@ -27,7 +27,7 @@
 				"string.quoted.double"
 			],
 			"settings": {
-				"foreground": "#ff00ff"
+				"foreground": "#f48322"
 			}
 		},
 		{
@@ -35,7 +35,7 @@
 				"entity.name.variable"
 			],
 			"settings": {
-				"foreground": "#ff0000"
+				"foreground": "#0064b1"
 			}
 		},		
 		{
@@ -43,7 +43,7 @@
 				"entity.name.type.enum"
 			],
 			"settings": {
-				"foreground": "#ffff00"
+				"foreground": "#8c2b86"
 			}
 		},
 		{
@@ -51,33 +51,7 @@
 				"entity.name.operator"
 			],
 			"settings": {
-				"foreground": "#ffff00"
-			}
-		},
-		{
-			"scope": [
-				"*.deprecated"
-			],
-			"settings": {
-				"fontStyle": "italic"
-			}
-		},
-		{
-			"scope": [
-				"entity.name.bebou"
-			],
-			"settings": {
-				"foreground": "#00ff00",
-				"fontStyle":"underline",
-				"background" : "ff0000"
-			}
-		},
-		{
-			"scope": [
-				"entity.name.function.macro"
-			],
-			"settings": {
-				"foreground": "#000000"
+				"foreground": "#cccccc"
 			}
 		}
 	]

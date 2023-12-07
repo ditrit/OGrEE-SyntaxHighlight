@@ -8,7 +8,50 @@
 				"unknown"
 			],
 			"settings": {
-				"foreground": "#ff1900"
+				"foreground": "#ee1646"
+			}
+		},
+		{
+			"scope": [
+				"comment",
+				"comment.block.documentation"
+			],
+			"settings": {
+				"foreground": "#004e58"
+			}
+		},
+		{
+			"scope": [
+				"string",
+				"string.quoted.single",
+				"string.quoted.double"
+			],
+			"settings": {
+				"foreground": "#ff7383"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.variable"
+			],
+			"settings": {
+				"foreground": "#3cb3c6"
+			}
+		},		
+		{
+			"scope": [
+				"entity.name.type.enum"
+			],
+			"settings": {
+				"foreground": "#7a474c"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.operator"
+			],
+			"settings": {
+				"foreground": "#cccccc"
 			}
 		}
 	]
