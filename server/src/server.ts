@@ -11,6 +11,7 @@ import {
 	CompletionItem,
 	TextDocumentSyncKind,
 	InitializeResult,
+	ColorPresentation,
 	Diagnostic
 } from 'vscode-languageserver/node';
 
@@ -20,6 +21,8 @@ import {
 
 import { autoCompletion } from "./autoCompletion.js";
 import { parseDocument } from "./parser.js"
+import {docColor} from "./syntaxHighlight.js";
+import {semanticTokenProvider} from "./semanticTokens.js";
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -55,7 +58,17 @@ connection.onInitialize((params: InitializeParams) => {
 			// Tell the client that this server supports code completion.
 			completionProvider: {
 				resolveProvider: true
-			}
+			},
+			// semanticTokensProvider: {
+			// 	range : false,
+			// 	full : false
+			// 	// legend : {
+			// 	// 	tokenTypes : ['building', 'variable'],
+			// 	// 	tokenModifiers : ['declaration', 'documentation', 'readonly', 'static', 'abstract', 'deprecated',
+			// 	// 	'modification', 'async']
+			// 	// }
+			// },
+			// colorProvider: true
 		}
 	};
 	if (hasWorkspaceFolderCapability) {
@@ -116,7 +129,7 @@ function getDocumentSettings(resource: string): Thenable<Settings> {
 	if (!result) {
 		result = connection.workspace.getConfiguration({
 			scopeUri: resource,
-			section: 'languageServerExample'
+			section: 'languageServerOCLI'
 		});
 		documentSettings.set(resource, result);
 	}
@@ -141,6 +154,17 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(autoCompletion());
+
+connection.onRequest('custom/semanticTokens', (doc) => {return semanticTokenProvider(doc)})
+
+
+connection.onDocumentColor(docColor(documents));
+
+// Événement déclenché lorsque la présentation de couleur est demandée par l'éditeur client
+connection.onColorPresentation((params : any) => {
+    // Vous pouvez personnaliser la présentation de la couleur ici si nécessaire
+    return [ColorPresentation.create(params.color)];
+});
 
 // This handler resolves additional information for the item selected in
 // the completion list.

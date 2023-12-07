@@ -1,0 +1,22 @@
+{ "tokenTypes" : [
+	"unknown",
+	"variable",
+	"boolean",
+	"number",
+	"string",
+	"comment",
+	"operator",
+	""
+],
+"tokenModifiers" : [
+	"declaration",
+	"definition",
+	"readonly",
+	"static",
+	"deprecated",
+	"abstract",
+	"async",
+	"modification",
+	"documentation",
+	"defaultLibrary"
+]}

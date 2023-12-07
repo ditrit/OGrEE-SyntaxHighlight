@@ -29,16 +29,8 @@ export function autoCompletion(){
 					insertTextFormat : InsertTextFormat.Snippet,
 					insertText : elem.insertText,
 				});
-			});
-		});
-		/*listVariables.forEach((elem) => {
-			listCommands.push({
-				label: elem,
-				kind: CompletionItemKind.Variable,
-				insertTextFormat: InsertTextFormat.Snippet,
-				insertText: elem
 			})
-		})*/
+		});
 		return listCommands;
 	};
 

@@ -19,25 +19,71 @@
 	"activationEvents": [
 		"onLanguage:ogreecli"
 	],
+	"configurationDefaults": {
+		"ogreecli": {
+			"editor.semanticHighlighting.enabled": true
+		}
+	},
 	"main": "./client/out/extension",
 	"contributes": {
-		"languages": [{
-			"id": "ogreecli",
-			"aliases": ["OGrEE CLI", "cliogree", "OGrEECLI"],
-			"extensions": [".ocli"],
-			"configuration": "./language-configuration.json"
-		}],
+		"semanticTokenScopes": [
+			{
+			  "scopes": {
+				"building": ["building"],
+				"bebou" : ["entity.name.bebou"]
+			  }
+			}
+		  ],
+		"themes": [
+			{
+			  "label": "OGrEE Default",
+			  "uiTheme": "vs-dark",
+			  "path": "./server/themes/ogreeDefault.json"
+			}
+		  ],
+		"semanticTokenTypes": [
+			{
+			  "id": "building",
+			  "superType": "class",
+			  "description": "An OGrEE buiding."
+			},
+			{
+				"id": "bebou",
+				"superType": "string",
+				"description": "An test."
+			  }
+		  ],
+		  "semanticTokenModifiers": [
+			{
+			  "id": "native",
+			  "description": "Annotates a symbol that is implemented natively"
+			}
+		  ],
+		"languages": [
+			{
+				"id": "ogreecli",
+				"aliases": [
+					"OGrEE CLI",
+					"cliogree",
+					"OGrEECLI"
+				],
+				"extensions": [
+					".ocli"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
 		"configuration": {
 			"type": "object",
 			"title": "Main configuration",
 			"properties": {
-				"languageServerExample.maxNumberOfProblems": {
+				"languageServerOCLI.maxNumberOfProblems": {
 					"scope": "resource",
 					"type": "number",
 					"default": 100,
 					"description": "Controls the maximum number of problems produced by the server."
 				},
-				"languageServerExample.trace.server": {
+				"languageServerOCLI.trace.server": {
 					"scope": "window",
 					"type": "string",
 					"enum": [
@@ -45,8 +91,13 @@
 						"messages",
 						"verbose"
 					],
-					"default": "off",
+					"default": "on",
 					"description": "Traces the communication between VS Code and the language server."
+				}
+			},
+			"configurationDefaults": {
+				"ogreecli": {
+				  "editor.semanticHighlighting.enabled": true
 				}
 			}
 		}
@@ -67,5 +118,8 @@
 		"eslint": "^8.35.0",
 		"mocha": "^9.2.1",
 		"typescript": "^5.2.2"
+	},
+	"dependencies": {
+		"vscode": "^1.1.37"
 	}
 }
