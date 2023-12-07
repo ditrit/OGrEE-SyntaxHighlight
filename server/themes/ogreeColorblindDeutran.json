@@ -53,6 +53,14 @@
 			"settings": {
 				"foreground": "#9ca4b3"
 			}
+		},
+		{
+			"scope": [
+				"entity.name.building"
+			],
+			"settings":{
+				"foreground": "#ffdb1c"
+			}
 		}
 	]
 }
