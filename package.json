@@ -1,0 +1,140 @@
+{
+	"name": "ogree-lsp",
+	"description": "Language server for OGrEE CLI",
+	"author": "Nicolas BARRERA, Corentin CAUGANT, Antoine CHEUCLE, Nathan CLAEYS, Ethan LAMBERT, Nathan RABIER, Florian SREDNIAWA",
+	"license": "MIT",
+	"version": "1.0.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ditrit/OGrEE-SyntaxHighlight"
+	},
+	"publisher": "vscode-samples",
+	"categories": [],
+	"keywords": [
+		"multi-root ready"
+	],
+	"engines": {
+		"vscode": "^1.75.0"
+	},
+	"activationEvents": [
+		"onLanguage:ogreecli"
+	],
+	"configurationDefaults": {
+		"ogreecli": {
+			"editor.semanticHighlighting.enabled": true
+		}
+	},
+	"main": "./client/out/extension",
+	"contributes": {
+		"semanticTokenScopes": [
+			{
+			  "scopes": {
+				"building": ["building"],
+				"bebou" : ["entity.name.bebou"]
+			  }
+			}
+		  ],
+		"themes": [
+			{
+			  "label": "OGrEE Default",
+			  "uiTheme": "vs-dark",
+			  "path": "./server/themes/ogreeDefault.json"
+			},
+			{
+				"label": "OGrEE colorblind (protan) theme",
+				"uiTheme": "vs-dark",
+				"path": "./server/themes/ogreeColorblindProtan.json"
+			},
+			{
+				"label": "OGrEE colorblind (deutran) theme",
+				"uiTheme": "vs-dark",
+				"path": "./server/themes/ogreeColorblindDeutran.json"
+			},
+			{
+				"label": "OGrEE colorblind (tritan) theme",
+				"uiTheme": "vs-dark",
+				"path": "./server/themes/ogreeColorblindTritan.json"
+			}
+		  ],
+		"semanticTokenTypes": [
+			{
+			  "id": "building",
+			  "superType": "class",
+			  "description": "An OGrEE buiding."
+			},
+			{
+				"id": "bebou",
+				"superType": "string",
+				"description": "An test."
+			  }
+		  ],
+		  "semanticTokenModifiers": [
+			{
+			  "id": "native",
+			  "description": "Annotates a symbol that is implemented natively"
+			}
+		  ],
+		"languages": [
+			{
+				"id": "ogreecli",
+				"aliases": [
+					"OGrEE CLI",
+					"cliogree",
+					"OGrEECLI"
+				],
+				"extensions": [
+					".ocli"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Main configuration",
+			"properties": {
+				"languageServerOCLI.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 100,
+					"description": "Controls the maximum number of problems produced by the server."
+				},
+				"languageServerOCLI.trace.server": {
+					"scope": "window",
+					"type": "string",
+					"enum": [
+						"off",
+						"messages",
+						"verbose"
+					],
+					"default": "on",
+					"description": "Traces the communication between VS Code and the language server."
+				}
+			},
+			"configurationDefaults": {
+				"ogreecli": {
+				  "editor.semanticHighlighting.enabled": true
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w",
+		"lint": "eslint ./client/src ./server/src --ext .ts,.tsx",
+		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+		"test": "sh ./scripts/e2e.sh"
+	},
+	"devDependencies": {
+		"@types/mocha": "^9.1.0",
+		"@types/node": "^16.18.34",
+		"@typescript-eslint/eslint-plugin": "^6.7.0",
+		"@typescript-eslint/parser": "^6.7.0",
+		"eslint": "^8.35.0",
+		"mocha": "^9.2.1",
+		"typescript": "^5.2.2"
+	},
+	"dependencies": {
+		"vscode": "^1.1.37"
+	}
+}

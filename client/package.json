@@ -1,0 +1,22 @@
+{
+	"name": "ogree-lsp-client",
+	"description": "VSCode extension for OGrEE CLI syntax highlight",
+	"author": "Nicolas BARRERA, Corentin CAUGANT, Antoine CHEUCLE, Nathan CLAEYS, Ethan LAMBERT, Nathan RABIER, Florian SREDNIAWA",
+	"license": "MIT",
+	"version": "0.0.1",
+	"publisher": "vscode",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ditrit/OGrEE-SyntaxHighlight"
+	},
+	"engines": {
+		"vscode": "^1.75.0"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^8.1.0"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.75.1",
+		"@vscode/test-electron": "^2.2.3"
+	}
+}
