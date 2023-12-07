@@ -6,7 +6,7 @@
 	"string",
 	"comment",
 	"operator",
-	""
+	"building"
 ],
 "tokenModifiers" : [
 	"declaration",
