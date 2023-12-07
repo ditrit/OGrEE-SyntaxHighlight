@@ -1,0 +1,19 @@
+{
+	"types":[
+		{
+		"site": "building"
+		},
+		{
+		"tenant": "building"
+		},
+		{
+		"building": "building"
+		},
+		{
+		"floor": "building"
+		},
+		{
+		"room": "building"
+		}
+	]
+}
