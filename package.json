@@ -29,8 +29,12 @@
 		"semanticTokenScopes": [
 			{
 			  "scopes": {
-				"building": ["building"],
-				"bebou" : ["entity.name.bebou"]
+				"building": ["entity.name.building"]
+			  }
+			},
+			{
+			  "scopes": {
+				"device": ["entity.name.device"]
 			  }
 			}
 		  ],
@@ -58,10 +62,15 @@
 		  ],
 		"semanticTokenTypes": [
 			{
-			  "id": "structure",
+			  "id": "building",
 			  "superType": "string",
-			  "description": "An OGrEE structure."
-			}
+			  "description": "An OGrEE buiding."
+			},
+			{
+				"id": "device",
+				"superType": "string",
+				"description": "An OGrEE device."
+			  }
 		  ],
 		  "semanticTokenModifiers": [
 			{

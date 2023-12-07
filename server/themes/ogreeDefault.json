@@ -61,6 +61,22 @@
 			"settings": {
 				"foreground": "#cccccc"
 			}
+		},
+		{
+			"scope": [
+				"entity.name.building"
+			],
+			"settings":{
+				"foreground": "#fff500"
+			}
+		},
+		{
+			"scope": [
+				"entity.name.device"
+			],
+			"settings":{
+				"foreground": "#cccccc"
+			}
 		}
 	]
 }
