@@ -1,0 +1,15 @@
+{
+	"name": "OGrEE Default colorblind (deutran) theme",
+	"type": "dark",
+	"semanticHighlighting": true,
+	"tokenColors": [
+		{
+			"scope": [
+				"unknown"
+			],
+			"settings": {
+				"foreground": "#ff1900"
+			}
+		}
+	]
+}
