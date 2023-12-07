@@ -58,15 +58,10 @@
 		  ],
 		"semanticTokenTypes": [
 			{
-			  "id": "building",
-			  "superType": "class",
-			  "description": "An OGrEE buiding."
-			},
-			{
-				"id": "bebou",
-				"superType": "string",
-				"description": "An test."
-			  }
+			  "id": "structure",
+			  "superType": "string",
+			  "description": "An OGrEE structure."
+			}
 		  ],
 		  "semanticTokenModifiers": [
 			{

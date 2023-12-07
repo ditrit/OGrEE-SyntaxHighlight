@@ -5,6 +5,8 @@ import {
 	integer
 } from 'vscode-languageserver/node';
 
+import { encodeTokenType, encodeTokenModifiers } from './semanticTokens.js'
+
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
@@ -302,12 +304,13 @@ export function getVariables() {
  * @param settings The settings to use for parsing.
  * @returns An array of diagnostics.
  */
-export function parseDocument(textDocument: TextDocument, settings: any): Diagnostic[] {
+export function parseDocument(textDocument: TextDocument) {
 	listNameVar = new Map<string, any>();
 	listNameStruc = new Map<string, any>();
 	variableNames = [];
 	const text = textDocument.getText();
 	const diagnostics: Diagnostic[] = [];
+	const tokens : any = [];
 	let currentIndex = 0;
 	let endSeparator = "\n";
 	let startSeparator = "\n";
@@ -338,7 +341,8 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 		
 		if (nextCommand != "") {
 			if (startSeparator == "//") {
-				diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
+				//diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
+				tokens.push({line : textDocument.positionAt(currentIndex).line, char : textDocument.positionAt(currentIndex).character, length : nextCommandIndex - currentIndex, tokenType : encodeTokenType("comment"), tokenModifiers : encodeTokenModifiers([])})
 			} else {
 				const commandFound = parseCommand2(currentIndex, nextCommandIndex, nextCommand, text, diagnostics, textDocument);
 				if (!commandFound) {
@@ -349,8 +353,12 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 
 		currentIndex = nextCommandIndex+endSeparator.length;
 	}
+	//console.log(tokens)
+	return [diagnostics, tokens];
+}
 
-	return diagnostics;
+function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[]){
+	return {line : textDocument.positionAt(startIndex).line, char : textDocument.positionAt(startIndex).character, length : endIndex - startIndex, tokenType : encodeTokenType("comment"), tokenModifiers : encodeTokenModifiers([])}
 }
 
 /**

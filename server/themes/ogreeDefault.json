@@ -5,6 +5,14 @@
 	"tokenColors": [
 		{
 			"scope": [
+				"entity.name.structure"
+			],
+			"settings": {
+				"foreground": "#abdcef"
+			}
+		},
+		{
+			"scope": [
 				"unknown"
 			],
 			"settings": {

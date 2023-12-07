@@ -1,13 +1,13 @@
 const tokensConfig = require("../data/semantic_tokens.json");
 
-function encodeTokenType(tokenType) {
-	if (tokensConfig.tokenTypes.includes(tokenType)) {
-		return tokensConfig.tokenTypes.indexOf(tokenType);
+export function encodeTokenType(tokenType) {
+	if (tokensConfig.tokenTypes.includes(tokensConfig.types[tokenType])) {
+		return tokensConfig.tokenTypes.indexOf(tokensConfig.types[tokenType]);
 	}
 	return 0;
 }
 
-function encodeTokenModifiers(strTokenModifiers) {
+export function encodeTokenModifiers(strTokenModifiers) {
 	let result = 0;
 	for (let i = 0; i < strTokenModifiers.length; i++) {
 		const tokenModifier = strTokenModifiers[i];
@@ -68,4 +68,4 @@ export function semanticTokenProvider(document){
 	return result
 }
 
-module.exports = {semanticTokenProvider}
+module.exports = {semanticTokenProvider, encodeTokenType, encodeTokenModifiers}
