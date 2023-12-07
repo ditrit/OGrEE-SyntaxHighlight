@@ -16,9 +16,11 @@ const commandSeparators = ["\n", "//"];
 // TOO : add config file
 const commandList = ["+tenant:[+name]@[=color]"];
 
-const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "\""]);
+const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "\"", ":", "."]);
 
 const blankChar = new Set([" ", "\\", "\n", "\t", "\"", "\r"]);
+
+let isLinked : number = 42;
 
 const commandsTest = getCommandsTest();
 
@@ -29,8 +31,6 @@ var listNameVar = new Map<string, any>();
 const typeStruct = getTypeStruct();
 
 var listNameStruc = new Map<string, any>();
-
-var variableNames: string[] = [];
 
 function createStruc(type : string, name : string, indexStartStruct : number, textDocument : TextDocument){
 	if (!isNameStructSyntaxeCorrect(type, name))
@@ -61,20 +61,23 @@ function createStruc(type : string, name : string, indexStartStruct : number, te
 }
 
 function isNameStructSyntaxeCorrect(type : string, name : string){
-	let slashBefore = false;
+	let slashBefore = true;
 	for (let iChar = 0; iChar < name.length; iChar ++){
 		const codeChar = name.charCodeAt(iChar);
-		if (!((("a".charCodeAt(0) <= codeChar) && (codeChar <= "z".charCodeAt(0))) || (("A".charCodeAt(0) <= codeChar) && (codeChar <= "Z".charCodeAt(0))) || (("0".charCodeAt(0) <= codeChar) && (codeChar <= "9".charCodeAt(0))) || name.charAt(iChar) == "/"))
-			return false;
 		if (name.charAt(iChar) == "/")
 			if (slashBefore)
 				return false;
 			else
 				slashBefore = true;
 		else
-			slashBefore = false;
-		
-		iChar ++;
+			if (slashBefore){
+				if (!((("a".charCodeAt(0) <= codeChar) && (codeChar <= "z".charCodeAt(0))) || (("A".charCodeAt(0) <= codeChar) && (codeChar <= "Z".charCodeAt(0)))|| name.charAt(iChar) == "_"))
+					return false;
+				slashBefore = false;
+			}
+			else
+				if (!((("a".charCodeAt(0) <= codeChar) && (codeChar <= "z".charCodeAt(0))) || (("A".charCodeAt(0) <= codeChar) && (codeChar <= "Z".charCodeAt(0))) || (("0".charCodeAt(0) <= codeChar) && (codeChar <= "9".charCodeAt(0))) || name.charAt(iChar) == "/" || name.charAt(iChar) == "_"))
+					return false;
 	}
 	return true;
 }
@@ -86,6 +89,8 @@ function strucHasCoherentParent(type : string, name : string){
 	if (typeStruct.get(type).get("parents").length == 0 && nameParent != "")
 		return false;
 	if (typeStruct.get(type).get("parents").length != 0 && nameParent == "")
+		return false;
+	if (!listNameStruc.has(nameParent))
 		return false;
 	for (const typeParent of typeStruct.get(type).get("parents")){
 		if (listNameStruc.get(nameParent).has(typeParent))
@@ -204,6 +209,7 @@ function delStruc(type : string, name : string, indexEndStruct : number, textDoc
 	if (typeStruct.get(type).get("structs").has(name))
 		if (!typeStruct.get(type).get("structs").get(name)[typeStruct.get(type).get("structs").get(name).length - 1].has("indexEndStruct")){
 			typeStruct.get(type).get("structs").get(name)[typeStruct.get(type).get("structs").get(name).length - 1].set("indexEndStruct", indexEndStruct)
+			delStrucSons(type, name, indexEndStruct)
 			return null;
 		}
 		else{
@@ -211,6 +217,15 @@ function delStruc(type : string, name : string, indexEndStruct : number, textDoc
 		}
 	else
 		return diagnosticNameNotCreated(name, indexEndStruct, textDocument);
+}
+
+function delStrucSons(type : string, nameParent : string, indexEndStruct : number){
+	for (const name of listNameStruc.keys())
+		if (name.length > nameParent.length && name.substring(0,nameParent.length) == nameParent)
+			for (const typeSon of listNameStruc.get(name).keys())
+				if (!typeStruct.get(typeSon).get("structs").get(name)[typeStruct.get(typeSon).get("structs").get(name).length - 1].has("indexEndStruct"))
+					typeStruct.get(typeSon).get("structs").get(name)[typeStruct.get(typeSon).get("structs").get(name).length - 1].set("indexEndStruct", indexEndStruct)
+	return;
 }
 
 function diagnosticNameNotCreated(name : string,  indexStartVar : number, textDocument : TextDocument){
@@ -239,6 +254,10 @@ function diagnosticStructAlreadyDeleted(name : string,  indexStartVar : number, 
 	return diagnostic;
 }
 
+function existStruc(type : string, name : string){
+	return typeStruct.get(type).get("structs").has(name);
+}
+
 //Implementation of the function +site:[name]@[color]
 function getCommandsTest(){
 	let c0 = new Map<any, any>();
@@ -248,23 +267,33 @@ function getCommandsTest(){
 	let c4 = new Map<any, any>();
 	let c2bis = new Map<any, any>();
 	let c3bis = new Map<any, any>();
-	let c4bis = new Map<any, any>();
 	let c10 = new Map<any, any>();
 	let c11 = new Map<any, any>();
+	let c100 = new Map<any, any>();
+	let c101 = new Map<any, any>();
 	c4.set(null, true);
 	c3.set("[+site]", c4); //We put a + because it create a variable of type site with this name : it create the name
+	c3.set(isLinked, false);
 	c2.set(":", c3);
-	c1.set("site:", c3);
+	c2.set(isLinked, false);
 	c1.set("site", c2);
-	/*c4bis.set(null, true);
-	c3bis.set("[+building]", c4bis)
+	c3bis.set("[+building]", c4)
+	c3bis.set(isLinked, false);
 	c2bis.set(":", c3bis);
+	c2bis.set(isLinked, false);
 	c1.set("building", c2bis)
-	c1.set("building:", c3bis)*/
+	c1.set(isLinked, false);
 	c0.set("+", c1);
-	c11.set(null, true);
+	c11.set(isLinked, true);
 	c10.set("[-name]", c11);
+	c10.set(isLinked, false);
 	c0.set("-", c10);
+	c101.set("[property]", c4);
+	c101.set(isLinked, false);
+	c100.set(":", c101);
+	c100.set(isLinked, false);
+	c0.set("[=struct]", c100);
+	c0.set(isLinked, false);//Used to know is this block need to be just after the previous one. false for not needed, true for needed
 	return c0;
 }
 
@@ -274,16 +303,16 @@ function getTypeStruct(){
 	site.set("structs", new Map<string, any>());
 	site.set("parents", []);
 	site.set("create", (name : string, indexStartStruct : number, textDocument : TextDocument) => createStruc("site", name, indexStartStruct, textDocument));
-	//site.set("exist", (name : string) => existStruc("site", name));
+	site.set("exist", (name : string) => existStruc("site", name));
 	site.set("del", (name : string, indexEndStruct : number, textDocument : TextDocument) => delStruc("site", name, indexEndStruct, textDocument));
 	types.set("site", site);
-	/*let building = new Map<string, any>();
+	let building = new Map<string, any>();
 	building.set("structs", new Map<string, any>());
 	building.set("parents", ["site"]);
 	building.set("create", (name : string, indexStartStruct : number, textDocument : TextDocument) => createStruc("building", name, indexStartStruct, textDocument))
-	//building.set("exist", (name : string) => existStruc("building", name));
+	building.set("exist", (name : string) => existStruc("building", name));
 	building.set("del", (name : string, indexEndStruct : number, textDocument : TextDocument) => delStruc("building", name, indexEndStruct, textDocument));
-	types.set("building", building);*/
+	types.set("building", building);
 	return types;
 }
 
@@ -291,10 +320,9 @@ function getTypeVars(){
 	return new Map<string, any>();
 }
 
-export function getVariables() {
-	return variableNames;
+export function getVariables(){
+	return [];
 }
-
 /**
  * Parses a text document and returns an array of diagnostics.
  * 
@@ -305,7 +333,6 @@ export function getVariables() {
 export function parseDocument(textDocument: TextDocument, settings: any): Diagnostic[] {
 	listNameVar = new Map<string, any>();
 	listNameStruc = new Map<string, any>();
-	variableNames = [];
 	const text = textDocument.getText();
 	const diagnostics: Diagnostic[] = [];
 	let currentIndex = 0;
@@ -340,7 +367,7 @@ export function parseDocument(textDocument: TextDocument, settings: any): Diagno
 			if (startSeparator == "//") {
 				diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
 			} else {
-				const commandFound = parseCommand2(currentIndex, nextCommandIndex, nextCommand, text, diagnostics, textDocument);
+				const commandFound = parseCommand(currentIndex, nextCommandIndex, nextCommand, text, diagnostics, textDocument);
 				if (!commandFound) {
 					diagnostics.push(parseUnrecognizedCommand(currentIndex, nextCommandIndex, nextCommand, textDocument));
 				}
@@ -373,12 +400,18 @@ function parseComment(currentIndex: number, nextCommandIndex: number, textDocume
 	return diagnostic;
 }
 
-function parseCommand2(currentIndex: number, endCommandIndex: number, command: string, text: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
+function parseCommand(currentIndex: number, endCommandIndex: number, command: string, text: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
 	let commandSplit = splitCommand(currentIndex, command);
 	let iSubCommand = 0;
 	let isCommand = true;
 	let curDicCommand = commandsTest; //List of commands (It is imbricated dictionnary, see the function getCommandsTest to get an example)
 	while (isCommand && iSubCommand < commandSplit.length){
+		if (curDicCommand.get(isLinked)){
+			if (commandSplit[iSubCommand - 1].indexEnd != commandSplit[iSubCommand].indexStart){
+				diagnostics.push(diagnosticUnexpectedSpace(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand].indexStart, textDocument));
+				return true;
+			}
+		}
 		if (curDicCommand.has(commandSplit[iSubCommand].subCommand)){
 			curDicCommand = curDicCommand.get(commandSplit[iSubCommand].subCommand)
 		}
@@ -391,11 +424,11 @@ function parseCommand2(currentIndex: number, endCommandIndex: number, command: s
 			else{
 				if (arrayKeys != null){
 					for (const subCommand of arrayKeys)
-						if (subCommand != null && subCommand.charAt(0) == "[")
+						if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
 							typesVariablesPossible.push(subCommand);
 					
 					if (typesVariablesPossible.length > 0){
-						const typeCorrespondant = parseVariable2(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
+						const typeCorrespondant = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
 						if (typeCorrespondant != null){
 							curDicCommand = curDicCommand.get(typeCorrespondant);
 						} else
@@ -436,7 +469,7 @@ function splitCommand(currentIndex: number, command : string) {
 		else {
 			let indexEnd = indexStart + 1;
 			if (!signCommand.has(command.charAt(indexStart))){
-				while (indexEnd < command.length && !signCommand.has(command.charAt(indexEnd)) && (command.charAt(indexEnd) != "$") && (!blankChar.has(command.charAt(indexEnd))) && (command.charAt(indexEnd-1) != ":"))
+				while (indexEnd < command.length && !signCommand.has(command.charAt(indexEnd)) && (command.charAt(indexEnd) != "$") && (!blankChar.has(command.charAt(indexEnd))))
 					indexEnd ++;
 
 			}
@@ -447,10 +480,15 @@ function splitCommand(currentIndex: number, command : string) {
 	return commandSplit;
 }
 
-function parseVariable2(typesVariablesPossible : string[], iStartVar : number, commandSplit : any, diagnostics : Diagnostic[], textDocument : TextDocument){
+function parseVariable(typesVariablesPossible : string[], iStartVar : number, commandSplit : any, diagnostics : Diagnostic[], textDocument : TextDocument){
 	let diagnostic;
 	for (const actionType of typesVariablesPossible){
-		if (actionType.substring(1,3) == "+="){
+		if (actionType == "[property]"){
+			if (isNameProperty(commandSplit[iStartVar].subCommand))
+				return actionType;
+			diagnostic = diagnosticNamePropertySyntaxe(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+		}
+		else if (actionType.substring(1,3) == "+="){
 
 		}
 		else if (actionType.charAt(1) == "+"){
@@ -460,7 +498,11 @@ function parseVariable2(typesVariablesPossible : string[], iStartVar : number, c
 				return actionType;
 		}
 		else if (actionType.charAt(1) == "="){
-			return actionType;
+			let type = actionType.substring(2, actionType.length - 1);
+			if (type == "struct")
+				if (listNameStruc.has(commandSplit[iStartVar].subCommand))
+					return actionType;
+				diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 		}
 		else if (actionType.charAt(1) == "-"){
 			if (listNameStruc.has(commandSplit[iStartVar].subCommand)){
@@ -483,6 +525,41 @@ function parseVariable2(typesVariablesPossible : string[], iStartVar : number, c
 	else
 		diagnostics.push(diagnosticVarAlreadyCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument))
 	return null;
+}
+
+function isNameProperty(name : string){
+	for (let iChar = 0; iChar < name.length; iChar ++){
+		const codeChar = name.charCodeAt(iChar);
+		if (!((("a".charCodeAt(0) <= codeChar) && (codeChar <= "z".charCodeAt(0))) || (("A".charCodeAt(0) <= codeChar) && (codeChar <= "Z".charCodeAt(0)))|| name.charAt(iChar) == "_"))
+			return false;
+	}
+	return true;
+}
+
+function diagnosticNamePropertySyntaxe(name : string, indexStartProperty : number, textDocument : TextDocument){
+	let diagnostic : Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStartProperty),
+			end: textDocument.positionAt(indexStartProperty + name.length)
+		},
+		message: `The name "` + name + `" isn't valid. You can only use letters, numbers and /.`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+function diagnosticUnexpectedSpace(indexStart : number, indexEnd : number, textDocument : TextDocument){
+	let diagnostic : Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStart),
+			end: textDocument.positionAt(indexEnd)
+		},
+		message: `Theses spaces are unexpected`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
 }
 
 function diagnosticUnexpectedCharactersExpected(indexStart: number, indexEnd: number,textDocument:TextDocument, stringExpected :string){
@@ -510,168 +587,6 @@ function diagnosticUnexpectedCharacters(indexStart: number, indexEnd: number,tex
 	};
 	return diagnostic;
 }
-/**
- * Parses a command from a given text and returns whether a command was found or not.
- * @param currentIndex The current index in the text.
- * @param nextCommandIndex The index of the next command in the text.
- * @param nextCommand The next command to parse.
- * @param text The text to parse.
- * @param diagnostics An array of diagnostics to add any errors or warnings found during parsing.
- * @param textDocument The text document to parse.
- * @returns Whether a command was found or not.
- */
-function parseCommand(currentIndex: number, nextCommandIndex: number, nextCommand: string, text: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
-	console.log("command", text)
-	console.log("nextCommand", nextCommand)
-	for (let command of commandList) {
-		if (nextCommand.indexOf(command.substring(0,command.indexOf("["))) == 0) {
-			diagnostics.push(parseFoundCommand(currentIndex, nextCommandIndex, textDocument));
-			let commandSubEndSeparator = "]";
-			let commandSubStartSeparator = "]";
-			let currentSubCommandIndex = 0;
-			let foundVariable = false;
-
-			while (currentSubCommandIndex < command.length && !foundVariable) {
-				commandSubStartSeparator = commandSubEndSeparator;
-				let nextSubCommandIndex = getNextPart(currentSubCommandIndex, command, ["[", "]"]).index;
-				commandSubEndSeparator = getNextPart(currentSubCommandIndex, command, ["[", "]"]).separator;
-
-				if (commandSubEndSeparator == "]") {
-					const variableEndDelimiterIndex = getNextPart(nextSubCommandIndex + commandSubEndSeparator.length, command, ["["]).index;
-					const variableEndDelimiter = command.substring(nextSubCommandIndex+commandSubEndSeparator.length, variableEndDelimiterIndex);
-					const variableEndPosition = text.indexOf(variableEndDelimiter, currentIndex);
-					const varType = command.substring(currentSubCommandIndex, currentSubCommandIndex+1)
-
-					if (variableEndDelimiter == "") {
-						diagnostics.push(parseVariable(varType, currentIndex, nextCommandIndex, text, textDocument));
-						foundVariable = true;
-						break;
-					}
-
-					diagnostics.push(parseVariable(varType, currentIndex, variableEndPosition, text, textDocument));
-					currentIndex = variableEndPosition + (variableEndDelimiterIndex - nextSubCommandIndex)-1;
-					currentSubCommandIndex = variableEndDelimiterIndex + getNextPart(nextSubCommandIndex + commandSubEndSeparator.length, command, ["["]).separator.length;
-					continue;
-				}
-				if (commandSubEndSeparator == "[") {
-					currentIndex += nextSubCommandIndex - currentSubCommandIndex;
-				}                        
-				currentSubCommandIndex = nextSubCommandIndex+commandSubEndSeparator.length;
-			}
-
-			if (!foundVariable) {
-				diagnostics.push(parseNoVariableFound(currentIndex, nextCommandIndex, command, textDocument));
-			}
-
-			return true;
-		}
-	}
-	return false;
-}
-
-/**
- * Parses a found command and returns a diagnostic object.
- * @param currentIndex The index of the current command.
- * @param nextCommandIndex The index of the next command.
- * @param textDocument The text document to parse.
- * @returns A diagnostic object.
- */
-function parseFoundCommand(currentIndex: number, nextCommandIndex: number, textDocument: TextDocument): Diagnostic {
-	const diagnostic: Diagnostic = {
-		severity: DiagnosticSeverity.Information,
-		range: {
-			start: textDocument.positionAt(currentIndex),
-			end: textDocument.positionAt(nextCommandIndex)
-		},
-		message: "command found",
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
-/**
- * Parses a variable based on its type and returns a Diagnostic object.
- * @param varType The type of the variable (+, =, or -).
- * @param currentIndex The index of the current position in the text document.
- * @param nextCommandIndex The index of the next command in the text document.
- * @param variable The name of the variable to be parsed.
- * @param textDocument The TextDocument object representing the text document being parsed.
- * @returns A Diagnostic object representing the result of the parsing operation.
- */
-function parseVariable(varType: any, currentIndex: number, nextCommandIndex: number, variable: string, textDocument: TextDocument): Diagnostic {
-	console.log("varType: " + varType);
-	console.log("variable", variable)
-	if (varType == "+") {
-		variableNames.push(variable);
-		return {
-			severity: DiagnosticSeverity.Warning,
-			range: {
-				start: textDocument.positionAt(currentIndex),
-				end: textDocument.positionAt(nextCommandIndex)
-			},
-			message: "var stored",
-			source: 'Ogree_parser'
-		};
-	}
-	if (varType == "=") {
-		for(var i = 0; i < variableNames.length; i++) {
-			if (variableNames[i] == variable) {
-				return {
-					severity: DiagnosticSeverity.Warning,
-					range: {
-						start: textDocument.positionAt(currentIndex),
-						end: textDocument.positionAt(nextCommandIndex)
-					},
-					message: "var exist",
-					source: 'Ogree_parser'
-				};
-			}
-		}
-		return {
-			severity: DiagnosticSeverity.Warning,
-			range: {
-				start: textDocument.positionAt(currentIndex),
-				end: textDocument.positionAt(nextCommandIndex)
-			},
-			message: variable + " is not defined",
-			source: 'Ogree_parser'
-		};
-	}
-	if (varType == "-") {
-		for(var i = 0; i < variableNames.length; i++) {
-			if (variableNames[i] == variable) {
-				variableNames.splice(i, 1);
-				return {
-					severity: DiagnosticSeverity.Warning,
-					range: {
-						start: textDocument.positionAt(currentIndex),
-						end: textDocument.positionAt(nextCommandIndex)
-					},
-					message: "var removed",
-					source: 'Ogree_parser'
-				};
-			}
-		}
-		return {
-			severity: DiagnosticSeverity.Warning,
-			range: {
-				start: textDocument.positionAt(currentIndex),
-				end: textDocument.positionAt(nextCommandIndex)
-			},
-			message: variable + " is not defined",
-			source: 'Ogree_parser'
-		};
-	}
-	return {
-		severity: DiagnosticSeverity.Warning,
-		range: {
-			start: textDocument.positionAt(currentIndex),
-			end: textDocument.positionAt(nextCommandIndex)
-		},
-		message: variable + "Parser error",
-		source: 'Ogree_parser'
-	};
-}
 
 /**
  * Parses an unrecognized command and returns a diagnostic object.
@@ -689,27 +604,6 @@ function parseUnrecognizedCommand(currentIndex: number, nextCommandIndex: number
 			end: textDocument.positionAt(nextCommandIndex)
 		},
 		message: "unrocognized command: " + nextCommand,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
-/**
- * Parses a command and returns a diagnostic if no variable is found.
- * @param currentIndex The starting index of the command.
- * @param nextCommandIndex The ending index of the command.
- * @param command The command to parse.
- * @param textDocument The text document to parse the command from.
- * @returns A diagnostic object indicating that no variable was found in the command.
- */
-function parseNoVariableFound(currentIndex: number, nextCommandIndex: number, command: string, textDocument: TextDocument): Diagnostic {
-	const diagnostic: Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(currentIndex),
-			end: textDocument.positionAt(nextCommandIndex)
-		},
-		message: "no variable found in command: " + command,
 		source: 'Ogree_parser'
 	};
 	return diagnostic;
