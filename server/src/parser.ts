@@ -257,7 +257,7 @@ function diagnosticStructAlreadyDeleted(name : string,  indexStartVar : number, 
 }
 
 function existStruc(type : string, name : string){
-	return typeStruct.get(type).get("structs").has(name);
+	return typeStruct.get(type).get("structs").has(name) && !typeStruct.get(type).get("structs").get(name)[typeStruct.get(type).get("structs").get(name).length - 1].has("indexEndStruct");
 }
 
 //Implementation of the function +site:[name]@[color]
@@ -270,7 +270,6 @@ function getCommandsTest(){
 	let c2bis = new Map<any, any>();
 	let c3bis = new Map<any, any>();
 	let c10 = new Map<any, any>();
-	let c11 = new Map<any, any>();
 	let c100 = new Map<any, any>();
 	let c101 = new Map<any, any>();
 	c4.set(null, true);
@@ -279,6 +278,7 @@ function getCommandsTest(){
 	c2.set(":", c3);
 	c2.set(isLinked, false);
 	c1.set("site", c2);
+	c1.set("si", c2);
 	c3bis.set("[+building]", c4)
 	c3bis.set(isLinked, false);
 	c2bis.set(":", c3bis);
@@ -286,8 +286,7 @@ function getCommandsTest(){
 	c1.set("building", c2bis)
 	c1.set(isLinked, false);
 	c0.set("+", c1);
-	c11.set(isLinked, true);
-	c10.set("[-name]", c11);
+	c10.set("[-name]", c4);
 	c10.set(isLinked, false);
 	c0.set("-", c10);
 	c101.set("[property]", c4);
@@ -507,10 +506,16 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 		}
 		else if (actionType.charAt(1) == "="){
 			let type = actionType.substring(2, actionType.length - 1);
-			if (type == "struct")
+			if (type == "struct"){
 				if (listNameStruc.has(commandSplit[iStartVar].subCommand))
-					return actionType;
-				diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+					for (const instanceType of listNameStruc.get(commandSplit[iStartVar].subCommand).keys())
+						if (typeStruct.get(instanceType).get("exist")(commandSplit[iStartVar].subCommand))
+							return actionType;
+						else
+							diagnostic = diagnosticStructAlreadyDeleted(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+				else
+					diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+			}
 		}
 		else if (actionType.charAt(1) == "-"){
 			if (listNameStruc.has(commandSplit[iStartVar].subCommand)){
