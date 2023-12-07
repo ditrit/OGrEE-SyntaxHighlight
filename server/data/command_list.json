@@ -582,7 +582,7 @@
             "quickText": "Draw an existing object on Unity",
             "documentation": "Unity can't draw already existing objects unless instructed to do so.\n[k] an integer value of 0 or greater",
             "insertText": "draw ${1:path/to/object} ${2:k}",
-            "detail": "draw: [path] [k]"
+            "detail": "draw [path] [k]"
         }
         ,
         {
