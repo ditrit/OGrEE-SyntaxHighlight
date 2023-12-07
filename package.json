@@ -39,6 +39,21 @@
 			  "label": "OGrEE Default",
 			  "uiTheme": "vs-dark",
 			  "path": "./server/themes/ogreeDefault.json"
+			},
+			{
+				"label": "OGrEE colorblind (protan) theme",
+				"uiTheme": "vs-dark",
+				"path": "./server/themes/ogreeColorblindProtan.json"
+			},
+			{
+				"label": "OGrEE colorblind (deutran) theme",
+				"uiTheme": "vs-dark",
+				"path": "./server/themes/ogreeColorblindDeutran.json"
+			},
+			{
+				"label": "OGrEE colorblind (tritan) theme",
+				"uiTheme": "vs-dark",
+				"path": "./server/themes/ogreeColorblindTritan.json"
 			}
 		  ],
 		"semanticTokenTypes": [
