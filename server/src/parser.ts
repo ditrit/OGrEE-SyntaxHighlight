@@ -30,7 +30,7 @@ const typeVars = getTypeVars();
 
 var listNameVar = new Map<string, any>();
 
-const typeStruct = getTypeStruct();
+const typeStructs = getTypeStruct();
 
 var listNameStruct = new Map<string, any>();
 
@@ -96,16 +96,16 @@ function isNameStructSyntaxeCorrect(name : string){
  */
 function strucHasCoherentParent(type : string, name : string){
 	let nameParent = getNameStructParent(name);
-	if (typeStruct.get(type).get("parents").length == 0 && nameParent == "")
+	if (typeStructs.get(type).get("parents").length == 0 && nameParent == "")
 		return true;
-	if (typeStruct.get(type).get("parents").length == 0 && nameParent != "")
+	if (typeStructs.get(type).get("parents").length == 0 && nameParent != "")
 		return false;
-	if (typeStruct.get(type).get("parents").length != 0 && nameParent == "")
+	if (typeStructs.get(type).get("parents").length != 0 && nameParent == "")
 		return false;
 	if (!listNameStruct.has(nameParent))
 		return false;
-	for (const typeParent of typeStruct.get(type).get("parents")){
-		if (typeStruct.get(typeParent).get("exist")(nameParent))
+	for (const typeParent of typeStructs.get(type).get("parents")){
+		if (typeStructs.get(typeParent).get("exist")(nameParent))
 			return true;
 	}
 	return false;
@@ -515,8 +515,8 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 		}
 		else if (actionType.charAt(1) == "+"){
 			let type = actionType.substring(2, actionType.length - 1);
-			if (typeStruct.has(type))
-				diagnostic = typeStruct.get(type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+			if (typeStructs.has(type))
+				diagnostic = typeStructs.get(type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			else if (typeVars.has(type))
 				diagnostic = typeVars.get(type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			else
