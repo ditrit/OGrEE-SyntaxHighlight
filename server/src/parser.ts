@@ -49,22 +49,14 @@ function createStruc(type : string, name : string, indexStartStruct : number, te
 		return diagnosticStructNoParent(name, indexStartStruct, textDocument);
 	
 	if (!listNameStruc.has(name)){
-		typeStruct.get(type).get("structs").set(name, [createMapIndexStart("Struct", indexStartStruct)]);
-		listNameStruc.set(name, new Set<string>([type]));
+		listNameStruc.set(name, [createMapInstance(type, indexStartStruct)]);
 		return null;
 	}
 	else{
-		
-		for (const typeStr of listNameStruc.get(name).keys())
-			if (typeStruct.get(typeStr).get("exist")(name))
-				return diagnosticStructNameAlreadyUsed(name, indexStartStruct, textDocument);
-		
-		if (typeStruct.get(type).get("structs").has(name))
-			typeStruct.get(type).get("structs").get(name).push(createMapIndexStart("Struct", indexStartStruct));
-		else{
-			typeStruct.get(type).get("structs").set(name, [createMapIndexStart("Struct", indexStartStruct)]);
-			listNameStruc.get(name).add(type);
-		}
+		if (!lastInstance(listNameStruc, name).has("indexEnd"))
+			return diagnosticStructNameAlreadyUsed(name, indexStartStruct, textDocument);
+
+		listNameStruc.get(name).push(createMapInstance(type, indexStartStruct));
 		return null;
 	}
 }
@@ -134,40 +126,63 @@ function getNameStructParent(name : string){
 
 //To Do
 function createVar(type : string, name : string, indexStartVar : number, textDocument : TextDocument){
+	if (!isNameVarSyntaxeCorrect(name))
+		return diagnosticNameVarSyntaxe(name, indexStartVar, textDocument);
 	if (!listNameVar.has(name)){
-		typeVars.get(type).get("vars").set(name, [createMapIndexStart("Var", indexStartVar)]);
-		listNameVar.set(name, new Set<string>([type]));
-		return null;
+		listNameVar.set(name,[createMapInstance(type, indexStartVar)]);
 	}
-	else
-	{
-		for (const typeVarExist of listNameVar.get(name)){
-			for (const instanceVar of typeVars.get(typeVarExist).get("vars").get(name)){
-				if (!instanceVar.has("indexEndVar")){
-					//return diagnosticVarAlreadyCreatedType(type, name, indexStartVar, textDocument);
-				}
-			}
+	else{
+		if (lastInstance(listNameVar, name).get("indexEnd"))
+			listNameVar.get(name).push(createMapInstance(type, indexStartVar));
+		else if (lastInstance(listNameVar, name).get("type") != type){
+			delVar(name, indexStartVar, textDocument);
+			listNameVar.get(name).push(createMapInstance(type, indexStartVar))
 		}
-		if (!typeVars.get(type).get("vars").has(name)){
-			typeVars.get(type).get("vars").set(name, [createMapIndexStart("Var", indexStartVar)]);
-			listNameVar.get(name).set(type);
+	}
+	return null;
+}
+
+function isNameVarSyntaxeCorrect(name : string){
+	if (name.length ==0)
+		return false;
+	const codeChar = name.charCodeAt(0);
+	if (!((("a".charCodeAt(0) <= codeChar) && (codeChar <= "z".charCodeAt(0))) || (("A".charCodeAt(0) <= codeChar) && (codeChar <= "Z".charCodeAt(0))) || name.charAt(0) == "_"))
+		return false;
+	for (let iChar = 1; iChar < name.length; iChar ++){
+		const codeChar = name.charCodeAt(iChar);
+		if (!((("a".charCodeAt(0) <= codeChar) && (codeChar <= "z".charCodeAt(0))) || (("A".charCodeAt(0) <= codeChar) && (codeChar <= "Z".charCodeAt(0))) || (("0".charCodeAt(0) <= codeChar) && (codeChar <= "9".charCodeAt(0))) || name.charAt(iChar) == "_"))
+			return false;
+	}
+	return true;
+}
+
+function delVar(name : string, indexEndVar : number, textDocument : TextDocument){
+	if (listNameVar.has(name)){
+		if (!lastInstance(listNameVar, name).has("indexEnd")){
+			lastInstance(listNameVar, name).set("indexEnd", indexEndVar);
+			return null;
 		}
 		else{
-			typeVars.get(type).get("vars").get(name).push(createMapIndexStart("Var", indexStartVar));
+			return diagnosticVarAlreadyDeleted(name, indexEndVar, textDocument);
 		}
-		return null;
+	}
+	else {
+		return diagnosticNameNotCreated(name, indexEndVar, textDocument);
 	}
 }
 
-/**
- * Create a Map with the key "indexStart"+type with the value indexStart.
- * @param type the large type i.e. "Struct" or "Var".
- * @param indexStart the value linked to the key.
- * @returns A new Map with "indexStart"+type as key and indexStart as value.
- */
-function createMapIndexStart(type : string, indexStart : number){
+function existVar(name : string){
+	return listNameVar.has(name) && !lastInstance(listNameVar, name).has("indexEnd");
+}
+
+function existVarType(type : string, name : string){
+	return existVar(name) && lastInstance(listNameVar, name).get("type") == type;
+}
+
+function createMapInstance(type : string, indexStart : number){
 	let descr = new Map<string, any>();
-	descr.set("indexStart" + type, indexStart);
+	descr.set("indexStart", indexStart);
+	descr.set("type", type);
 	return descr;
 }
 
@@ -179,11 +194,11 @@ function createMapIndexStart(type : string, indexStart : number){
  * @param textDocument the TextDocument
  * @returns A diagnostic if he can't be deleted, null otherwise
  */
-function delStruc(type : string, name : string, indexEndStruct : number, textDocument : TextDocument){
-	if (typeStruct.get(type).get("structs").has(name))
-		if (!typeStruct.get(type).get("structs").get(name)[typeStruct.get(type).get("structs").get(name).length - 1].has("indexEndStruct")){
-			typeStruct.get(type).get("structs").get(name)[typeStruct.get(type).get("structs").get(name).length - 1].set("indexEndStruct", indexEndStruct)
-			delStrucSons(name, indexEndStruct)
+function delStruc(name : string, indexEndStruct : number, textDocument : TextDocument){
+	if (listNameStruc.has(name))
+		if (!lastInstance(listNameStruc, name).has("indexEnd")){
+			lastInstance(listNameStruc, name).set("indexEnd", indexEndStruct);
+			delStrucSons(name, indexEndStruct);
 			return null;
 		}
 		else{
@@ -201,12 +216,14 @@ function delStruc(type : string, name : string, indexEndStruct : number, textDoc
 function delStrucSons(nameParent : string, indexEndStruct : number){
 	for (const name of listNameStruc.keys())
 		if (name.length > nameParent.length && name.substring(0,nameParent.length) == nameParent)
-			for (const typeSon of listNameStruc.get(name).keys())
-				if (!typeStruct.get(typeSon).get("structs").get(name)[typeStruct.get(typeSon).get("structs").get(name).length - 1].has("indexEndStruct"))
-					typeStruct.get(typeSon).get("structs").get(name)[typeStruct.get(typeSon).get("structs").get(name).length - 1].set("indexEndStruct", indexEndStruct)
+			if (!lastInstance(listNameStruc, name).has("indexEnd"))
+				lastInstance(listNameStruc, name).set("indexEnd", indexEndStruct);
 	return;
 }
 
+function lastInstance(listName : Map<string, any>, name : string){
+	return listName.get(name)[listName.get(name).length - 1];
+}
 
 
 /**
@@ -215,8 +232,12 @@ function delStrucSons(nameParent : string, indexEndStruct : number){
  * @param name the name of the structure.
  * @returns boolean : true if the name exist with the type type, false otherwise.
  */
-function existStruc(type : string, name : string){
-	return typeStruct.get(type).get("structs").has(name) && !typeStruct.get(type).get("structs").get(name)[typeStruct.get(type).get("structs").get(name).length - 1].has("indexEndStruct");
+function existStrucType(type : string, name : string){
+	return existStruct(name) && lastInstance(listNameStruc, name).get("type") == type;
+}
+
+function existStruct(name : string){
+	return listNameStruc.has(name) && !lastInstance(listNameStruc, name).has("indexEnd");
 }
 
 //Implementation of the function +site:[name]@[color]
@@ -231,6 +252,9 @@ function getCommandsTest(){
 	let c10 = new Map<any, any>();
 	let c100 = new Map<any, any>();
 	let c101 = new Map<any, any>();
+	let c200 = new Map<any, any>();
+	let c201 = new Map<any, any>();
+	let c202 = new Map<any, any>();
 	c4.set(null, true);
 	c3.set("[+site]", c4); //We put a + because it create a variable of type site with this name : it create the name
 	c3.set(isLinked, false);
@@ -245,7 +269,7 @@ function getCommandsTest(){
 	c1.set("building", c2bis)
 	c1.set(isLinked, false);
 	c0.set("+", c1);
-	c10.set("[-name]", c4);
+	c10.set("[-struct]", c4);
 	c10.set(isLinked, false);
 	c0.set("-", c10);
 	c101.set("[property]", c4);
@@ -253,6 +277,13 @@ function getCommandsTest(){
 	c100.set(":", c101);
 	c100.set(isLinked, false);
 	c0.set("[=struct]", c100);
+	c202.set("[+string]", c4);
+	c202.set(isLinked, false);
+	c201.set(":", c202);
+	c201.set(isLinked, true);
+	c200.set("var", c201);
+	c200.set(isLinked, true);
+	c0.set(".", c200);
 	c0.set(isLinked, false);//Used to know is this block need to be just after the previous one. false for not needed, true for needed
 	return c0;
 }
@@ -261,25 +292,26 @@ function getCommandsTest(){
 function getTypeStruct(){
 	let types = new Map<string, any>();
 	let site = new Map<string, any>();
-	site.set("structs", new Map<string, any>());
 	site.set("parents", []);
 	site.set("create", (name : string, indexStartStruct : number, textDocument : TextDocument) => createStruc("site", name, indexStartStruct, textDocument));
-	site.set("exist", (name : string) => existStruc("site", name));
-	site.set("del", (name : string, indexEndStruct : number, textDocument : TextDocument) => delStruc("site", name, indexEndStruct, textDocument));
+	site.set("exist", (name : string) => existStrucType("site", name));
 	types.set("site", site);
 	let building = new Map<string, any>();
-	building.set("structs", new Map<string, any>());
 	building.set("parents", ["site"]);
 	building.set("create", (name : string, indexStartStruct : number, textDocument : TextDocument) => createStruc("building", name, indexStartStruct, textDocument))
-	building.set("exist", (name : string) => existStruc("building", name));
-	building.set("del", (name : string, indexEndStruct : number, textDocument : TextDocument) => delStruc("building", name, indexEndStruct, textDocument));
+	building.set("exist", (name : string) => existStrucType("building", name));
 	types.set("building", building);
 	return types;
 }
 
 //Implementation of typeVars
 function getTypeVars(){
-	return new Map<string, any>();
+	let types = new Map<string, any>();
+	let string = new Map<string, any>();
+	string.set("create", (name : string, indexStartVar : number, textDocument : TextDocument) => createVar("string", name, indexStartVar, textDocument))
+	string.set("exist", (name : string) => existVarType("string", name));
+	types.set("string", string);
+	return types;
 }
 
 export function getVariables(){
@@ -429,7 +461,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 		return false;
 
 	if (!curDicCommand.get(null)){
-		if (Array.from(curDicCommand.keys()).length == 1)
+		if (Array.from(curDicCommand.keys()).length == 2)
 			diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument, Array.from(curDicCommand.keys())[0]));
 		else
 			diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument));
@@ -481,12 +513,14 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				return actionType;
 			diagnostic = diagnosticNamePropertySyntaxe(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 		}
-		else if (actionType.substring(1,3) == "+="){
-
-		}
 		else if (actionType.charAt(1) == "+"){
 			let type = actionType.substring(2, actionType.length - 1);
-			diagnostic = typeStruct.get(type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+			if (typeStruct.has(type))
+				diagnostic = typeStruct.get(type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+			else if (typeVars.has(type))
+				diagnostic = typeVars.get(type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+			else
+				throw new Error("Unrecognized actionType " + actionType);
 			if (diagnostic == null)
 				return actionType;
 		}
@@ -494,28 +528,23 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 			let type = actionType.substring(2, actionType.length - 1);
 			if (type == "struct"){
 				if (listNameStruc.has(commandSplit[iStartVar].subCommand))
-					for (const instanceType of listNameStruc.get(commandSplit[iStartVar].subCommand).keys())
-						if (typeStruct.get(instanceType).get("exist")(commandSplit[iStartVar].subCommand))
-							return actionType;
-						else
-							diagnostic = diagnosticStructAlreadyDeleted(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+					if (existStruct(commandSplit[iStartVar].subCommand))
+						return actionType;
+					else
+						diagnostic = diagnosticStructAlreadyDeleted(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 				else
 					diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			}
 		}
 		else if (actionType.charAt(1) == "-"){
-			if (listNameStruc.has(commandSplit[iStartVar].subCommand)){
-				for (const instanceStruct of listNameStruc.get(commandSplit[iStartVar].subCommand)){
-					diagnostic = typeStruct.get(instanceStruct).get("del")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument)
-					if (diagnostic == null)
-						return actionType;
-					}
-			}
-			else if (listNameVar.has(commandSplit[iStartVar].subCommand)){
-
+			let type = actionType.substring(2, actionType.length - 1);
+			if (type == "struct"){
+				diagnostic = delStruc(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+				if (diagnostic == null)
+					return actionType;
 			}
 			else{
-				diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+				throw new Error("Unrecognized actionType"  + actionType)
 			}
 		}
 	}
@@ -587,7 +616,7 @@ function diagnosticNameStructSyntaxe(name : string, indexStartStruct : number, t
 			start: textDocument.positionAt(indexStartStruct),
 			end: textDocument.positionAt(indexStartStruct + name.length)
 		},
-		message: `The name "` + name + `" isn't valid. You can only use letters, numbers and /.`,
+		message: `The name "` + name + `" isn't valid. You can only use letters, numbers, / and _.`,
 		source: 'Ogree_parser'
 	};
 	return diagnostic;
@@ -608,6 +637,19 @@ function diagnosticStructNoParent(name : string, indexStartStruct : number, text
 			end: textDocument.positionAt(indexStartStruct + name.length)
 		},
 		message: `The name "` + name + `" isn't valid, Because he doesn't have a parent.`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+function diagnosticNameVarSyntaxe(name : string, indexStartStruct : number, textDocument : TextDocument){
+	let diagnostic : Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStartStruct),
+			end: textDocument.positionAt(indexStartStruct + name.length)
+		},
+		message: `The name "` + name + `" isn't valid. You can only use letters, numbers and _.`,
 		source: 'Ogree_parser'
 	};
 	return diagnostic;
@@ -668,6 +710,26 @@ function diagnosticStructAlreadyDeleted(name : string,  indexStartStruct : numbe
 			end: textDocument.positionAt(indexStartStruct + name.length)
 		},
 		message: `The struct "` + name + `" is already deleted.`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Create a diagnostic to say that the name of the variable is already deleted
+ * @param name the name of the structure
+ * @param indexStartStruct the index of the beginning of the name in the whole document
+ * @param textDocument the TextDocument
+ * @returns the diagnostic
+ */
+function diagnosticVarAlreadyDeleted(name : string,  indexStartVar : number, textDocument : TextDocument){
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStartVar),
+			end: textDocument.positionAt(indexStartVar + name.length)
+		},
+		message: `The variable "` + name + `" is already deleted.`,
 		source: 'Ogree_parser'
 	};
 	return diagnostic;
