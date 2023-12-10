@@ -32,7 +32,7 @@ var listNameVar = new Map<string, any>();
 
 const typeStruct = getTypeStruct();
 
-var listNameStruc = new Map<string, any>();
+var listNameStruct = new Map<string, any>();
 
 /**
  * Test is the structure can be created and record the name of the structure.
@@ -48,15 +48,15 @@ function createStruc(type : string, name : string, indexStartStruct : number, te
 	if (!strucHasCoherentParent(type, name))
 		return diagnosticStructNoParent(name, indexStartStruct, textDocument);
 	
-	if (!listNameStruc.has(name)){
-		listNameStruc.set(name, [createMapInstance(type, indexStartStruct)]);
+	if (!listNameStruct.has(name)){
+		listNameStruct.set(name, [createMapInstance(type, indexStartStruct)]);
 		return null;
 	}
 	else{
-		if (!lastInstance(listNameStruc, name).has("indexEnd"))
+		if (!lastInstance(listNameStruct, name).has("indexEnd"))
 			return diagnosticStructNameAlreadyUsed(name, indexStartStruct, textDocument);
 
-		listNameStruc.get(name).push(createMapInstance(type, indexStartStruct));
+		listNameStruct.get(name).push(createMapInstance(type, indexStartStruct));
 		return null;
 	}
 }
@@ -102,7 +102,7 @@ function strucHasCoherentParent(type : string, name : string){
 		return false;
 	if (typeStruct.get(type).get("parents").length != 0 && nameParent == "")
 		return false;
-	if (!listNameStruc.has(nameParent))
+	if (!listNameStruct.has(nameParent))
 		return false;
 	for (const typeParent of typeStruct.get(type).get("parents")){
 		if (typeStruct.get(typeParent).get("exist")(nameParent))
@@ -195,9 +195,9 @@ function createMapInstance(type : string, indexStart : number){
  * @returns A diagnostic if he can't be deleted, null otherwise
  */
 function delStruc(name : string, indexEndStruct : number, textDocument : TextDocument){
-	if (listNameStruc.has(name))
-		if (!lastInstance(listNameStruc, name).has("indexEnd")){
-			lastInstance(listNameStruc, name).set("indexEnd", indexEndStruct);
+	if (listNameStruct.has(name))
+		if (!lastInstance(listNameStruct, name).has("indexEnd")){
+			lastInstance(listNameStruct, name).set("indexEnd", indexEndStruct);
 			delStrucSons(name, indexEndStruct);
 			return null;
 		}
@@ -214,10 +214,10 @@ function delStruc(name : string, indexEndStruct : number, textDocument : TextDoc
  * @param indexEndStruct the index in the document of the deleting of the structure
  */
 function delStrucSons(nameParent : string, indexEndStruct : number){
-	for (const name of listNameStruc.keys())
+	for (const name of listNameStruct.keys())
 		if (name.length > nameParent.length && name.substring(0,nameParent.length) == nameParent)
-			if (!lastInstance(listNameStruc, name).has("indexEnd"))
-				lastInstance(listNameStruc, name).set("indexEnd", indexEndStruct);
+			if (!lastInstance(listNameStruct, name).has("indexEnd"))
+				lastInstance(listNameStruct, name).set("indexEnd", indexEndStruct);
 	return;
 }
 
@@ -233,11 +233,11 @@ function lastInstance(listName : Map<string, any>, name : string){
  * @returns boolean : true if the name exist with the type type, false otherwise.
  */
 function existStrucType(type : string, name : string){
-	return existStruct(name) && lastInstance(listNameStruc, name).get("type") == type;
+	return existStruct(name) && lastInstance(listNameStruct, name).get("type") == type;
 }
 
 function existStruct(name : string){
-	return listNameStruc.has(name) && !lastInstance(listNameStruc, name).has("indexEnd");
+	return listNameStruct.has(name) && !lastInstance(listNameStruct, name).has("indexEnd");
 }
 
 //Implementation of the function +site:[name]@[color]
@@ -326,7 +326,7 @@ export function getVariables(){
  */
 export function parseDocument(textDocument: TextDocument) {
 	listNameVar = new Map<string, any>();
-	listNameStruc = new Map<string, any>();
+	listNameStruct = new Map<string, any>();
 	const text = textDocument.getText();
 	const diagnostics: Diagnostic[] = [];
 	const tokens : any = [];
@@ -527,7 +527,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 		else if (actionType.charAt(1) == "="){
 			let type = actionType.substring(2, actionType.length - 1);
 			if (type == "struct"){
-				if (listNameStruc.has(commandSplit[iStartVar].subCommand))
+				if (listNameStruct.has(commandSplit[iStartVar].subCommand))
 					if (existStruct(commandSplit[iStartVar].subCommand))
 						return actionType;
 					else
