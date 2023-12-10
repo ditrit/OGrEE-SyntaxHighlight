@@ -34,35 +34,47 @@ const typeStruct = getTypeStruct();
 
 var listNameStruc = new Map<string, any>();
 
+/**
+ * Test is the structure can be created and record the name of the structure.
+ * @param type the type of structure
+ * @param name the name of the structure
+ * @param indexStartStruct the starting index in the whole document of the name
+ * @param textDocument the TextDocument
+ * @returns A diagnostic if it's not possible to create the structure, and null if not.
+ */
 function createStruc(type : string, name : string, indexStartStruct : number, textDocument : TextDocument){
-	if (!isNameStructSyntaxeCorrect(type, name))
+	if (!isNameStructSyntaxeCorrect(name))
 		return diagnosticNameStructSyntaxe(name, indexStartStruct, textDocument);
 	if (!strucHasCoherentParent(type, name))
 		return diagnosticStructNoParent(name, indexStartStruct, textDocument);
 	
 	if (!listNameStruc.has(name)){
-		typeStruct.get(type).get("structs").set(name, [createMapIndexStart(indexStartStruct)]);
+		typeStruct.get(type).get("structs").set(name, [createMapIndexStart("Struct", indexStartStruct)]);
 		listNameStruc.set(name, new Set<string>([type]));
 		return null;
 	}
 	else{
 		
 		for (const typeStr of listNameStruc.get(name).keys())
-			for (const instanceStruct of typeStruct.get(typeStr).get("structs").get(name))
-				if (!instanceStruct.has("indexEndStruct"))
-					return diagnosticStructNameAlreadyUsed(name, indexStartStruct, textDocument);
+			if (typeStruct.get(typeStr).get("exist")(name))
+				return diagnosticStructNameAlreadyUsed(name, indexStartStruct, textDocument);
 		
 		if (typeStruct.get(type).get("structs").has(name))
-			typeStruct.get(type).get("structs").get(name).push(createMapIndexStart(indexStartStruct));
+			typeStruct.get(type).get("structs").get(name).push(createMapIndexStart("Struct", indexStartStruct));
 		else{
-			typeStruct.get(type).get("structs").set(name, [createMapIndexStart(indexStartStruct)]);
+			typeStruct.get(type).get("structs").set(name, [createMapIndexStart("Struct", indexStartStruct)]);
 			listNameStruc.get(name).add(type);
 		}
 		return null;
 	}
 }
 
-function isNameStructSyntaxeCorrect(type : string, name : string){
+/**
+ * Tests if the name is syntactically correct for a structure
+ * @param name The name of the structure
+ * @returns boolean : true if it is syntactically correct, false otherwise
+ */
+function isNameStructSyntaxeCorrect(name : string){
 	let slashBefore = true;
 	for (let iChar = 0; iChar < name.length; iChar ++){
 		const codeChar = name.charCodeAt(iChar);
@@ -84,6 +96,12 @@ function isNameStructSyntaxeCorrect(type : string, name : string){
 	return true;
 }
 
+/**
+ * Tests if the name of the structure have an existing parent
+ * @param type the type of the structure
+ * @param name the (complete) name of the structure
+ * @returns boolean : true if the parent exist, false otherwise
+ */
 function strucHasCoherentParent(type : string, name : string){
 	let nameParent = getNameStructParent(name);
 	if (typeStruct.get(type).get("parents").length == 0 && nameParent == "")
@@ -95,14 +113,17 @@ function strucHasCoherentParent(type : string, name : string){
 	if (!listNameStruc.has(nameParent))
 		return false;
 	for (const typeParent of typeStruct.get(type).get("parents")){
-		if (listNameStruc.get(nameParent).has(typeParent))
-			for (const instanceParent of typeStruct.get(typeParent).get("structs").get(nameParent))
-				if (!instanceParent.has("indexEndStruct"))
-					return true;
+		if (typeStruct.get(typeParent).get("exist")(nameParent))
+			return true;
 	}
 	return false;
 }
 
+/**
+ * Extracts the name of the theoretical parent of a structure named name.
+ * @param name the name of the structure.
+ * @returns the theoretical name of the parent.
+ */
 function getNameStructParent(name : string){
 	let indexEnd = name.length - 1;
 	while (indexEnd > 0 && name.charAt(indexEnd) != "/")
@@ -110,48 +131,11 @@ function getNameStructParent(name : string){
 	return name.substring(0, indexEnd);
 }
 
-function diagnosticNameStructSyntaxe(name : string, indexStartStruct : number, textDocument : TextDocument){
-	let diagnostic : Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStartStruct),
-			end: textDocument.positionAt(indexStartStruct + name.length)
-		},
-		message: `The name "` + name + `" isn't valid. You can only use letters, numbers and /.`,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
 
-function diagnosticStructNoParent(name : string, indexStartStruct : number, textDocument : TextDocument){
-	let diagnostic : Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStartStruct),
-			end: textDocument.positionAt(indexStartStruct + name.length)
-		},
-		message: `The name "` + name + `" isn't valid, Because he doesn't have a parent.`,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
-function diagnosticStructNameAlreadyUsed(name : string, indexStartStruct : number, textDocument : TextDocument){
-	let diagnostic : Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStartStruct),
-			end: textDocument.positionAt(indexStartStruct + name.length)
-		},
-		message: `The name "` + name + `" is already used.`,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
+//To Do
 function createVar(type : string, name : string, indexStartVar : number, textDocument : TextDocument){
 	if (!listNameVar.has(name)){
-		typeVars.get(type).get("vars").set(name, [createMapIndexStart(indexStartVar)]);
+		typeVars.get(type).get("vars").set(name, [createMapIndexStart("Var", indexStartVar)]);
 		listNameVar.set(name, new Set<string>([type]));
 		return null;
 	}
@@ -160,58 +144,46 @@ function createVar(type : string, name : string, indexStartVar : number, textDoc
 		for (const typeVarExist of listNameVar.get(name)){
 			for (const instanceVar of typeVars.get(typeVarExist).get("vars").get(name)){
 				if (!instanceVar.has("indexEndVar")){
-					return diagnosticVarAlreadyCreatedType(type, name, indexStartVar, textDocument);
+					//return diagnosticVarAlreadyCreatedType(type, name, indexStartVar, textDocument);
 				}
 			}
 		}
 		if (!typeVars.get(type).get("vars").has(name)){
-			typeVars.get(type).get("vars").set(name, [createMapIndexStart(indexStartVar)]);
+			typeVars.get(type).get("vars").set(name, [createMapIndexStart("Var", indexStartVar)]);
 			listNameVar.get(name).set(type);
 		}
 		else{
-			typeVars.get(type).get("vars").get(name).push(createMapIndexStart(indexStartVar));
+			typeVars.get(type).get("vars").get(name).push(createMapIndexStart("Var", indexStartVar));
 		}
 		return null;
 	}
 }
 
-function createMapIndexStart(indexStartVar : number){
+/**
+ * Create a Map with the key "indexStart"+type with the value indexStart.
+ * @param type the large type i.e. "Struct" or "Var".
+ * @param indexStart the value linked to the key.
+ * @returns A new Map with "indexStart"+type as key and indexStart as value.
+ */
+function createMapIndexStart(type : string, indexStart : number){
 	let descr = new Map<string, any>();
-	descr.set("indexStartVar", indexStartVar);
+	descr.set("indexStart" + type, indexStart);
 	return descr;
 }
 
-function diagnosticVarAlreadyCreatedType(type : string, name : string,  indexStartVar : number, textDocument : TextDocument){
-	const diagnostic: Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStartVar),
-			end: textDocument.positionAt(indexStartVar + name.length)
-		},
-		message: `The name "` + name + `" is already used with a type ` + type + ` so it can't be used for creating a new object.`,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
-function diagnosticVarAlreadyCreated(name : string,  indexStartVar : number, textDocument : TextDocument){
-	const diagnostic: Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStartVar),
-			end: textDocument.positionAt(indexStartVar + name.length)
-		},
-		message: `The name "` + name + `" is already used so it can't be used for creating a new object.`,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
+/**
+ * Delete, if possible, the structure named name with a type type, and set the index of deleting "indexEndStruct" to indexEndStruct.
+ * @param type the type of the structure
+ * @param name the name of the structure
+ * @param indexEndStruct the index in the document of the deleting of the structure
+ * @param textDocument the TextDocument
+ * @returns A diagnostic if he can't be deleted, null otherwise
+ */
 function delStruc(type : string, name : string, indexEndStruct : number, textDocument : TextDocument){
 	if (typeStruct.get(type).get("structs").has(name))
 		if (!typeStruct.get(type).get("structs").get(name)[typeStruct.get(type).get("structs").get(name).length - 1].has("indexEndStruct")){
 			typeStruct.get(type).get("structs").get(name)[typeStruct.get(type).get("structs").get(name).length - 1].set("indexEndStruct", indexEndStruct)
-			delStrucSons(type, name, indexEndStruct)
+			delStrucSons(name, indexEndStruct)
 			return null;
 		}
 		else{
@@ -221,7 +193,12 @@ function delStruc(type : string, name : string, indexEndStruct : number, textDoc
 		return diagnosticNameNotCreated(name, indexEndStruct, textDocument);
 }
 
-function delStrucSons(type : string, nameParent : string, indexEndStruct : number){
+/**
+ * Delete all the sons of the structure named nameParent, and set the index of deleting "indexEndStruct" to indexEndStruct.
+ * @param nameParent the name of the parent
+ * @param indexEndStruct the index in the document of the deleting of the structure
+ */
+function delStrucSons(nameParent : string, indexEndStruct : number){
 	for (const name of listNameStruc.keys())
 		if (name.length > nameParent.length && name.substring(0,nameParent.length) == nameParent)
 			for (const typeSon of listNameStruc.get(name).keys())
@@ -230,32 +207,14 @@ function delStrucSons(type : string, nameParent : string, indexEndStruct : numbe
 	return;
 }
 
-function diagnosticNameNotCreated(name : string,  indexStartVar : number, textDocument : TextDocument){
-	const diagnostic: Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStartVar),
-			end: textDocument.positionAt(indexStartVar + name.length)
-		},
-		message: `The name "` + name + `" hasn't been declared before.`,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
 
-function diagnosticStructAlreadyDeleted(name : string,  indexStartVar : number, textDocument : TextDocument){
-	const diagnostic: Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStartVar),
-			end: textDocument.positionAt(indexStartVar + name.length)
-		},
-		message: `The struct "` + name + `" is already deleted.`,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
 
+/**
+ * Tests if the structure name of type type exist (i.e. is created and not deleted).
+ * @param type the type of the structure.
+ * @param name the name of the structure.
+ * @returns boolean : true if the name exist with the type type, false otherwise.
+ */
 function existStruc(type : string, name : string){
 	return typeStruct.get(type).get("structs").has(name) && !typeStruct.get(type).get("structs").get(name)[typeStruct.get(type).get("structs").get(name).length - 1].has("indexEndStruct");
 }
@@ -298,6 +257,7 @@ function getCommandsTest(){
 	return c0;
 }
 
+//Implementation of typeStruct to test the parser
 function getTypeStruct(){
 	let types = new Map<string, any>();
 	let site = new Map<string, any>();
@@ -317,6 +277,7 @@ function getTypeStruct(){
 	return types;
 }
 
+//Implementation of typeVars
 function getTypeVars(){
 	return new Map<string, any>();
 }
@@ -324,11 +285,11 @@ function getTypeVars(){
 export function getVariables(){
 	return [];
 }
+
 /**
  * Parses a text document and returns an array of diagnostics.
  * 
  * @param textDocument The text document to parse.
- * @param settings The settings to use for parsing.
  * @returns An array of diagnostics.
  */
 export function parseDocument(textDocument: TextDocument) {
@@ -370,11 +331,11 @@ export function parseDocument(textDocument: TextDocument) {
 				//diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
 				tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "comment", [], true))
 			} else {
-				const commandFound = parseCommand(currentIndex, nextCommandIndex, nextCommand, text, diagnostics, textDocument);
-				if (!commandFound) {
+				const commandFound = parseCommand(currentIndex, nextCommandIndex, nextCommand, diagnostics, textDocument);
+				/*if (!commandFound) {
 					diagnostics.push(parseUnrecognizedCommand(currentIndex, nextCommandIndex, nextCommand, textDocument));
 					tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "unknown", [], true))
-				}
+				}*/
 			}
 		}
 
@@ -407,7 +368,16 @@ function parseComment(currentIndex: number, nextCommandIndex: number, textDocume
 	return diagnostic;
 }
 
-function parseCommand(currentIndex: number, endCommandIndex: number, command: string, text: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
+/**
+ * Parse a command
+ * @param currentIndex the index in the document of the command
+ * @param endCommandIndex the index of the end of the command in the document
+ * @param command the command itself
+ * @param diagnostics The list of all the diagnostics
+ * @param textDocument the TextDocument
+ * @returns boolean : true if the command is recognized, false otherwise
+ */
+function parseCommand(currentIndex: number, endCommandIndex: number, command: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
 	let commandSplit = splitCommand(currentIndex, command);
 	let iSubCommand = 0;
 	let isCommand = true;
@@ -416,7 +386,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 		if (curDicCommand.get(isLinked)){
 			if (commandSplit[iSubCommand - 1].indexEnd != commandSplit[iSubCommand].indexStart){
 				diagnostics.push(diagnosticUnexpectedSpace(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand].indexStart, textDocument));
-				return true;
+				return false;
 			}
 		}
 		if (curDicCommand.has(commandSplit[iSubCommand].subCommand)){
@@ -439,7 +409,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 						if (typeCorrespondant != null){
 							curDicCommand = curDicCommand.get(typeCorrespondant);
 						} else
-							return true;
+							return false;
 					}
 					else{
 						isCommand = false
@@ -456,17 +426,24 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 	}
 	
 	if (!isCommand)
-		return true;
+		return false;
 
-	if (!curDicCommand.get(null))
+	if (!curDicCommand.get(null)){
 		if (Array.from(curDicCommand.keys()).length == 1)
 			diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument, Array.from(curDicCommand.keys())[0]));
 		else
 			diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument));
-	
+		return false;
+	}
 	return true;
 }
 
+/**
+ * Split the command in differents subcommand, removing all the blank characters and splitting according to differents sign, in signCommand
+ * @param currentIndex The index of the begginning of the command in the whole document.
+ * @param command The command to split.
+ * @returns An array, with dictionnary containing the subCommand, the index of the beginning and the index of ending in the whole document of the subcommand.
+ */
 function splitCommand(currentIndex: number, command : string) {
 	let commandSplit = [];
 	let indexStart = 0;
@@ -487,6 +464,15 @@ function splitCommand(currentIndex: number, command : string) {
 	return commandSplit;
 }
 
+/**
+ * Parse a subCommand when it's a variable or a structure.
+ * @param typesVariablesPossible The differents actionTypes possibles to match.
+ * @param iStartVar The index of the subCommand in the array of subCommands.
+ * @param commandSplit The array of subCommands.
+ * @param diagnostics The list of diagnostics.
+ * @param textDocument The TextDocument.
+ * @returns The first actionType for which it match with the subCommand, and null if no one actionType match with the subCommand.
+ */
 function parseVariable(typesVariablesPossible : string[], iStartVar : number, commandSplit : any, diagnostics : Diagnostic[], textDocument : TextDocument){
 	let diagnostic;
 	for (const actionType of typesVariablesPossible){
@@ -536,10 +522,16 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 	if (typesVariablesPossible.length == 1)
 		diagnostics.push(diagnostic);
 	else
-		diagnostics.push(diagnosticVarAlreadyCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument))
+		diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument))
 	return null;
 }
 
+
+/**
+ * Tests if the name name is valid to be a property of a structure.
+ * @param name the name of the property.
+ * @returns boolean : true is the name is valid, false otherwise.
+ */
 function isNameProperty(name : string){
 	for (let iChar = 0; iChar < name.length; iChar ++){
 		const codeChar = name.charCodeAt(iChar);
@@ -547,79 +539,6 @@ function isNameProperty(name : string){
 			return false;
 	}
 	return true;
-}
-
-function diagnosticNamePropertySyntaxe(name : string, indexStartProperty : number, textDocument : TextDocument){
-	let diagnostic : Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStartProperty),
-			end: textDocument.positionAt(indexStartProperty + name.length)
-		},
-		message: `The name "` + name + `" isn't valid. You can only use letters, numbers and /.`,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
-function diagnosticUnexpectedSpace(indexStart : number, indexEnd : number, textDocument : TextDocument){
-	let diagnostic : Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStart),
-			end: textDocument.positionAt(indexEnd)
-		},
-		message: `Theses spaces are unexpected`,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
-function diagnosticUnexpectedCharactersExpected(indexStart: number, indexEnd: number,textDocument:TextDocument, stringExpected :string){
-	const diagnostic: Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStart),
-			end: textDocument.positionAt(indexEnd)
-		},
-		message: "Unexpected Characters : " + stringExpected + " expected",
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
-function diagnosticUnexpectedCharacters(indexStart: number, indexEnd: number,textDocument:TextDocument){
-	const diagnostic: Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(indexStart),
-			end: textDocument.positionAt(indexEnd)
-		},
-		message: "Unexpected Characters",
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
-}
-
-/**
- * Parses an unrecognized command and returns a diagnostic object.
- * @param currentIndex The index of the current command.
- * @param nextCommandIndex The index of the next command.
- * @param nextCommand The next command to be parsed.
- * @param textDocument The text document being parsed.
- * @returns A diagnostic object representing the unrecognized command error.
- */
-function parseUnrecognizedCommand(currentIndex: number, nextCommandIndex: number, nextCommand: string, textDocument: TextDocument): Diagnostic {
-	const diagnostic: Diagnostic = {
-		severity: DiagnosticSeverity.Error,
-		range: {
-			start: textDocument.positionAt(currentIndex),
-			end: textDocument.positionAt(nextCommandIndex)
-		},
-		message: "unrocognized command: " + nextCommand,
-		source: 'Ogree_parser'
-	};
-	return diagnostic;
 }
 
 
@@ -650,16 +569,187 @@ function getNextPart(currentIndex: any, text: string, delimitersList: any) {
 		}
 	}
 	return {index:text.length, separator:""};
-	
+}
 
-/*
-	for (const delimiter of delimitersList) {
-		nextCommandIndexPotential = text.indexOf(delimiter, currentIndex);
-		if (nextCommandIndexPotential != -1 && nextCommandIndexPotential < nextCommandIndex) {
-			nextCommandIndex = nextCommandIndexPotential;
-			endSeparator = delimiter;
-		}
-	}
 
-	return { index: nextCommandIndex, separator: endSeparator };*/
+
+/**
+ * Create a diagnostic to say that the name of the structure have an invalid syntaxe
+ * @param name the name of the structure
+ * @param indexStartStruct the index of the beginning of the name in the whole document
+ * @param textDocument the TextDocument
+ * @returns the diagnostic
+ */
+function diagnosticNameStructSyntaxe(name : string, indexStartStruct : number, textDocument : TextDocument){
+	let diagnostic : Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStartStruct),
+			end: textDocument.positionAt(indexStartStruct + name.length)
+		},
+		message: `The name "` + name + `" isn't valid. You can only use letters, numbers and /.`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Create a diagnostic to say that the name of the structure doesn't have an existing parent.
+ * @param name the name of the structure
+ * @param indexStartStruct the index of the beginning of the name in the whole document
+ * @param textDocument the TextDocument
+ * @returns the diagnostic
+ */
+function diagnosticStructNoParent(name : string, indexStartStruct : number, textDocument : TextDocument){
+	let diagnostic : Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStartStruct),
+			end: textDocument.positionAt(indexStartStruct + name.length)
+		},
+		message: `The name "` + name + `" isn't valid, Because he doesn't have a parent.`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Create a diagnostic to say that the name of the structure is already used
+ * @param name the name of the structure
+ * @param indexStartStruct the index of the beginning of the name in the whole document
+ * @param textDocument the TextDocument
+ * @returns the diagnostic
+ */
+function diagnosticStructNameAlreadyUsed(name : string, indexStartStruct : number, textDocument : TextDocument){
+	let diagnostic : Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStartStruct),
+			end: textDocument.positionAt(indexStartStruct + name.length)
+		},
+		message: `The name "` + name + `" is already used.`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Create a diagnostic to say that the name is not created
+ * @param name the name
+ * @param indexStart the index of the beginning of the name in the whole document
+ * @param textDocument the TextDocument
+ * @returns the diagnostic
+ */
+function diagnosticNameNotCreated(name : string,  indexStart : number, textDocument : TextDocument){
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStart),
+			end: textDocument.positionAt(indexStart + name.length)
+		},
+		message: `The name "` + name + `" hasn't been declared before.`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Create a diagnostic to say that the name of the structure is already deleted
+ * @param name the name of the structure
+ * @param indexStartStruct the index of the beginning of the name in the whole document
+ * @param textDocument the TextDocument
+ * @returns the diagnostic
+ */
+function diagnosticStructAlreadyDeleted(name : string,  indexStartStruct : number, textDocument : TextDocument){
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStartStruct),
+			end: textDocument.positionAt(indexStartStruct + name.length)
+		},
+		message: `The struct "` + name + `" is already deleted.`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Create a diagnostic to say that the property doesn't have a good syntaxe.
+ * @param name the name of the property.
+ * @param indexStartProperty the index of the beggining in the whole document of the name.
+ * @param textDocument the TextDocument.
+ * @returns the diagnostic
+ */
+function diagnosticNamePropertySyntaxe(name : string, indexStartProperty : number, textDocument : TextDocument){
+	let diagnostic : Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStartProperty),
+			end: textDocument.positionAt(indexStartProperty + name.length)
+		},
+		message: `The name "` + name + `" isn't valid. You can only use letters, numbers and /.`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Create a diagnostic to say that some spaces are unexpected.
+ * @param indexStart the start of the blanks characters in the document.
+ * @param indexEnd the end of the blanks characteres in the document.
+ * @param textDocument the TextDocument.
+ * @returns the diagnostic
+ */
+function diagnosticUnexpectedSpace(indexStart : number, indexEnd : number, textDocument : TextDocument){
+	let diagnostic : Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStart),
+			end: textDocument.positionAt(indexEnd)
+		},
+		message: `Theses spaces are unexpected`,
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Create a diagnostic to say that the characters betweens indexStart and indexEnd are unexpected, and that stringExpected was expected.
+ * @param indexStart the starting index of the unexpected characters.
+ * @param indexEnd the ending index of the unexpected characters.
+ * @param textDocument the TextDocument.
+ * @param stringExpected the string expected.
+ * @returns the diagnostic.
+ */
+function diagnosticUnexpectedCharactersExpected(indexStart: number, indexEnd: number,textDocument:TextDocument, stringExpected :string){
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStart),
+			end: textDocument.positionAt(indexEnd)
+		},
+		message: "Unexpected Characters : " + stringExpected + " expected",
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+/**
+ * Create a diagnostic to say that the characters betweens indexStart and indexEnd are unexpected.
+ * @param indexStart the starting index of the unexpected characters.
+ * @param indexEnd the ending index of the unexpected characters.
+ * @param textDocument the TextDocument.
+ * @returns the diagnostic.
+ */
+function diagnosticUnexpectedCharacters(indexStart: number, indexEnd: number,textDocument:TextDocument){
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStart),
+			end: textDocument.positionAt(indexEnd)
+		},
+		message: "Unexpected Characters",
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
 }
