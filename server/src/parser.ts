@@ -57,7 +57,7 @@ function createStruc(type : string, name : string, indexStartStruct : number, te
 		return null;
 	}
 	else{
-		if (!lastInstance(listNameStruct, name)["indexEnd"])
+		if (!lastInstance(listNameStruct, name).indexEnd)
 			return diagnosticStructNameAlreadyUsed(name, indexStartStruct, textDocument);
 
 		listNameStruct.get(name)?.push(createMapInstance(type, indexStartStruct));
@@ -163,7 +163,7 @@ function isNameVarSyntaxeCorrect(name : string){
 function delVar(name : string, indexEndVar : number, textDocument : TextDocument){
 	if (listNameVar.has(name)){
 		if (!lastInstance(listNameVar, name).indexEnd){
-			lastInstance(listNameVar, name).set("indexEnd", indexEndVar);
+			lastInstance(listNameVar, name).indexEnd = indexEndVar;
 			return null;
 		}
 		else{
@@ -203,7 +203,7 @@ function createMapInstance(type : string, indexStart : number){
 function delStruc(name : string, indexEndStruct : number, textDocument : TextDocument){
 	if (listNameStruct.has(name))
 		if (!lastInstance(listNameStruct, name).indexEnd){
-			lastInstance(listNameStruct, name).set("indexEnd", indexEndStruct);
+			lastInstance(listNameStruct, name).indexEnd = indexEndStruct;
 			delStrucSons(name, indexEndStruct);
 			return null;
 		}
@@ -223,7 +223,7 @@ function delStrucSons(nameParent : string, indexEndStruct : number){
 	for (const name of listNameStruct.keys())
 		if (name.length > nameParent.length && name.substring(0,nameParent.length) == nameParent)
 			if (!lastInstance(listNameStruct, name).indexEnd)
-				lastInstance(listNameStruct, name).set("indexEnd", indexEndStruct);
+				lastInstance(listNameStruct, name).indexEnd = indexEndStruct;
 	return;
 }
 
@@ -344,6 +344,44 @@ export function getVariables(){
 }
 
 /**
+ * @param cursorPosition 
+ * @return [string[], string[]] Lists of existing variables and structures at this position
+ */
+export function getExistingVariables(cursorPosition: number): [string[], string[]] {
+	let variables: string[] = [];
+	for (let [key, variableInfos] of listNameVar) {
+		let key_exists = false;
+		for (let variableInfo of variableInfos) {
+			if (cursorPosition >= variableInfo.indexStart && ((variableInfo.indexEnd && cursorPosition <= variableInfo.indexEnd) || !variableInfo.indexEnd)) {
+				key_exists = true;
+				break;
+			}
+		}
+
+		if (key_exists) {
+			variables.push(key);
+		}
+	}
+
+	let structures: string[] = [];
+	for (let [key, variableInfos] of listNameStruct) {
+		let key_exists = false;
+		for (let variableInfo of variableInfos) {
+			if (cursorPosition >= variableInfo.indexStart && ((variableInfo.indexEnd && cursorPosition <= variableInfo.indexEnd) || !variableInfo.indexEnd)) {
+				key_exists = true;
+				break;
+			}
+		}
+
+		if (key_exists) {
+			structures.push(key);
+		}
+	}
+
+	return [variables, structures];
+}
+
+/**
  * Parses a text document and returns an array of diagnostics.
  * 
  * @param textDocument The text document to parse.
@@ -388,7 +426,7 @@ export function parseDocument(textDocument: TextDocument) {
 				//diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
 				tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "comment", [], true))
 			} else {
-				const commandFound = parseCommand(currentIndex, nextCommandIndex, nextCommand, diagnostics, textDocument);
+				parseCommand(currentIndex, nextCommandIndex, nextCommand, diagnostics, textDocument, tokens);
 				/*if (!commandFound) {
 					diagnostics.push(parseUnrecognizedCommand(currentIndex, nextCommandIndex, nextCommand, textDocument));
 					tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "unknown", [], true))
@@ -402,6 +440,7 @@ export function parseDocument(textDocument: TextDocument) {
 }
 
 function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[], genericToken = false){
+	console.log("Semantic token recieved : " + startIndex + " " + endIndex + " " + tokenType + " " + tokenModifiers + " " + genericToken)
 	return {line : textDocument.positionAt(startIndex).line, char : textDocument.positionAt(startIndex).character, length : endIndex - startIndex, tokenType : encodeTokenType(tokenType, genericToken), tokenModifiers : encodeTokenModifiers([])}
 }
 
@@ -434,7 +473,7 @@ function parseComment(currentIndex: number, nextCommandIndex: number, textDocume
  * @param textDocument the TextDocument
  * @returns boolean : true if the command is recognized, false otherwise
  */
-function parseCommand(currentIndex: number, endCommandIndex: number, command: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
+function parseCommand(currentIndex: number, endCommandIndex: number, command: string, diagnostics: Diagnostic[], textDocument: TextDocument, tokens : any[]): boolean {
 	let commandSplit = splitCommand(currentIndex, command);
 	let iSubCommand = 0;
 	let isCommand = true;
@@ -464,6 +503,8 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 					if (typesVariablesPossible.length > 0){
 						const vari = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
 						if (vari != null){
+							let variableType = vari.actionType.match(/\[[+-=]?(\w+)\]/)![1];
+							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, variableType, []))
 							curDicCommand = curDicCommand.get(vari.actionType);
 							iSubCommand = vari.iEndVar;
 						} else
