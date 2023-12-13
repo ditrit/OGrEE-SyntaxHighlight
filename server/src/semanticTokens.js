@@ -28,7 +28,7 @@ function parseText(text){
 		let currentOffset = 0;
 		do {
 			const openOffset = line.indexOf('[', currentOffset);
-			console.log("Token trouvé, ")
+			//console.log("Token trouvé, ")
 			if (openOffset === -1) {
 				break;
 			}

@@ -16,7 +16,6 @@ import { text } from 'stream/consumers';
 
 const commandSeparators = ["\n", "//"];
 // TOO : add config file
-const commandList = ["+tenant:[+name]@[=color]"];
 
 const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "\"", ":", "."]);
 

@@ -30,7 +30,7 @@ const provider: vscode.DocumentSemanticTokensProvider = {
 		(<Array<any>> data).forEach((token) => {
 			tokensBuilder.push(token.line, token.char, token.length, token.tokenType, token.tokenModifiers);
 		});
-		console.log("DATA", data);
+		//console.log("DATA", data);
 	}).then(() => {
 		return tokensBuilder.build();
 	});
