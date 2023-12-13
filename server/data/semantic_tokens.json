@@ -26,6 +26,9 @@
 	"site": "building"
 	},
 	{
+	"struct": "building"
+	},
+	{
 	"tenant": "building"
 	},
 	{

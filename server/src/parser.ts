@@ -409,7 +409,7 @@ export function parseDocument(textDocument: TextDocument) {
 				//diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
 				tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "comment", [], true))
 			} else {
-				const commandFound = parseCommand(currentIndex, nextCommandIndex, nextCommand, diagnostics, textDocument);
+				parseCommand(currentIndex, nextCommandIndex, nextCommand, diagnostics, textDocument, tokens);
 				/*if (!commandFound) {
 					diagnostics.push(parseUnrecognizedCommand(currentIndex, nextCommandIndex, nextCommand, textDocument));
 					tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "unknown", [], true))
@@ -423,6 +423,7 @@ export function parseDocument(textDocument: TextDocument) {
 }
 
 function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[], genericToken = false){
+	console.log("Semantic token recieved : " + startIndex + " " + endIndex + " " + tokenType + " " + tokenModifiers + " " + genericToken)
 	return {line : textDocument.positionAt(startIndex).line, char : textDocument.positionAt(startIndex).character, length : endIndex - startIndex, tokenType : encodeTokenType(tokenType, genericToken), tokenModifiers : encodeTokenModifiers([])}
 }
 
@@ -455,7 +456,7 @@ function parseComment(currentIndex: number, nextCommandIndex: number, textDocume
  * @param textDocument the TextDocument
  * @returns boolean : true if the command is recognized, false otherwise
  */
-function parseCommand(currentIndex: number, endCommandIndex: number, command: string, diagnostics: Diagnostic[], textDocument: TextDocument): boolean {
+function parseCommand(currentIndex: number, endCommandIndex: number, command: string, diagnostics: Diagnostic[], textDocument: TextDocument, tokens : any[]): boolean {
 	let commandSplit = splitCommand(currentIndex, command);
 	let iSubCommand = 0;
 	let isCommand = true;
@@ -485,6 +486,8 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 					if (typesVariablesPossible.length > 0){
 						const typeCorrespondant = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
 						if (typeCorrespondant != null){
+							let variableType = typeCorrespondant.match(/\[[+-=]?(\w+)\]/)![1];
+							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, variableType, []))
 							curDicCommand = curDicCommand.get(typeCorrespondant);
 						} else
 							return false;
