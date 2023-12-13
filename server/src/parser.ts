@@ -26,7 +26,7 @@ const commandsTest = getCommandsTest();
 
 const typeVars = getTypeVars();
 
-var listNameVar = new Map<string, [Map<string, string | number>]>();
+var listNameVar = new Map<string, any>();
 
 const typeStructs = getTypeStruct();
 
