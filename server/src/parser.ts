@@ -465,6 +465,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 	let commandSplit = splitCommand(currentIndex, command);
 	let iSubCommand = 0;
 	let isCommand = true;
+	let thereIsAPlusOrMinus = false;
 	let curDicCommand = commandsTest; //List of commands (It is imbricated dictionnary, see the function getCommandsTest to get an example)
 	while (isCommand && iSubCommand < commandSplit.length){
 		if (curDicCommand.get(isLinked)){
@@ -474,6 +475,12 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 			}
 		}
 		if (curDicCommand.has(commandSplit[iSubCommand].subCommand)){
+			if (commandSplit[iSubCommand].subCommand == "+" || commandSplit[iSubCommand].subCommand == "-"){
+				thereIsAPlusOrMinus = true;}
+			if (commandSplit[iSubCommand].subCommand==":" && thereIsAPlusOrMinus){
+				tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand-1].indexStart, commandSplit[iSubCommand-1].indexEnd, commandSplit[iSubCommand - 1].subCommand, []));
+				thereIsAPlusOrMinus = false;
+			}
 			curDicCommand = curDicCommand.get(commandSplit[iSubCommand].subCommand)
 		}
 		else{

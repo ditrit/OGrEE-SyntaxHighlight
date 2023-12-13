@@ -159,7 +159,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 }
 
 // This handler provides the initial list of the completion items.
-connection.onCompletion(autoCompletion());
+connection.onCompletion(autoCompletion(documents));
 
 connection.onDocumentColor(docColor(documents));
 
