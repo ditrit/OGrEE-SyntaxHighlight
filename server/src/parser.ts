@@ -473,7 +473,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 			if (commandSplit[iSubCommand].subCommand == "+" || commandSplit[iSubCommand].subCommand == "-"){
 				thereIsAPlusOrMinus = true;}
 			if (commandSplit[iSubCommand].subCommand==":" && thereIsAPlusOrMinus){
-				tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, commandSplit[iSubCommand - 1].subCommand, []));
+				tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand-1].indexStart, commandSplit[iSubCommand-1].indexEnd, commandSplit[iSubCommand - 1].subCommand, []));
 				thereIsAPlusOrMinus = false;
 			}
 			curDicCommand = curDicCommand.get(commandSplit[iSubCommand].subCommand)
