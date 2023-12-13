@@ -138,7 +138,7 @@ function createVar(type : string, name : string, indexStartVar : number, textDoc
 	else{
 		if (lastInstance(listNameVar, name).indexEnd)
 			listNameVar.get(name)?.push(createMapInstance(type, indexStartVar));
-		else if (lastInstance(listNameVar, name).get("type") != type){
+		else if (lastInstance(listNameVar, name).type != type){
 			delVar(name, indexStartVar, textDocument);
 			listNameVar.get(name)?.push(createMapInstance(type, indexStartVar))
 		}
@@ -180,7 +180,7 @@ function existVar(name : string){
 }
 
 function existVarType(type : string, name : string){
-	return existVar(name) && lastInstance(listNameVar, name).get("type") == type;
+	return existVar(name) && lastInstance(listNameVar, name).type == type;
 }
 
 function createMapInstance(type : string, indexStart : number){
@@ -239,7 +239,7 @@ function lastInstance(listName : Map<string, any>, name : string){
  * @returns boolean : true if the name exist with the type type, false otherwise.
  */
 function existStrucType(type : string, name : string){
-	return existStruct(name) && lastInstance(listNameStruct, name).get("type") == type;
+	return existStruct(name) && lastInstance(listNameStruct, name).type == type;
 }
 
 function existStruct(name : string){
@@ -264,11 +264,11 @@ function getCommandsTest(){
 	let c200 = new Map<any, any>();
 	let c201 = new Map<any, any>();
 	let c202 = new Map<any, any>();
-	//c5.set(null, true);
-	//c5.set(isLinked, false);
-	//c4.set(";", c5);
+	c5.set(null, true);
+	c5.set(isLinked, false);
+	c4.set(";", c5);
 	c4.set(null, true);
-	//c4.set(isLinked, false);
+	c4.set(isLinked, false);
 	c3.set("[+site]", c4); //We put a + because it create a variable of type site with this name : it create the name
 	c3.set(isLinked, false);
 	c2.set(":", c3);
@@ -285,7 +285,7 @@ function getCommandsTest(){
 	c10.set("[-struct]", c4);
 	c10.set(isLinked, false);
 	c0.set("-", c10);
-	c103.set("[strings]", c4);
+	c103.set("[=string]", c4);
 	c102.set("=", c103);
 	c102.set(isLinked, false);
 	c101.set("[property]", c102);
@@ -606,6 +606,8 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				else
 					diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			}
+			diagnostic = diagnosticUnexpectedCharacters(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument);
+			/*
 			else if (type == "var"){
 				for (const type of typeVars.keys()){
 					if (type != "string"){
@@ -616,7 +618,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				if (vari != null){
 					
 				}
-			}
+			}*/
 		}
 		else if (actionType.charAt(1) == "-"){
 			let type = actionType.substring(2, actionType.length - 1);
