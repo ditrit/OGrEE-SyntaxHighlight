@@ -364,6 +364,11 @@ export function getExistingVariables(cursorPosition: number): [string[], string[
 	return [variables, structures];
 }
 
+
+export function countCharactersOnLines(lines: number) {
+	
+}
+
 /**
  * Parses a text document and returns an array of diagnostics.
  * 
