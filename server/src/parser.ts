@@ -14,9 +14,7 @@ import { ALL } from 'dns';
 import { addAbortSignal } from 'stream';
 import { text } from 'stream/consumers';
 
-const commandSeparators = ["\n", "//"];
-// TOO : add config file
-const commandList = ["+tenant:[+name]@[=color]"];
+const commandSeparators = ["\n", "//", ";"];
 
 const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "\"", ":", "."]);
 
@@ -28,7 +26,7 @@ const commandsTest = getCommandsTest();
 
 const typeVars = getTypeVars();
 
-var listNameVar = new Map<string, any>();
+var listNameVar = new Map<string, [Map<string, string | number>]>();
 
 const typeStructs = getTypeStruct();
 
@@ -247,15 +245,22 @@ function getCommandsTest(){
 	let c2 = new Map<any, any>();
 	let c3 = new Map<any, any>();
 	let c4 = new Map<any, any>();
+	let c5 = new Map<any, any>();
 	let c2bis = new Map<any, any>();
 	let c3bis = new Map<any, any>();
 	let c10 = new Map<any, any>();
 	let c100 = new Map<any, any>();
 	let c101 = new Map<any, any>();
+	let c102 = new Map<any, any>();
+	let c103 = new Map<any, any>();
 	let c200 = new Map<any, any>();
 	let c201 = new Map<any, any>();
 	let c202 = new Map<any, any>();
+	//c5.set(null, true);
+	//c5.set(isLinked, false);
+	//c4.set(";", c5);
 	c4.set(null, true);
+	//c4.set(isLinked, false);
 	c3.set("[+site]", c4); //We put a + because it create a variable of type site with this name : it create the name
 	c3.set(isLinked, false);
 	c2.set(":", c3);
@@ -272,7 +277,10 @@ function getCommandsTest(){
 	c10.set("[-struct]", c4);
 	c10.set(isLinked, false);
 	c0.set("-", c10);
-	c101.set("[property]", c4);
+	c103.set("[strings]", c4);
+	c102.set("=", c103);
+	c102.set(isLinked, false);
+	c101.set("[property]", c102);
 	c101.set(isLinked, false);
 	c100.set(":", c101);
 	c100.set(isLinked, false);
@@ -310,8 +318,19 @@ function getTypeVars(){
 	let string = new Map<string, any>();
 	string.set("create", (name : string, indexStartVar : number, textDocument : TextDocument) => createVar("string", name, indexStartVar, textDocument))
 	string.set("exist", (name : string) => existVarType("string", name));
+	string.set("isType", (name : string) => isString(name))
 	types.set("string", string);
+	let number = new Map<string, any>();
+	number.set("create", (name : string, indexStartVar : number, textDocument : TextDocument) => createVar("string", name, indexStartVar, textDocument));
+	number.set("exist", (name : string) => existVarType("string", name));
+	types.set("number", number);
 	return types;
+}
+
+function isString(name : string){
+	for (let iChar = 0; iChar < name.length; iChar ++){
+		
+	}
 }
 
 export function getVariables(){
@@ -513,6 +532,9 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				return actionType;
 			diagnostic = diagnosticNamePropertySyntaxe(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 		}
+		else if (actionType == "[strings]"){
+			return actionType;
+		}
 		else if (actionType.charAt(1) == "+"){
 			let type = actionType.substring(2, actionType.length - 1);
 			if (typeStructs.has(type))
@@ -521,15 +543,19 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				diagnostic = typeVars.get(type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			else
 				throw new Error("Unrecognized actionType " + actionType);
-			if (diagnostic == null)
+			if (diagnostic == null){
+				//token.push...
 				return actionType;
+			}
 		}
 		else if (actionType.charAt(1) == "="){
 			let type = actionType.substring(2, actionType.length - 1);
 			if (type == "struct"){
 				if (listNameStruct.has(commandSplit[iStartVar].subCommand))
-					if (existStruct(commandSplit[iStartVar].subCommand))
+					if (existStruct(commandSplit[iStartVar].subCommand)){
+						//token.push...
 						return actionType;
+					}
 					else
 						diagnostic = diagnosticStructAlreadyDeleted(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 				else
@@ -540,8 +566,10 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 			let type = actionType.substring(2, actionType.length - 1);
 			if (type == "struct"){
 				diagnostic = delStruc(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
-				if (diagnostic == null)
+				if (diagnostic == null){
+					//token.push...
 					return actionType;
+				}
 			}
 			else{
 				throw new Error("Unrecognized actionType"  + actionType)
