@@ -28,11 +28,17 @@ const commandsTest = getCommandsTest();
 
 const typeVars = getTypeVars();
 
-var listNameVar = new Map<string, any>();
+type variableInfos = {
+	type: string;
+	indexStart: number;
+	indexEnd: number | null;
+}
+
+var listNameVar = new Map<string, variableInfos[]>();
 
 const typeStructs = getTypeStruct();
 
-var listNameStruct = new Map<string, any>();
+var listNameStruct = new Map<string, variableInfos[]>();
 
 /**
  * Test is the structure can be created and record the name of the structure.
@@ -53,10 +59,10 @@ function createStruc(type : string, name : string, indexStartStruct : number, te
 		return null;
 	}
 	else{
-		if (!lastInstance(listNameStruct, name).has("indexEnd"))
+		if (!lastInstance(listNameStruct, name)["indexEnd"])
 			return diagnosticStructNameAlreadyUsed(name, indexStartStruct, textDocument);
 
-		listNameStruct.get(name).push(createMapInstance(type, indexStartStruct));
+		listNameStruct.get(name)?.push(createMapInstance(type, indexStartStruct));
 		return null;
 	}
 }
@@ -132,11 +138,11 @@ function createVar(type : string, name : string, indexStartVar : number, textDoc
 		listNameVar.set(name,[createMapInstance(type, indexStartVar)]);
 	}
 	else{
-		if (lastInstance(listNameVar, name).get("indexEnd"))
-			listNameVar.get(name).push(createMapInstance(type, indexStartVar));
+		if (lastInstance(listNameVar, name).indexEnd)
+			listNameVar.get(name)?.push(createMapInstance(type, indexStartVar));
 		else if (lastInstance(listNameVar, name).get("type") != type){
 			delVar(name, indexStartVar, textDocument);
-			listNameVar.get(name).push(createMapInstance(type, indexStartVar))
+			listNameVar.get(name)?.push(createMapInstance(type, indexStartVar))
 		}
 	}
 	return null;
@@ -158,7 +164,7 @@ function isNameVarSyntaxeCorrect(name : string){
 
 function delVar(name : string, indexEndVar : number, textDocument : TextDocument){
 	if (listNameVar.has(name)){
-		if (!lastInstance(listNameVar, name).has("indexEnd")){
+		if (!lastInstance(listNameVar, name).indexEnd){
 			lastInstance(listNameVar, name).set("indexEnd", indexEndVar);
 			return null;
 		}
@@ -172,7 +178,7 @@ function delVar(name : string, indexEndVar : number, textDocument : TextDocument
 }
 
 function existVar(name : string){
-	return listNameVar.has(name) && !lastInstance(listNameVar, name).has("indexEnd");
+	return listNameVar.has(name) && !lastInstance(listNameVar, name).indexEnd;
 }
 
 function existVarType(type : string, name : string){
@@ -180,9 +186,11 @@ function existVarType(type : string, name : string){
 }
 
 function createMapInstance(type : string, indexStart : number){
-	let descr = new Map<string, any>();
-	descr.set("indexStart", indexStart);
-	descr.set("type", type);
+	let descr: variableInfos = {
+		type: type,
+		indexStart: indexStart,
+		indexEnd: null,
+	}
 	return descr;
 }
 
@@ -196,7 +204,7 @@ function createMapInstance(type : string, indexStart : number){
  */
 function delStruc(name : string, indexEndStruct : number, textDocument : TextDocument){
 	if (listNameStruct.has(name))
-		if (!lastInstance(listNameStruct, name).has("indexEnd")){
+		if (!lastInstance(listNameStruct, name).indexEnd){
 			lastInstance(listNameStruct, name).set("indexEnd", indexEndStruct);
 			delStrucSons(name, indexEndStruct);
 			return null;
@@ -216,7 +224,7 @@ function delStruc(name : string, indexEndStruct : number, textDocument : TextDoc
 function delStrucSons(nameParent : string, indexEndStruct : number){
 	for (const name of listNameStruct.keys())
 		if (name.length > nameParent.length && name.substring(0,nameParent.length) == nameParent)
-			if (!lastInstance(listNameStruct, name).has("indexEnd"))
+			if (!lastInstance(listNameStruct, name).indexEnd)
 				lastInstance(listNameStruct, name).set("indexEnd", indexEndStruct);
 	return;
 }
@@ -237,7 +245,7 @@ function existStrucType(type : string, name : string){
 }
 
 function existStruct(name : string){
-	return listNameStruct.has(name) && !lastInstance(listNameStruct, name).has("indexEnd");
+	return listNameStruct.has(name) && !lastInstance(listNameStruct, name).indexEnd;
 }
 
 //Implementation of the function +site:[name]@[color]
