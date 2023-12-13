@@ -1,8 +1,8 @@
 const tokensConfig = require("../data/semantic_tokens.json");
 
-export function encodeTokenType(tokenType) {
-	if (tokensConfig.tokenTypes.includes(tokensConfig.types[tokenType])) {
-		return tokensConfig.tokenTypes.indexOf(tokensConfig.types[tokenType]);
+export function encodeTokenType(tokenType, genericToken = false) {
+	if (tokensConfig.tokenTypes.includes(genericToken ? tokenType : tokensConfig.types[tokenType])) {
+		return tokensConfig.tokenTypes.indexOf(genericToken ? tokenType : tokensConfig.types[tokenType]);
 	}
 	return 0;
 }

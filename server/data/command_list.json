@@ -109,24 +109,6 @@
         }
         ,
         {
-            "keyword": "+tenant",
-            "matchKeyword" : ["tenant", "tn"],
-            "quickText": "Create a Tenant",
-            "documentation": "Tenant will be created as a new root",
-            "insertText": "tenant:${1:name}@${0:color}",
-            "detail" : "+tenant:[Name]@[color]"
-        }
-        ,
-        {
-            "keyword": "-tenant",
-            "matchKeyword" : ["tenant", "tn"],
-            "quickText": "Delete a Tenant",
-            "documentation": "[name] is the name of the tenant to delete",
-            "insertText": "tenant:${0:name}",
-            "detail" : "-tenant:[name]"
-        }
-        ,
-        {
             "keyword": "+building",
             "matchKeyword" : ["building","bd"],
             "quickText": "Create a Building without template",
