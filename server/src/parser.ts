@@ -28,11 +28,17 @@ const commandsTest = getCommandsTest();
 
 const typeVars = getTypeVars();
 
-var listNameVar = new Map<string, any>();
+type variableInfos = {
+	type: string;
+	indexStart: number;
+	indexEnd: number | null;
+}
+
+var listNameVar = new Map<string, variableInfos[]>();
 
 const typeStructs = getTypeStruct();
 
-var listNameStruct = new Map<string, any>();
+var listNameStruct = new Map<string, variableInfos[]>();
 
 /**
  * Test is the structure can be created and record the name of the structure.
@@ -56,7 +62,7 @@ function createStruc(type : string, name : string, indexStartStruct : number, te
 		if (!lastInstance(listNameStruct, name).has("indexEnd"))
 			return diagnosticStructNameAlreadyUsed(name, indexStartStruct, textDocument);
 
-		listNameStruct.get(name).push(createMapInstance(type, indexStartStruct));
+		listNameStruct.get(name)?.push(createMapInstance(type, indexStartStruct));
 		return null;
 	}
 }
@@ -133,10 +139,10 @@ function createVar(type : string, name : string, indexStartVar : number, textDoc
 	}
 	else{
 		if (lastInstance(listNameVar, name).get("indexEnd"))
-			listNameVar.get(name).push(createMapInstance(type, indexStartVar));
+			listNameVar.get(name)?.push(createMapInstance(type, indexStartVar));
 		else if (lastInstance(listNameVar, name).get("type") != type){
 			delVar(name, indexStartVar, textDocument);
-			listNameVar.get(name).push(createMapInstance(type, indexStartVar))
+			listNameVar.get(name)?.push(createMapInstance(type, indexStartVar))
 		}
 	}
 	return null;
@@ -180,9 +186,11 @@ function existVarType(type : string, name : string){
 }
 
 function createMapInstance(type : string, indexStart : number){
-	let descr = new Map<string, any>();
-	descr.set("indexStart", indexStart);
-	descr.set("type", type);
+	let descr: variableInfos = {
+		type: type,
+		indexStart: indexStart,
+		indexEnd: null,
+	}
 	return descr;
 }
 
