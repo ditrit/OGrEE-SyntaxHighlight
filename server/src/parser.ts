@@ -59,7 +59,7 @@ function createStruc(type : string, name : string, indexStartStruct : number, te
 		return null;
 	}
 	else{
-		if (!lastInstance(listNameStruct, name).has("indexEnd"))
+		if (!lastInstance(listNameStruct, name)["indexEnd"])
 			return diagnosticStructNameAlreadyUsed(name, indexStartStruct, textDocument);
 
 		listNameStruct.get(name)?.push(createMapInstance(type, indexStartStruct));
@@ -138,7 +138,7 @@ function createVar(type : string, name : string, indexStartVar : number, textDoc
 		listNameVar.set(name,[createMapInstance(type, indexStartVar)]);
 	}
 	else{
-		if (lastInstance(listNameVar, name).get("indexEnd"))
+		if (lastInstance(listNameVar, name).indexEnd)
 			listNameVar.get(name)?.push(createMapInstance(type, indexStartVar));
 		else if (lastInstance(listNameVar, name).get("type") != type){
 			delVar(name, indexStartVar, textDocument);
@@ -164,7 +164,7 @@ function isNameVarSyntaxeCorrect(name : string){
 
 function delVar(name : string, indexEndVar : number, textDocument : TextDocument){
 	if (listNameVar.has(name)){
-		if (!lastInstance(listNameVar, name).has("indexEnd")){
+		if (!lastInstance(listNameVar, name).indexEnd){
 			lastInstance(listNameVar, name).set("indexEnd", indexEndVar);
 			return null;
 		}
@@ -178,7 +178,7 @@ function delVar(name : string, indexEndVar : number, textDocument : TextDocument
 }
 
 function existVar(name : string){
-	return listNameVar.has(name) && !lastInstance(listNameVar, name).has("indexEnd");
+	return listNameVar.has(name) && !lastInstance(listNameVar, name).indexEnd;
 }
 
 function existVarType(type : string, name : string){
@@ -204,7 +204,7 @@ function createMapInstance(type : string, indexStart : number){
  */
 function delStruc(name : string, indexEndStruct : number, textDocument : TextDocument){
 	if (listNameStruct.has(name))
-		if (!lastInstance(listNameStruct, name).has("indexEnd")){
+		if (!lastInstance(listNameStruct, name).indexEnd){
 			lastInstance(listNameStruct, name).set("indexEnd", indexEndStruct);
 			delStrucSons(name, indexEndStruct);
 			return null;
@@ -224,7 +224,7 @@ function delStruc(name : string, indexEndStruct : number, textDocument : TextDoc
 function delStrucSons(nameParent : string, indexEndStruct : number){
 	for (const name of listNameStruct.keys())
 		if (name.length > nameParent.length && name.substring(0,nameParent.length) == nameParent)
-			if (!lastInstance(listNameStruct, name).has("indexEnd"))
+			if (!lastInstance(listNameStruct, name).indexEnd)
 				lastInstance(listNameStruct, name).set("indexEnd", indexEndStruct);
 	return;
 }
@@ -245,7 +245,7 @@ function existStrucType(type : string, name : string){
 }
 
 function existStruct(name : string){
-	return listNameStruct.has(name) && !lastInstance(listNameStruct, name).has("indexEnd");
+	return listNameStruct.has(name) && !lastInstance(listNameStruct, name).indexEnd;
 }
 
 //Implementation of the function +site:[name]@[color]
