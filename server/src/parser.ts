@@ -336,9 +336,7 @@ function getTypeVars(){
 }
 
 function isString(name : string){
-	for (let iChar = 0; iChar < name.length; iChar ++){
-		
-	}
+	
 }
 
 export function getVariables(){
@@ -464,9 +462,10 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 							typesVariablesPossible.push(subCommand);
 					
 					if (typesVariablesPossible.length > 0){
-						const typeCorrespondant = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
-						if (typeCorrespondant != null){
-							curDicCommand = curDicCommand.get(typeCorrespondant);
+						const vari = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
+						if (vari != null){
+							curDicCommand = curDicCommand.get(vari.actionType);
+							iSubCommand = vari.iEndVar;
 						} else
 							return false;
 					}
@@ -537,11 +536,8 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 	for (const actionType of typesVariablesPossible){
 		if (actionType == "[property]"){
 			if (isNameProperty(commandSplit[iStartVar].subCommand))
-				return actionType;
+				return {actionType : actionType, iEndVar : iStartVar};
 			diagnostic = diagnosticNamePropertySyntaxe(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
-		}
-		else if (actionType == "[strings]"){
-			return actionType;
 		}
 		else if (actionType.charAt(1) == "+"){
 			let type = actionType.substring(2, actionType.length - 1);
@@ -553,7 +549,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				throw new Error("Unrecognized actionType " + actionType);
 			if (diagnostic == null){
 				//token.push...
-				return actionType;
+				return {actionType : actionType, iEndVar : iStartVar};
 			}
 		}
 		else if (actionType.charAt(1) == "="){
@@ -562,12 +558,23 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				if (listNameStruct.has(commandSplit[iStartVar].subCommand))
 					if (existStruct(commandSplit[iStartVar].subCommand)){
 						//token.push...
-						return actionType;
+						return {actionType : actionType, iEndVar : iStartVar};
 					}
 					else
 						diagnostic = diagnosticStructAlreadyDeleted(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 				else
 					diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+			}
+			else if (type == "var"){
+				for (const type of typeVars.keys()){
+					if (type != "string"){
+
+					}
+				}
+				const vari = typeVars.get("string").get("isType")(commandSplit, iStartVar);
+				if (vari != null){
+					
+				}
 			}
 		}
 		else if (actionType.charAt(1) == "-"){
@@ -576,7 +583,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				diagnostic = delStruc(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 				if (diagnostic == null){
 					//token.push...
-					return actionType;
+					return {actionType : actionType, iEndVar : iStartVar};
 				}
 			}
 			else{
