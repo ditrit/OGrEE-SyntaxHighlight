@@ -140,7 +140,7 @@ function createVar(type : string, name : string, indexStartVar : number, textDoc
 	else{
 		if (lastInstance(listNameVar, name).indexEnd)
 			listNameVar.get(name)?.push(createMapInstance(type, indexStartVar));
-		else if (lastInstance(listNameVar, name).get("type") != type){
+		else if (lastInstance(listNameVar, name).type != type){
 			delVar(name, indexStartVar, textDocument);
 			listNameVar.get(name)?.push(createMapInstance(type, indexStartVar))
 		}
@@ -182,7 +182,7 @@ function existVar(name : string){
 }
 
 function existVarType(type : string, name : string){
-	return existVar(name) && lastInstance(listNameVar, name).get("type") == type;
+	return existVar(name) && lastInstance(listNameVar, name).type == type;
 }
 
 function createMapInstance(type : string, indexStart : number){
@@ -241,7 +241,7 @@ function lastInstance(listName : Map<string, any>, name : string){
  * @returns boolean : true if the name exist with the type type, false otherwise.
  */
 function existStrucType(type : string, name : string){
-	return existStruct(name) && lastInstance(listNameStruct, name).get("type") == type;
+	return existStruct(name) && lastInstance(listNameStruct, name).type == type;
 }
 
 function existStruct(name : string){
