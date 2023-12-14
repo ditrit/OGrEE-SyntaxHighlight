@@ -8,7 +8,7 @@
 				"entity.name.structure"
 			],
 			"settings": {
-				"foreground": "#abdcef"
+				"foreground": "#71ff3" //cyan
 			}
 		},
 		{
@@ -16,7 +16,7 @@
 				"unknown"
 			],
 			"settings": {
-				"foreground": "#ff0000"
+				"foreground": "#ff0000" //rouge
 			}
 		},
 		{
@@ -25,7 +25,7 @@
 				"comment.block.documentation"
 			],
 			"settings": {
-				"foreground": "#06A841",
+				"foreground": "#047b00", //vert
 				"fontStyle": "italic"
 			}
 		},
@@ -36,7 +36,7 @@
 				"string.quoted.double"
 			],
 			"settings": {
-				"foreground": "#f48322"
+				"foreground": "#ff7600" //orange
 			}
 		},
 		{
@@ -44,7 +44,7 @@
 				"entity.name.variable"
 			],
 			"settings": {
-				"foreground": "#0064b1"
+				"foreground": "#0064b1" //bleu foncé 
 			}
 		},		
 		{
@@ -52,7 +52,7 @@
 				"entity.name.type.enum"
 			],
 			"settings": {
-				"foreground": "#8c2b86"
+				"foreground": "#8c2bff" //violet
 			}
 		},
 		{
@@ -60,7 +60,7 @@
 				"entity.name.operator"
 			],
 			"settings": {
-				"foreground": "#cccccc"
+				"foreground": "#cccccc" //blanc
 			}
 		},
 		{
@@ -68,7 +68,7 @@
 				"entity.name.building"
 			],
 			"settings":{
-				"foreground": "#fff500"
+				"foreground": "#fff58c" //jaune
 			}
 		},
 		{
@@ -76,7 +76,7 @@
 				"entity.name.device"
 			],
 			"settings":{
-				"foreground": "#cccccc"
+				"foreground": "#fff58c" //jaune
 			}
 		}
 	]
