@@ -20,8 +20,6 @@ const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "\"", 
 
 const blankChar = new Set([" ", "\\", "\n", "\t", "\r"]);
 
-let isLinked : string = "42";
-
 const typeVars = getTypeVars();
 
 type variableInfos = {
@@ -310,7 +308,14 @@ function getTypeVars(){
 	let number = new Map<string, any>();
 	number.set("create", (name : string, indexStartVar : number, textDocument : TextDocument) => createVar("string", name, indexStartVar, textDocument));
 	number.set("exist", (name : string) => existVarType("string", name));
+	number.set("isType", isNumber);
 	types.set("number", number);
+	let float = new Map<string, any>();
+	float.set("create", (name : string, indexStartVar : number, textDocument : TextDocument) => createVar("float", name, indexStartVar, textDocument))
+	float.set("exist", (name : string) => existVarType("float", name))
+	float.set("isType", isFloat);
+	types.set("float", float);
+	types.set("priority order", ["number", "string"])
 	return types;
 }
 
@@ -340,6 +345,50 @@ function isString(commandSplit : any, iStartVar : number, textDocument : TextDoc
 		}
 		iEndVar --;
 		return {iEndVar : iEndVar, diagnostic : null};
+	}
+}
+
+function isNumber(commandSplit : any, iStartVar : number, textDocument : TextDocument){
+	if (commandSplit[iStartVar].subCommand.charAt(0) == ""){
+		if (!existVarType(commandSplit[iStartVar].subCommand.substring(1), "number"))
+			return {iEndVar : null, diagnostic : diagnosticNameNotCreated(commandSplit[iStartVar].subCommand.substring(1), commandSplit[iStartVar].indexStart, textDocument)}
+		else
+			return {iEndVar : iStartVar, diagnostic : null};
+	}
+	else {
+		return isNumberWVar(commandSplit, iStartVar, textDocument, "number");
+	}
+}
+
+function isNumberWVar(commandSplit : any, iStartVar : number, textDocument : TextDocument, type : string){
+	let iChar = 0;
+	while (iChar < commandSplit[iStartVar].subcommand.length && commandSplit[iStartVar].subcommand.charCodeAt(iChar) >= "0".charCodeAt(0) && commandSplit[iStartVar].subcommand.charCodeAt(iChar) <= "9".charCodeAt(0)){
+		iChar ++;
+	}
+	if (iChar <= commandSplit[iStartVar].subcommand.length)
+		return {iEndVar : null, diagnostic : diagnosticUnrecognizedExpression(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument, "number")};
+	return {iEndVar : iStartVar, diagnostic : null};
+}
+
+function isFloat(commandSplit : any, iStartVar : number, textDocument : TextDocument){
+	if (commandSplit[iStartVar].subCommand.charAt(0) == "$"){
+		if (!(existVarType(commandSplit[iStartVar].subCommand.substring(1), "float")))
+			return {iEndVar : null, diagnostic : diagnosticUnrecognizedExpression(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument, "float")}
+		else
+			return {iEndVar : iStartVar, diagnostic : null};
+	}
+	else{
+		if (iStartVar + 2 >= commandSplit.length)
+			return {iEndVar : null, diagnostic : diagnosticUnrecognizedExpression(commandSplit[iStartVar].indexStart, commandSplit[commandSplit.length - 1].indexEnd, textDocument, "float")}
+		const isNum1 = isNumberWVar(commandSplit, iStartVar, textDocument, "float");
+		if (isNum1.iEndVar == null)
+			return isNum1;
+		if (commandSplit[iStartVar + 1] != ".")
+			return {iEndVar : null, diagnostic : diagnosticUnrecognizedExpression(commandSplit[iStartVar].indexStart, commandSplit[iStartVar + 1].indexEnd, textDocument, "float")}
+		const isNum2 = isNumberWVar(commandSplit, iStartVar + 2, textDocument, "float");
+		if (isNum2.iEndVar == null)
+			return isNum2;
+		return {iEndVar : iStartVar + 2, diagnostic : null};
 	}
 }
 
@@ -489,10 +538,9 @@ function parseComment(currentIndex: number, nextCommandIndex: number, textDocume
 function parseCommand(currentIndex: number, endCommandIndex: number, command: string, diagnostics: Diagnostic[], textDocument: TextDocument, tokens : any[]): boolean {
 	let commandSplit = splitCommand(currentIndex, command);
 	let iSubCommand = 0;
-	let isCommand = true;
 	let thereIsAPlusOrMinus = false;
 	let curDicCommand : any = commands; //List of commands (It is imbricated dictionnary, see the function getCommandsTest to get an example)
-	while (isCommand && iSubCommand < commandSplit.length){
+	while (iSubCommand < commandSplit.length){
 		if (curDicCommand?.isLinked){
 			if (commandSplit[iSubCommand - 1].indexEnd != commandSplit[iSubCommand].indexStart){
 				diagnostics.push(diagnosticUnexpectedSpace(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand].indexStart, textDocument));
@@ -515,38 +563,32 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 			if (arrayKeysLength == 0){
 				diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand].indexStart, commandSplit[commandSplit.length - 1].indexEnd, textDocument))
 			}
-			else
-				{
-					typesVariablesPossible = curDicCommand?.commands || [];
-					//for (const subCommand of arrayKeys)
-					//	if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
-					//		typesVariablesPossible.push(subCommand);
-					if (typesVariablesPossible.length > 0){
-						const vari = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
-						if (vari != null){
-							let variableType = vari.actionType.match(/\[[+-=]?(\w+)\]/)![1];
-							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, variableType, []))
-							curDicCommand = curDicCommand[vari.actionType];
-							iSubCommand = vari.iEndVar;
-						} else
-							return false;
-					}
-					else{
-						isCommand = false
-						if (arrayKeysLength == 1)
-							diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument, Array.from(Object.keys(curDicCommand))[0]));
-						else
-							diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument));
-					}
-				
+			else{
+				typesVariablesPossible = curDicCommand?.commands || [];
+				//for (const subCommand of arrayKeys)
+				//	if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
+				//		typesVariablesPossible.push(subCommand);
+				if (typesVariablesPossible.length > 0){
+					const vari = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
+					if (vari != null){
+						let variableType = vari.actionType.match(/\[[+-=]?(\w+)\]/)![1];
+						tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, variableType, []))
+						curDicCommand = curDicCommand[vari.actionType];
+						iSubCommand = vari.iEndVar;
+					} else
+						return false;
+				}
+				else{
+					if (arrayKeysLength == 1)
+						diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument, Array.from(Object.keys(curDicCommand))[0]));
+					else
+						diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument));
+					return false;
+				}
 			}
 		}
-		
 		iSubCommand ++;
 	}
-	
-	if (!isCommand)
-		return false;
 
 	if (curDicCommand && curDicCommand?.commands == undefined){
 		if (Object.keys(curDicCommand).length == 2)
@@ -629,6 +671,15 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				else
 					diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			}
+			else if (type == "var"){
+				for (const typeVar of typeVars.get("priority order")){
+					let isType = typeVars.get(type).get("isType")(commandSplit, iStartVar, textDocument);
+					if (isType.iEndVar != null){
+						return {actionType : actionType, iEndVar : isType.iEndVar, type : typeVar};
+					}
+				}
+				diagnostic = diagnosticUnrecognizedExpression(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument, "any type");
+			}
 			else if (typeVars.has(type)){
 				let isType = typeVars.get(type).get("isType")(commandSplit, iStartVar, textDocument);
 				if (isType.iEndVar != null){
@@ -640,18 +691,6 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 			}
 			else
 				diagnostic = diagnosticUnexpectedCharacters(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument);
-			/*
-			else if (type == "var"){
-				for (const type of typeVars.keys()){
-					if (type != "string"){
-
-					}
-				}
-				const vari = typeVars.get("string").get("isType")(commandSplit, iStartVar);
-				if (vari != null){
-					
-				}
-			}*/
 		}
 		else if (actionType.charAt(1) == "-"){
 			let type = actionType.substring(2, actionType.length - 1);
