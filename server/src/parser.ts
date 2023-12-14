@@ -278,7 +278,7 @@ let commands = {
 	},
 	"[=struct]": {
 		":": {
-			"[property]" : {
+			"[=property]" : {
 				"=" : {
 					"[=string]" : {
 						";" : true,
@@ -767,12 +767,7 @@ function splitCommand(currentIndex: number, command : string) {
 function parseVariable(typesVariablesPossible : string[], iStartVar : number, commandSplit : any, diagnostics : Diagnostic[], textDocument : TextDocument){
 	let diagnostic;
 	for (const actionType of typesVariablesPossible){
-		if (actionType == "[property]"){
-			if (isNameProperty(commandSplit[iStartVar].subCommand))
-				return {actionType : actionType, iEndVar : iStartVar};
-			diagnostic = diagnosticNamePropertySyntaxe(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
-		}
-		else if (actionType.charAt(1) == "+"){
+		if (actionType.charAt(1) == "+"){
 			let type = actionType.substring(2, actionType.length - 1);
 			if (type == "var"){
 				if (iStartVar + 2 >= commandSplit.length){
@@ -803,7 +798,12 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 		}
 		else if (actionType.charAt(1) == "="){
 			let type = actionType.substring(2, actionType.length - 1);
-			if (type == "struct"){
+			if (type == "property"){
+				if (isNameProperty(commandSplit[iStartVar].subCommand))
+					return {actionType : actionType, iEndVar : iStartVar};
+				diagnostic = diagnosticNamePropertySyntaxe(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+			}
+			else if (type == "struct"){
 				if (listNameStruct.has(commandSplit[iStartVar].subCommand))
 					if (existStruct(commandSplit[iStartVar].subCommand)){
 						return {actionType : actionType, iEndVar : iStartVar};
