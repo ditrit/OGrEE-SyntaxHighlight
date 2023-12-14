@@ -139,7 +139,7 @@ function getDocumentSettings(resource: string): Thenable<Settings> {
 	return result;
 }
 
-connection.onRequest('custom/semanticTokens', ([textDocument, text]) => {console.log(semanticTokens);return semanticTokens})//{return semanticTokenProvider(doc)})
+connection.onRequest('custom/semanticTokens', ([textDocument, text]) => {/*console.log(semanticTokens);*/return semanticTokens})//{return semanticTokenProvider(doc)})
 
 // Only keep settings for open documents
 documents.onDidClose(e => {
