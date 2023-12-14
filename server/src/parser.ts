@@ -21,9 +21,7 @@ const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "\"", 
 
 const blankChar = new Set([" ", "\\", "\n", "\t", "\"", "\r"]);
 
-let isLinked : number = 42;
-
-const commandsTest = getCommandsTest();
+let isLinked : string = "42";
 
 const typeVars = getTypeVars();
 
@@ -248,52 +246,43 @@ function existStruct(name : string){
 }
 
 //Implementation of the function +site:[name]@[color]
-function getCommandsTest(){
-	let c0 = new Map<any, any>();
-	let c1 = new Map<any, any>();
-	let c2 = new Map<any, any>();
-	let c3 = new Map<any, any>();
-	let c4 = new Map<any, any>();
-	let c2bis = new Map<any, any>();
-	let c3bis = new Map<any, any>();
-	let c10 = new Map<any, any>();
-	let c100 = new Map<any, any>();
-	let c101 = new Map<any, any>();
-	let c200 = new Map<any, any>();
-	let c201 = new Map<any, any>();
-	let c202 = new Map<any, any>();
-	c4.set(null, true);
-	c3.set("[+site]", c4); //We put a + because it create a variable of type site with this name : it create the name
-	c3.set(isLinked, false);
-	c2.set(":", c3);
-	c2.set(isLinked, false);
-	c1.set("site", c2);
-	c1.set("si", c2);
-	c3bis.set("[+building]", c4)
-	c3bis.set(isLinked, false);
-	c2bis.set(":", c3bis);
-	c2bis.set(isLinked, false);
-	c1.set("building", c2bis)
-	c1.set(isLinked, false);
-	c0.set("+", c1);
-	c10.set("[-struct]", c4);
-	c10.set(isLinked, false);
-	c0.set("-", c10);
-	c101.set("[property]", c4);
-	c101.set(isLinked, false);
-	c100.set(":", c101);
-	c100.set(isLinked, false);
-	c0.set("[=struct]", c100);
-	c202.set("[+string]", c4);
-	c202.set(isLinked, false);
-	c201.set(":", c202);
-	c201.set(isLinked, true);
-	c200.set("var", c201);
-	c200.set(isLinked, true);
-	c0.set(".", c200);
-	c0.set(isLinked, false);//Used to know is this block need to be just after the previous one. false for not needed, true for needed
-	return c0;
-}
+const commands = {
+	"+": {
+		"site": {
+			":": {
+				commands : ["[+site]"]
+			},
+		},
+		"si": {
+			":": {
+				commands : ["[+site]"]
+			},
+		},
+		"building": {
+			":": {
+				commands : ["[+building]"]
+			},
+		},
+	},
+	"-": {
+		commands : ["[-struct]"]
+	},
+	"[=struct]": {
+		":": {
+			commands : ["[property]"]
+		},
+	},
+	".": {
+		"var": {
+			":": {
+				commands : ["[+string]"],
+				isLinked: true
+			},
+			isLinked: true
+		},
+		isLinked: true
+	},
+};
 
 //Implementation of typeStruct to test the parser
 function getTypeStruct(){
@@ -465,52 +454,53 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 	let iSubCommand = 0;
 	let isCommand = true;
 	let thereIsAPlusOrMinus = false;
-	let curDicCommand = commandsTest; //List of commands (It is imbricated dictionnary, see the function getCommandsTest to get an example)
+	let curDicCommand : any = commands; //List of commands (It is imbricated dictionnary, see the function getCommandsTest to get an example)
 	while (isCommand && iSubCommand < commandSplit.length){
-		if (curDicCommand.get(isLinked)){
+		if (curDicCommand?.isLinked){
 			if (commandSplit[iSubCommand - 1].indexEnd != commandSplit[iSubCommand].indexStart){
 				diagnostics.push(diagnosticUnexpectedSpace(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand].indexStart, textDocument));
 				return false;
 			}
 		}
-		if (curDicCommand.has(commandSplit[iSubCommand].subCommand)){
+		if (commandSplit[iSubCommand].subCommand in curDicCommand){
 			if (commandSplit[iSubCommand].subCommand == "+" || commandSplit[iSubCommand].subCommand == "-"){
 				thereIsAPlusOrMinus = true;}
 			if (commandSplit[iSubCommand].subCommand==":" && thereIsAPlusOrMinus){
 				tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand-1].indexStart, commandSplit[iSubCommand-1].indexEnd, commandSplit[iSubCommand - 1].subCommand, []));
 				thereIsAPlusOrMinus = false;
 			}
-			curDicCommand = curDicCommand.get(commandSplit[iSubCommand].subCommand)
+			curDicCommand = curDicCommand[commandSplit[iSubCommand].subCommand]
+
 		}
 		else{
 			let typesVariablesPossible = [];
-			let arrayKeys = Array.from(curDicCommand.keys())
-			if (arrayKeys.length == 0){
+			let arrayKeysLength = Object.keys(curDicCommand).length
+			if (arrayKeysLength == 0){
 				diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand].indexStart, commandSplit[commandSplit.length - 1].indexEnd, textDocument))
 			}
-			else{
-				if (arrayKeys != null){
-					for (const subCommand of arrayKeys)
-						if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
-							typesVariablesPossible.push(subCommand);
-					
+			else
+				{
+					typesVariablesPossible = curDicCommand?.commands || [];
+					//for (const subCommand of arrayKeys)
+					//	if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
+					//		typesVariablesPossible.push(subCommand);
 					if (typesVariablesPossible.length > 0){
 						const typeCorrespondant = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
 						if (typeCorrespondant != null){
 							let variableType = typeCorrespondant.match(/\[[+-=]?(\w+)\]/)![1];
 							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, variableType, []))
-							curDicCommand = curDicCommand.get(typeCorrespondant);
+							curDicCommand = curDicCommand[typeCorrespondant];
 						} else
 							return false;
 					}
 					else{
 						isCommand = false
-						if (arrayKeys.length == 1)
-							diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument, arrayKeys[0]));
+						if (arrayKeysLength == 1)
+							diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument, Array.from(Object.keys(curDicCommand))[0]));
 						else
 							diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument));
 					}
-				}
+				
 			}
 		}
 		
@@ -520,9 +510,9 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 	if (!isCommand)
 		return false;
 
-	if (!curDicCommand.get(null)){
-		if (Array.from(curDicCommand.keys()).length == 2)
-			diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument, Array.from(curDicCommand.keys())[0]));
+	if (curDicCommand && curDicCommand?.commands == undefined){
+		if (Object.keys(curDicCommand).length == 2)
+			diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument, Array.from(Object.keys(curDicCommand))[0]));
 		else
 			diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument));
 		return false;
@@ -575,6 +565,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 		}
 		else if (actionType.charAt(1) == "+"){
 			let type = actionType.substring(2, actionType.length - 1);
+			console.log(type)
 			if (typeStructs.has(type))
 				diagnostic = typeStructs.get(type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			else if (typeVars.has(type))
