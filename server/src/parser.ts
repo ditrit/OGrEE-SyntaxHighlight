@@ -321,10 +321,6 @@ function getTypeVars(){
 	return types;
 }
 
-export function getVariables(){
-	return [];
-}
-
 /**
  * @param cursorPosition 
  * @return [string[], string[]] Lists of existing variables and structures at this position
@@ -334,7 +330,7 @@ export function getExistingVariables(cursorPosition: number): [string[], string[
 	for (let [key, variableInfos] of listNameVar) {
 		let key_exists = false;
 		for (let variableInfo of variableInfos) {
-			if (cursorPosition >= variableInfo.indexStart && ((variableInfo.indexEnd && cursorPosition <= variableInfo.indexEnd) || !variableInfo.indexEnd)) {
+			if (cursorPosition >= (variableInfo.indexStart + key.length) && ((variableInfo.indexEnd && cursorPosition <= variableInfo.indexEnd) || !variableInfo.indexEnd)) {
 				key_exists = true;
 				break;
 			}
