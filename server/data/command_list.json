@@ -619,6 +619,62 @@
             "documentation": "The schema requirements for stray-device are much less restrictive than other objects. The device must have size dimensions and a name. If this device or its hierarchy does not satisfy the stray-device schema requirement, this command will fail.",
             "insertText": "unlink:${1:PATH/TO/DEVICE}@${2:PATH/TO/STRAY-DEVICE-PARENT}",
             "detail": "unlink:[path/to/device]@[path/to/stray-device-parent]"
+        },
+        {
+            "keyword": "ls",
+            "matchKeyword": ["ls"],
+            "quickText": "Display children of specified object",
+            "documentation": "Display the children of the specified path. If the path is empty, it will display all structures",
+            "insertText":"ls ${1:PATH/TO/DEVICES}",
+            "detail": "ls [path/to/devices]"
+        },
+        {
+            "keyword": "get",
+            "matchKeyword": ["get"],
+            "quickText": "Display information of specified objects",
+            "documentation": "Display the information of the specified objects. If the path is empty, it will display the information of all structures",
+            "insertText":"get ${1:PATH/TO/DEVICES}",
+            "detail": "get [path/to/devices]"
+        },
+        {
+            "keyword": "env",
+            "matchKeyword": ["env"],
+            "quickText": "Display all namespaces",
+            "documentation": "Display an overview of all namespaces within the file",
+            "insertText": "env",
+            "detail": "env"
+        },
+        {
+            "keyword": "man",
+            "matchKeyword": ["man"],
+            "quickText": "Display all CLI shortcuts",
+            "documentation": "Display all CLI shortcuts",
+            "insertText": "man",
+            "detail": "man"
+        },
+        {
+            "keyword": "print",
+            "matchKeyword": ["print"],
+            "quickText": "Print the given string",
+            "documentation": "Print the given string",
+            "insertText": "print ${1:string}",
+            "detail": "print [string]"
+        },
+        {
+            "keyword": "printf",
+            "matchKeyword": ["printf"],
+            "quickText": "Print the given format",
+            "documentation": "Print the given format",
+            "insertText": "printf ${1:format}",
+            "detail": "printf [format]"
+        },
+        {
+            "keyword": "tree",
+            "matchKeyword": ["tree"],
+            "quickText": "Print the hierarchy below a path, at a certain depth",
+            "documentation": "Print the hierarchy below a path, at a certain depth",
+            "insertText": "tree ${1:path} ${2:depth}",
+            "detail": "tree [path] [depth]"
         }
     ]
 }
