@@ -20,7 +20,6 @@ const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "\"", 
 
 const blankChar = new Set([" ", "\\", "\n", "\t", "\r"]);
 
-let isLinked : string = "42";
 
 const typeVars = getTypeVars();
 
@@ -249,32 +248,33 @@ const commands = {
 	"+": {
 		"site": {
 			":": {
-				commands : ["[+site]"]
+				endCommand : true,
+				"[+site]" : {endCommand : true}
 			},
 		},
 		"si": {
 			":": {
-				commands : ["[+site]"]
+				"[+site]" : {endCommand : true}
 			},
 		},
 		"building": {
 			":": {
-				commands : ["[+building]"]
+				"[+building]" : {endCommand : true}
 			},
 		},
 	},
 	"-": {
-		commands : ["[-struct]"]
+		"[-struct]" : {endCommand : true}
 	},
 	"[=struct]": {
 		":": {
-			commands : ["[property]"]
+			"[property]" : {endCommand : true}
 		},
 	},
 	".": {
 		"var": {
 			":": {
-				commands : ["[+string]"],
+				"[+string]" : {endCommand : true},
 				isLinked: true
 			},
 			isLinked: true
@@ -493,6 +493,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 	let thereIsAPlusOrMinus = false;
 	let curDicCommand : any = commands; //List of commands (It is imbricated dictionnary, see the function getCommandsTest to get an example)
 	while (isCommand && iSubCommand < commandSplit.length){
+		const {isLinked, endCommand, ...newDicCommand} = curDicCommand;
 		if (curDicCommand?.isLinked){
 			if (commandSplit[iSubCommand - 1].indexEnd != commandSplit[iSubCommand].indexStart){
 				diagnostics.push(diagnosticUnexpectedSpace(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand].indexStart, textDocument));
@@ -501,8 +502,9 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 		}
 		if (commandSplit[iSubCommand].subCommand in curDicCommand){
 			if (commandSplit[iSubCommand].subCommand == "+" || commandSplit[iSubCommand].subCommand == "-"){
-				thereIsAPlusOrMinus = true;}
-			if (commandSplit[iSubCommand].subCommand==":" && thereIsAPlusOrMinus){
+				thereIsAPlusOrMinus = true;
+			}
+			if (commandSplit[iSubCommand].subCommand == ":" && thereIsAPlusOrMinus){
 				tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand-1].indexStart, commandSplit[iSubCommand-1].indexEnd, commandSplit[iSubCommand - 1].subCommand, []));
 				thereIsAPlusOrMinus = false;
 			}
@@ -517,7 +519,8 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 			}
 			else
 				{
-					typesVariablesPossible = curDicCommand?.commands || [];
+					typesVariablesPossible = Object.keys(newDicCommand).filter((key : any) => Object.keys(key).length > 0 && key.charAt(0) == "[")
+					console.log(typesVariablesPossible)
 					//for (const subCommand of arrayKeys)
 					//	if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
 					//		typesVariablesPossible.push(subCommand);
@@ -534,7 +537,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 					else{
 						isCommand = false
 						if (arrayKeysLength == 1)
-							diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument, Array.from(Object.keys(curDicCommand))[0]));
+							diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument, Object.keys(newDicCommand)[0]));
 						else
 							diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument));
 					}
@@ -548,7 +551,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 	if (!isCommand)
 		return false;
 
-	if (curDicCommand && curDicCommand?.commands == undefined){
+	if (!curDicCommand?.endCommand){
 		if (Object.keys(curDicCommand).length == 2)
 			diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument, Array.from(Object.keys(curDicCommand))[0]));
 		else
