@@ -14,12 +14,11 @@ import { ALL } from 'dns';
 import { addAbortSignal } from 'stream';
 import { text } from 'stream/consumers';
 
-const commandSeparators = ["\n", "//"];
-// TOO : add config file
+const commandSeparators = ["\r\n", "//"];
 
 const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "\"", ":", "."]);
 
-const blankChar = new Set([" ", "\\", "\n", "\t", "\"", "\r"]);
+const blankChar = new Set([" ", "\\", "\n", "\t", "\r"]);
 
 let isLinked : string = "42";
 
@@ -306,8 +305,42 @@ function getTypeVars(){
 	let string = new Map<string, any>();
 	string.set("create", (name : string, indexStartVar : number, textDocument : TextDocument) => createVar("string", name, indexStartVar, textDocument))
 	string.set("exist", (name : string) => existVarType("string", name));
+	string.set("isType", isString);
 	types.set("string", string);
+	let number = new Map<string, any>();
+	number.set("create", (name : string, indexStartVar : number, textDocument : TextDocument) => createVar("string", name, indexStartVar, textDocument));
+	number.set("exist", (name : string) => existVarType("string", name));
+	types.set("number", number);
 	return types;
+}
+
+function isPathCmd(commandSplit : any, iStartVar : number){
+	if (iStartVar + 3 < commandSplit.length)
+		return commandSplit[iStartVar].subCommand == "$" && commandSplit[iStartVar + 1].subCommand == "(" && commandSplit[iStartVar + 2].subCommand == "pwd" && commandSplit[iStartVar + 3].subCommand == ")";
+}
+
+function isString(commandSplit : any, iStartVar : number, textDocument : TextDocument){
+	if (commandSplit[iStartVar].subCommand.charAt(0) == "\""){
+		let iEndVar = iStartVar + 1;
+		while (iEndVar < commandSplit.length && commandSplit[iEndVar].subCommand.charAt(0) != "\""){
+			if (commandSplit[iEndVar].subCommand.charAt(0) == "$")
+				if (!(isPathCmd(commandSplit, iEndVar) || existVar(commandSplit[iEndVar].subCommand.substring(1))))
+					return {iEndVar : null, diagnostic : diagnosticNameNotCreated(commandSplit[iEndVar].subCommand.substring(1), commandSplit[iEndVar].indexStart, textDocument)}
+			iEndVar ++;
+		}
+		if (iEndVar < commandSplit.length)
+			return {iEndVar : iEndVar, diagnostic : null};
+		else
+			return {iEndVar : null, diagnostic : diagnosticQuotedStringUnfinished(commandSplit[iStartVar].indexStart, commandSplit[iEndVar - 1].indexEnd, textDocument)}
+	}
+	else{
+		let iEndVar = iStartVar;
+		while (iEndVar < commandSplit.length && commandSplit[iEndVar].subCommand != "@" && commandSplit[iEndVar].subCommand != ";"){
+			iEndVar ++;
+		}
+		iEndVar --;
+		return {iEndVar : iEndVar, diagnostic : null};
+	}
 }
 
 export function getVariables(){
@@ -323,7 +356,7 @@ export function getExistingVariables(cursorPosition: number): [string[], string[
 	for (let [key, variableInfos] of listNameVar) {
 		let key_exists = false;
 		for (let variableInfo of variableInfos) {
-			if (cursorPosition >= variableInfo.indexStart && ((variableInfo.indexEnd && cursorPosition <= variableInfo.indexEnd) || !variableInfo.indexEnd)) {
+			if (cursorPosition >= (variableInfo.indexStart + key.length) && ((variableInfo.indexEnd && cursorPosition <= variableInfo.indexEnd) || !variableInfo.indexEnd)) {
 				key_exists = true;
 				break;
 			}
@@ -382,7 +415,7 @@ export function parseDocument(textDocument: TextDocument) {
 		let nextCommand = text.substring(currentIndex, nextCommandIndex);
 		let nextCommandTrim = nextCommand.trimEnd()
 		// While the command line finishe by \, add the line after as it must be read as a single line.
-		while (endSeparator == "\n" && nextCommandTrim != "" && nextCommandTrim.charAt(nextCommandTrim.length - 1) == "\\" ){
+		while (isNewLineSeparator(endSeparator) && nextCommandTrim != "" && nextCommandTrim.charAt(nextCommandTrim.length - 1) == "\\" ){
 			nextPart = getNextPart(nextCommandIndex + endSeparator.length, text, commandSeparators);
 			nextCommand += text.substring(nextCommandIndex, nextPart.index);
 			nextCommandTrim = nextCommand.trimEnd();
@@ -391,7 +424,7 @@ export function parseDocument(textDocument: TextDocument) {
 		}
 
 		//Place currentIndex to the beginning of the command, i.e. without taking into account whiteSpaces before the beginning of the command
-		if (startSeparator == "\n") {
+		if (isNewLineSeparator(startSeparator)) {
 			const commandLength = nextCommand.length;
 			nextCommand = nextCommand.trimStart();
 			currentIndex += commandLength - nextCommand.length;
@@ -413,6 +446,10 @@ export function parseDocument(textDocument: TextDocument) {
 		currentIndex = nextCommandIndex+endSeparator.length;
 	}
 	return [diagnostics, tokens];
+}
+
+function isNewLineSeparator(separator : string){
+	return separator == "\n" || separator == "\r\n";
 }
 
 function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[], genericToken = false){
@@ -485,11 +522,12 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 					//	if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
 					//		typesVariablesPossible.push(subCommand);
 					if (typesVariablesPossible.length > 0){
-						const typeCorrespondant = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
-						if (typeCorrespondant != null){
-							let variableType = typeCorrespondant.match(/\[[+-=]?(\w+)\]/)![1];
+						const vari = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, diagnostics, textDocument);
+						if (vari != null){
+							let variableType = vari.actionType.match(/\[[+-=]?(\w+)\]/)![1];
 							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, variableType, []))
-							curDicCommand = curDicCommand[typeCorrespondant];
+							curDicCommand = curDicCommand[vari.actionType];
+							iSubCommand = vari.iEndVar;
 						} else
 							return false;
 					}
@@ -514,7 +552,8 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 		if (Object.keys(curDicCommand).length == 2)
 			diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument, Array.from(Object.keys(curDicCommand))[0]));
 		else
-			diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument));
+			if (iSubCommand > 0)
+				diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument));
 		return false;
 	}
 	return true;
@@ -560,7 +599,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 	for (const actionType of typesVariablesPossible){
 		if (actionType == "[property]"){
 			if (isNameProperty(commandSplit[iStartVar].subCommand))
-				return actionType;
+				return {actionType : actionType, iEndVar : iStartVar};
 			diagnostic = diagnosticNamePropertySyntaxe(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 		}
 		else if (actionType.charAt(1) == "+"){
@@ -572,27 +611,56 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				diagnostic = typeVars.get(type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			else
 				throw new Error("Unrecognized actionType " + actionType);
-			if (diagnostic == null)
-				return actionType;
+			if (diagnostic == null){
+				//token.push...
+				return {actionType : actionType, iEndVar : iStartVar};
+			}
 		}
 		else if (actionType.charAt(1) == "="){
 			let type = actionType.substring(2, actionType.length - 1);
 			if (type == "struct"){
 				if (listNameStruct.has(commandSplit[iStartVar].subCommand))
-					if (existStruct(commandSplit[iStartVar].subCommand))
-						return actionType;
+					if (existStruct(commandSplit[iStartVar].subCommand)){
+						//token.push...
+						return {actionType : actionType, iEndVar : iStartVar};
+					}
 					else
 						diagnostic = diagnosticStructAlreadyDeleted(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 				else
 					diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			}
+			else if (typeVars.has(type)){
+				let isType = typeVars.get(type).get("isType")(commandSplit, iStartVar, textDocument);
+				if (isType.iEndVar != null){
+					//token.push...
+					return {actionType : actionType, iEndVar : isType.iEndVar};
+				}
+				else
+					diagnostic = isType.diagnostic;
+			}
+			else
+				diagnostic = diagnosticUnexpectedCharacters(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument);
+			/*
+			else if (type == "var"){
+				for (const type of typeVars.keys()){
+					if (type != "string"){
+
+					}
+				}
+				const vari = typeVars.get("string").get("isType")(commandSplit, iStartVar);
+				if (vari != null){
+					
+				}
+			}*/
 		}
 		else if (actionType.charAt(1) == "-"){
 			let type = actionType.substring(2, actionType.length - 1);
 			if (type == "struct"){
 				diagnostic = delStruc(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
-				if (diagnostic == null)
-					return actionType;
+				if (diagnostic == null){
+					//token.push...
+					return {actionType : actionType, iEndVar : iStartVar};
+				}
 			}
 			else{
 				throw new Error("Unrecognized actionType"  + actionType)
@@ -862,6 +930,32 @@ function diagnosticUnexpectedCharacters(indexStart: number, indexEnd: number,tex
 			end: textDocument.positionAt(indexEnd)
 		},
 		message: "Unexpected Characters",
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+function diagnosticUnrecognizedExpression(indexStart: number, indexEnd: number,textDocument:TextDocument, typeExpected :string){
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStart),
+			end: textDocument.positionAt(indexEnd)
+		},
+		message: "Unexpected expression : expression of type " + typeExpected + " expected",
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+function diagnosticQuotedStringUnfinished(indexStart: number, indexEnd: number,textDocument:TextDocument){
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStart),
+			end: textDocument.positionAt(indexEnd)
+		},
+		message: "A \" is openned, but it's never closed ",
 		source: 'Ogree_parser'
 	};
 	return diagnostic;
