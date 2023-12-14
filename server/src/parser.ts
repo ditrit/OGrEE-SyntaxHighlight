@@ -14,11 +14,11 @@ import { ALL } from 'dns';
 import { addAbortSignal } from 'stream';
 import { text } from 'stream/consumers';
 
-const commandSeparators = ["\n", "//", ";"];
+const commandSeparators = ["\r\n", "//"];
 
 const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "\"", ":", "."]);
 
-const blankChar = new Set([" ", "\\", "\n", "\t", "\"", "\r"]);
+const blankChar = new Set([" ", "\\", "\n", "\t", "\r"]);
 
 let isLinked : number = 42;
 
@@ -253,7 +253,6 @@ function getCommandsTest(){
 	let c2 = new Map<any, any>();
 	let c3 = new Map<any, any>();
 	let c4 = new Map<any, any>();
-	let c5 = new Map<any, any>();
 	let c2bis = new Map<any, any>();
 	let c3bis = new Map<any, any>();
 	let c10 = new Map<any, any>();
@@ -264,9 +263,7 @@ function getCommandsTest(){
 	let c200 = new Map<any, any>();
 	let c201 = new Map<any, any>();
 	let c202 = new Map<any, any>();
-	c5.set(null, true);
-	c5.set(isLinked, false);
-	c4.set(";", c5);
+	c4.set(";", c0);
 	c4.set(null, true);
 	c4.set(isLinked, false);
 	c3.set("[+site]", c4); //We put a + because it create a variable of type site with this name : it create the name
@@ -300,6 +297,7 @@ function getCommandsTest(){
 	c200.set("var", c201);
 	c200.set(isLinked, true);
 	c0.set(".", c200);
+	c0.set(null, true);
 	c0.set(isLinked, false);//Used to know is this block need to be just after the previous one. false for not needed, true for needed
 	return c0;
 }
@@ -326,7 +324,7 @@ function getTypeVars(){
 	let string = new Map<string, any>();
 	string.set("create", (name : string, indexStartVar : number, textDocument : TextDocument) => createVar("string", name, indexStartVar, textDocument))
 	string.set("exist", (name : string) => existVarType("string", name));
-	string.set("isType", (name : string) => isString(name))
+	string.set("isType", isString);
 	types.set("string", string);
 	let number = new Map<string, any>();
 	number.set("create", (name : string, indexStartVar : number, textDocument : TextDocument) => createVar("string", name, indexStartVar, textDocument));
@@ -335,8 +333,33 @@ function getTypeVars(){
 	return types;
 }
 
-function isString(name : string){
-	
+function isPathCmd(commandSplit : any, iStartVar : number){
+	if (iStartVar + 3 < commandSplit.length)
+		return commandSplit[iStartVar].subCommand == "$" && commandSplit[iStartVar + 1].subCommand == "(" && commandSplit[iStartVar + 2].subCommand == "pwd" && commandSplit[iStartVar + 3].subCommand == ")";
+}
+
+function isString(commandSplit : any, iStartVar : number, textDocument : TextDocument){
+	if (commandSplit[iStartVar].subCommand.charAt(0) == "\""){
+		let iEndVar = iStartVar + 1;
+		while (iEndVar < commandSplit.length && commandSplit[iEndVar].subCommand.charAt(0) != "\""){
+			if (commandSplit[iEndVar].subCommand.charAt(0) == "$")
+				if (!(isPathCmd(commandSplit, iEndVar) || existVar(commandSplit[iEndVar].subCommand.substring(1))))
+					return {iEndVar : null, diagnostic : diagnosticNameNotCreated(commandSplit[iEndVar].subCommand.substring(1), commandSplit[iEndVar].indexStart, textDocument)}
+			iEndVar ++;
+		}
+		if (iEndVar < commandSplit.length)
+			return {iEndVar : iEndVar, diagnostic : null};
+		else
+			return {iEndVar : null, diagnostic : diagnosticQuotedStringUnfinished(commandSplit[iStartVar].indexStart, commandSplit[iEndVar - 1].indexEnd, textDocument)}
+	}
+	else{
+		let iEndVar = iStartVar;
+		while (iEndVar < commandSplit.length && commandSplit[iEndVar].subCommand != "@" && commandSplit[iEndVar].subCommand != ";"){
+			iEndVar ++;
+		}
+		iEndVar --;
+		return {iEndVar : iEndVar, diagnostic : null};
+	}
 }
 
 export function getVariables(){
@@ -406,7 +429,7 @@ export function parseDocument(textDocument: TextDocument) {
 		let nextCommand = text.substring(currentIndex, nextCommandIndex);
 		let nextCommandTrim = nextCommand.trimEnd()
 		// While the command line finishe by \, add the line after as it must be read as a single line.
-		while (endSeparator == "\n" && nextCommandTrim != "" && nextCommandTrim.charAt(nextCommandTrim.length - 1) == "\\" ){
+		while (isNewLineSeparator(endSeparator) && nextCommandTrim != "" && nextCommandTrim.charAt(nextCommandTrim.length - 1) == "\\" ){
 			nextPart = getNextPart(nextCommandIndex + endSeparator.length, text, commandSeparators);
 			nextCommand += text.substring(nextCommandIndex, nextPart.index);
 			nextCommandTrim = nextCommand.trimEnd();
@@ -415,7 +438,7 @@ export function parseDocument(textDocument: TextDocument) {
 		}
 
 		//Place currentIndex to the beginning of the command, i.e. without taking into account whiteSpaces before the beginning of the command
-		if (startSeparator == "\n") {
+		if (isNewLineSeparator(startSeparator)) {
 			const commandLength = nextCommand.length;
 			nextCommand = nextCommand.trimStart();
 			currentIndex += commandLength - nextCommand.length;
@@ -437,6 +460,10 @@ export function parseDocument(textDocument: TextDocument) {
 		currentIndex = nextCommandIndex+endSeparator.length;
 	}
 	return [diagnostics, tokens];
+}
+
+function isNewLineSeparator(separator : string){
+	return separator == "\n" || separator == "\r\n";
 }
 
 function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[], genericToken = false){
@@ -538,7 +565,8 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 		if (Array.from(curDicCommand.keys()).length == 2)
 			diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument, Array.from(curDicCommand.keys())[0]));
 		else
-			diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument));
+			if (iSubCommand > 0)
+				diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument));
 		return false;
 	}
 	return true;
@@ -613,7 +641,17 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				else
 					diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			}
-			diagnostic = diagnosticUnexpectedCharacters(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument);
+			else if (typeVars.has(type)){
+				let isType = typeVars.get(type).get("isType")(commandSplit, iStartVar, textDocument);
+				if (isType.iEndVar != null){
+					//token.push...
+					return {actionType : actionType, iEndVar : isType.iEndVar};
+				}
+				else
+					diagnostic = isType.diagnostic;
+			}
+			else
+				diagnostic = diagnosticUnexpectedCharacters(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument);
 			/*
 			else if (type == "var"){
 				for (const type of typeVars.keys()){
@@ -904,6 +942,32 @@ function diagnosticUnexpectedCharacters(indexStart: number, indexEnd: number,tex
 			end: textDocument.positionAt(indexEnd)
 		},
 		message: "Unexpected Characters",
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+function diagnosticUnrecognizedExpression(indexStart: number, indexEnd: number,textDocument:TextDocument, typeExpected :string){
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStart),
+			end: textDocument.positionAt(indexEnd)
+		},
+		message: "Unexpected expression : expression of type " + typeExpected + " expected",
+		source: 'Ogree_parser'
+	};
+	return diagnostic;
+}
+
+function diagnosticQuotedStringUnfinished(indexStart: number, indexEnd: number,textDocument:TextDocument){
+	const diagnostic: Diagnostic = {
+		severity: DiagnosticSeverity.Error,
+		range: {
+			start: textDocument.positionAt(indexStart),
+			end: textDocument.positionAt(indexEnd)
+		},
+		message: "A \" is openned, but it's never closed ",
 		source: 'Ogree_parser'
 	};
 	return diagnostic;
