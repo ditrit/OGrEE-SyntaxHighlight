@@ -6,7 +6,8 @@
             "quickText": "Declare variable",
             "documentation": "Declare a variable with the initial value Value",
             "insertText": ".var:${1:name}=${0:value}",
-            "detail": ".var:[Name]=[Value]"
+            "detail": ".var:[Name]=[Value]",
+            "parser" : [".", {"value" : "var", "isLinked" : true}, {"value" : ":", "isLinked" : true}, "[+var]"]
         }
         ,
         {

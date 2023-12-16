@@ -252,8 +252,16 @@ function getCommands(){
 		let treeParcours : any = result;
 		if (command.parser){
 			for (let subCommand of command.parser) {
+				let issubCommandLinked = false;
+				if (typeof subCommand == "object"){
+					if (subCommand.isLinked){
+						issubCommandLinked = subCommand.isLinked;
+					}
+					subCommand = subCommand.value;
+
+				}
 				if (!treeParcours[subCommand]){
-					treeParcours[subCommand] = {};
+					treeParcours[subCommand] = {isLinked : issubCommandLinked};
 				}
 				if (command.parser.indexOf(subCommand) == command.parser.length - 1){
 					treeParcours[subCommand] = {
@@ -264,14 +272,10 @@ function getCommands(){
 				else{
 					treeParcours = treeParcours[subCommand];
 				}
-
 			}
-
-	
 		}
 	}
-
-	//console.log("Command list", result)
+	console.log("Command list", result)
 	return result;
 }
 
