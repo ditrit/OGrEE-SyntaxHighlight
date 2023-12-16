@@ -45,7 +45,8 @@
             "quickText": "If structure.",
             "documentation": "If [condition] then do {command1; command2; ...}.",
             "insertText": "if ${1:condition} {${0:command1; command2; ...}}",
-            "detail": "if [condition] {command1; command2; ...}"
+            "detail": "if [condition] {command1; command2; ...}",
+            "parser": ["if", "[=condition]", "[=cmds]", "[=el(if/se)]"]
         }
         ,
         {
@@ -54,7 +55,8 @@
             "quickText": "else part of an if/else structure.",
             "documentation": "Must be just after an if structure. If [condition] is false, then do the {command1; command2; ...} after the else.",
             "insertText": "else {${0:command1; command2; ...}}",
-            "detail": "else {command1; command2; ...}"
+            "detail": "else {command1; command2; ...}",
+            "parser": ["if", "[=condition]", "[=cmds]", "[=el(if/se)]", "else", "[=cmds]"]
         }
         ,
         {
@@ -63,7 +65,8 @@
             "quickText": "elif part of an if/elif(/else) structure.",
             "documentation": "Must be just after an if structure. If [If condition] is false, then if [elif condition] do the {command1; command2; ...} after the elif.",
             "insertText": "elif ${1:condition} {${0:command1; command2; ...}}",
-            "detail": "elif [elif condition] {command1; command2; ...}"
+            "detail": "elif [elif condition] {command1; command2; ...}",
+            "parser": ["if", "[=condition]", "[=cmds]", "[=el(if/se)]", "elif", "[=condition]", "[=cmds]", "[=el(if/se)]"]
         }
         ,
         {

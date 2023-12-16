@@ -17,7 +17,7 @@ const commandSeparators = ["\r\n", "//"];
 
 const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "[", "]", "\"", ":", ".", ",", "*", "/", "%", "<", ">", "!", "|", "&"]);
 
-const operators = new Set(["+", "-", "*", "/", "%", "<", ">", "<=", ">=", "==", "!=", "||", "&&", "(", ")"])
+const operators = new Set(["+", "-", "*", "/", "%", "<", ">", "<=", ">=", "==", "!=", "||", "&&", "(", ")", "!"])
 
 const blankChar = new Set([" ", "\\", "\n", "\t", "\r"]);
 
@@ -27,7 +27,11 @@ const endCommand = "(endCommand)";
 
 const isLinked = "(isLinked)";
 
+const elseElif = "[=el(if/se)]";
+
 const typeVars = getTypeVars();
+
+let dicElseElif : any= null;
 
 type variableInfos = {
 	type: string;
@@ -270,19 +274,19 @@ function getCommands(){
 	for (let command of commandsData){
 		let treeParcours : any = result;
 		if (command.parser){
-			for (let subCommand of command.parser) {
+			for (let iSubCommand = 0; iSubCommand < command.parser.length; iSubCommand ++){
+				let subCommand = command.parser[iSubCommand];
 				let issubCommandLinked = false;
 				if (typeof subCommand == "object"){
 					if (subCommand[isLinked]){
 						issubCommandLinked = subCommand[isLinked];
 					}
 					subCommand = subCommand.value;
-
 				}
 				if (!treeParcours[subCommand]){
 					treeParcours[subCommand] = {"(isLinked)" : issubCommandLinked};
 				}
-				if (command.parser.indexOf(subCommand) == command.parser.length - 1){
+				if (iSubCommand == command.parser.length - 1){
 					treeParcours[subCommand] = {
 						";" : true,
 						"(endCommand)" : true
@@ -1022,6 +1026,21 @@ function parseCommand(commandSplit : any, diagnostics: Diagnostic[], textDocumen
 				diagnostics.push(diagnosticUnexpectedSpace(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand].indexStart, textDocument));
 			}
 		}
+		if (curDicCommand?.[elseElif]){
+			if (dicElseElif == null){
+				dicElseElif = curDicCommand;
+			}
+			else{
+				curDicCommand = dicElseElif;
+				console.log("Boucle !!!!")
+				console.log(curDicCommand)
+			}
+			curDicCommand = curDicCommand[elseElif];
+		}
+		if (curDicCommand?.["[=cmds]"]){
+			console.log("cmds");
+			console.log(curDicCommand);
+		}
 		if (commandSplit[iSubCommand].subCommand in curDicCommand){
 			if (commandSplit[iSubCommand].subCommand == ";"){
 				curDicCommand = commandList;
@@ -1081,6 +1100,11 @@ function parseCommand(commandSplit : any, diagnostics: Diagnostic[], textDocumen
 		}
 		iSubCommand ++;
 	}
+	console.log(curDicCommand);
+	if (curDicCommand?.[elseElif])
+		curDicCommand = curDicCommand[elseElif];
+
+	console.log(curDicCommand);
 
 	if (!curDicCommand?.[endCommand]){
 		const lstCommand = Object.keys(curDicCommand).filter((key : any) => Object.keys(key).length > 0 && key != isLinked && key != endCommand);
