@@ -6,7 +6,8 @@
             "quickText": "Declare variable",
             "documentation": "Declare a variable with the initial value Value",
             "insertText": ".var:${1:name}=${0:value}",
-            "detail": ".var:[Name]=[Value]"
+            "detail": ".var:[Name]=[Value]",
+            "parser" : [".", {"value" : "var", "isLinked" : true}, {"value" : ":", "isLinked" : true}, "[+var]"]
         }
         ,
         {
@@ -96,7 +97,8 @@
             "quickText": "Create a Site",
             "documentation": "Site must be child of a Tenant",
             "insertText": "site:${0:name}",
-            "detail": "+site:[Name]"
+            "detail": "+site:[Name]",
+            "parser" : ["+", "site", ":", "[+site]"]
         }
         ,
         {
@@ -114,7 +116,8 @@
             "quickText": "Create a Building without template",
             "documentation": "Building must be child of a Site.\n [pos] is a Vector2 [x,y] (m,m)\n [rotation] is the rotation of the building around its lower left corner, in degree\n [size] is a Vector3 [width,length,height] (m,m,m)\n [template] is the name (slug) of the building template",
             "insertText": "building:${1:name}@${2:pos}@${3:rotation}@[${4:width}, ${5:length}, ${0:height}]",
-            "detail": "+building:[name]@[pos]@[rotation]@[width,length,height]"
+            "detail": "+building:[name]@[pos]@[rotation]@[width,length,height]",
+            "parser" : ["+", "building", ":", "[+building]"]
         }
         ,
         {
@@ -475,6 +478,16 @@
             "documentation": "Enables tiles edges display.\nYou can modify areas only if the room has no racks in it.\nTechnical area : typically a restricted zone where power panels and AC systems are installed. separated from \"IT space\" with either a wall or a wire mesh\nReserved area : some tiles around the room that must be kept free to move racks and walk (usually 2 or 3 tiles)\n[reserved] is a vector4: [front,back,right,left] (tile,tile,tile,tile)\n[technical] is a vector4: [front,back,right,left] (tile,tile,tile,tile)",
             "insertText": "areas=[${1:front},${2:back},${3:right},${4:left}]@[${5:front},${6:back},${7:right},${0:left}]",
             "detail": ":areas=[reserved]@[technical]"
+        }
+        ,
+        {
+            "keyword": ":property",
+            "matchKeyword" : [],
+            "quickText": "Create a property for the structure",
+            "documentation": "Create a property called [property] for the structure [structure] with the attribute [attribute]",
+            "insertText": ":${1:property}=${2:attribute}",
+            "detail": "[structure]:[property]=[attribute]",
+            "parser": ["[=struct]", ":", "[=property]", "=", "[=string]"]
         }
         ,
         {
