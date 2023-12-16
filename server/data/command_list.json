@@ -96,7 +96,8 @@
             "quickText": "Create a Site",
             "documentation": "Site must be child of a Tenant",
             "insertText": "site:${0:name}",
-            "detail": "+site:[Name]"
+            "detail": "+site:[Name]",
+            "parser" : ["+", "site", ":", "[+site]"]
         }
         ,
         {
@@ -114,7 +115,8 @@
             "quickText": "Create a Building without template",
             "documentation": "Building must be child of a Site.\n [pos] is a Vector2 [x,y] (m,m)\n [rotation] is the rotation of the building around its lower left corner, in degree\n [size] is a Vector3 [width,length,height] (m,m,m)\n [template] is the name (slug) of the building template",
             "insertText": "building:${1:name}@${2:pos}@${3:rotation}@[${4:width}, ${5:length}, ${0:height}]",
-            "detail": "+building:[name]@[pos]@[rotation]@[width,length,height]"
+            "detail": "+building:[name]@[pos]@[rotation]@[width,length,height]",
+            "parser" : ["+", "building", ":", "[+building]"]
         }
         ,
         {

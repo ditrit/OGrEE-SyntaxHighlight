@@ -6,13 +6,11 @@ import {
 } from 'vscode-languageserver/node';
 
 import { encodeTokenType, encodeTokenModifiers } from './semanticTokens.js'
+const commandsData = require('../data/command_list.json').commands;
 
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-import { ALL } from 'dns';
-import { addAbortSignal, pipeline } from 'stream';
-import { text } from 'stream/consumers';
 
 const commandSeparators = ["\r\n", "//"];
 
@@ -247,66 +245,98 @@ function existStruct(name : string){
 }
 
 //Implementation of of some functions, as +site:[name]
-let commands = {
-	"+": {
-		"site": {
-			":": {
-				"[+site]" : {
-					";" : true,
-					"(endCommand)" : true},
-			},
-		},
-		"si": {
-			":": {
-				"[+site]" : {
-					";" : true,
-					"(endCommand)" : true},
-			},
-		},
-		"building": {
-			":": {
-				"[+building]" : {
-					";" : true,
-					"(endCommand)" : true},
-			},
-		},
-	},
-	"-": {
-		"[-struct]" : {
-			";" : true,
-			"(endCommand)" : true},
-	},
-	"[=struct]": {
-		":": {
-			"[=property]" : {
-				"=" : {
-					"[=string]" : {
+function getCommands(){
+	let result = {};
+	
+	for (let command of commandsData){
+		let treeParcours : any = result;
+		if (command.parser){
+			for (let subCommand of command.parser) {
+				if (!treeParcours[subCommand]){
+					treeParcours[subCommand] = {};
+				}
+				if (command.parser.indexOf(subCommand) == command.parser.length - 1){
+					treeParcours[subCommand] = {
 						";" : true,
-						"(endCommand)" : true},
-				},
-			},
-		},
-	},
-	".": {
-		"var": {
-			":": {
-				"[+var]" : {
-					";" : true,
-					"(endCommand)" : true},
-				"(isLinked)": true
-			},
-			"(isLinked)": true
-		},
-		"(isLinked)": true
-	},
-	"print" : {
-		"[=string]" : {
-			";" : true,
-			"(endCommand)" : true
-		},
-	},
-	"(endCommand)" : true,
-};
+						"(endCommand)" : true
+					}
+				}
+				else{
+					treeParcours = treeParcours[subCommand];
+				}
+
+			}
+
+	
+		}
+	}
+
+	//console.log("Command list", result)
+	return result;
+}
+
+const commandList = getCommands();
+
+// let commands = {
+// 	"+": {
+// 		"site": {
+// 			":": {
+// 				"[+site]" : {
+// 					";" : true,
+// 					"(endCommand)" : true},
+// 			},
+// 		},
+// 		"si": {
+// 			":": {
+// 				"[+site]" : {
+// 					";" : true,
+// 					"(endCommand)" : true},
+// 			},
+// 		},
+// 		"building": {
+// 			":": {
+// 				"[+building]" : {
+// 					";" : true,
+// 					"(endCommand)" : true},
+// 			},
+// 		},
+// 	},
+// 	"-": {
+// 		"[-struct]" : {
+// 			";" : true,
+// 			"(endCommand)" : true},
+// 	},
+// 	"[=struct]": {
+// 		":": {
+// 			"[=property]" : {
+// 				"=" : {
+// 					"[=string]" : {
+// 						";" : true,
+// 						"(endCommand)" : true},
+// 				},
+// 			},
+// 		},
+// 	},
+// 	".": {
+// 		"var": {
+// 			":": {
+// 				"[+var]" : {
+// 					";" : true,
+// 					"(endCommand)" : true},
+// 				"(isLinked)": true
+// 			},
+// 			"(isLinked)": true
+// 		},
+// 		"(isLinked)": true
+// 	},
+// 	"print" : {
+// 		"[=string]" : {
+// 			";" : true,
+// 			"(endCommand)" : true
+// 		},
+// 	},
+// 	"(endCommand)" : true,
+// };
 
 
 //Implementation of typeStruct to test the parser
@@ -636,6 +666,7 @@ export function countCharactersOnLines(lines: number) {
  * @returns An array of diagnostics.
  */
 export function parseDocument(textDocument: TextDocument) {
+	getCommands()
 	listNameVar = new Map<string, any>();
 	listNameStruct = new Map<string, any>();
 	const text = textDocument.getText();
@@ -692,7 +723,7 @@ function isNewLineSeparator(separator : string){
 }
 
 function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[], genericToken = false){
-	console.log("Semantic token recieved : " + startIndex + " " + endIndex + " " + tokenType + " " + tokenModifiers + " " + genericToken)
+	//console.log("Semantic token recieved : " + startIndex + " " + endIndex + " " + tokenType + " " + tokenModifiers + " " + genericToken)
 	return {line : textDocument.positionAt(startIndex).line, char : textDocument.positionAt(startIndex).character, length : endIndex - startIndex, tokenType : encodeTokenType(tokenType, genericToken), tokenModifiers : encodeTokenModifiers([])}
 }
 
@@ -729,7 +760,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 	let commandSplit = splitCommand(currentIndex, command);
 	let iSubCommand = 0;
 	let thereIsAPlusOrMinus = false;
-	let curDicCommand : any = commands; //List of commands (It is imbricated dictionnary, see the function getCommandsTest to get an example)
+	let curDicCommand : any = commandList; //List of commands (It is imbricated dictionnary, see the function getCommandsTest to get an example)
 	while (iSubCommand < commandSplit.length){
 		if (curDicCommand?.[isLinked]){
 			if (!subCommandIsLinked(commandSplit, iSubCommand)){
@@ -738,7 +769,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 		}
 		if (commandSplit[iSubCommand].subCommand in curDicCommand){
 			if (commandSplit[iSubCommand].subCommand == ";"){
-				curDicCommand = commands;
+				curDicCommand = commandList;
 			}
 			else {
 				curDicCommand = curDicCommand[commandSplit[iSubCommand].subCommand]
@@ -761,7 +792,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 			else
 				{
 					typesVariablesPossible = Object.keys(curDicCommand).filter((key : any) => Object.keys(key).length > 0 && key.charAt(0) == "[")
-					console.log(typesVariablesPossible)
+					//console.log(typesVariablesPossible)
 					//for (const subCommand of arrayKeys)
 					//	if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
 					//		typesVariablesPossible.push(subCommand);
@@ -854,7 +885,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				else if (commandSplit[iStartVar + 1].subCommand != "=")
 					diagnostic = diagnosticUnexpectedCharactersExpected(commandSplit[iStartVar + 1].indexStart, commandSplit[iStartVar + 1].indexEnd, textDocument, "=");
 				else{
-					console.log(commandSplit);
+					//console.log(commandSplit);
 					if (commandSplit[iStartVar + 2].subCommand == "["){
 						const isArr = typeVars.get("array").get("isType")(commandSplit, iStartVar + 2, textDocument)
 						if (isArr.iEndVar != null)
@@ -869,7 +900,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 						if (vari == null)
 							return null;
 						diagnostic = typeVars.get(vari.type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
-						console.log(listNameVar);
+						//console.log(listNameVar);
 						if (diagnostic == null){
 							return {actionType : actionType, iEndVar : vari.iEndVar};
 						}
