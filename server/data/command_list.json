@@ -7,7 +7,7 @@
             "documentation": "Declare a variable with the initial value Value",
             "insertText": ".var:${1:name}=${0:value}",
             "detail": ".var:[Name]=[Value]",
-            "parser" : [".", {"value" : "var", "isLinked" : true}, {"value" : ":", "isLinked" : true}, "[+var]"]
+            "parser" : [".", {"value" : "var", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, "[+var]"]
         }
         ,
         {
@@ -25,7 +25,8 @@
             "quickText": "For Loop from start to end (included).",
             "documentation": "For Loop from start (included) to end (included), with an increment of 1. We don't need to initialise the Variable used",
             "insertText": "for ${1:Variable} in ${2:start}..${3:end} {${0:command1; command2; ...}}",
-            "detail": "for [Variable] in [start]..[end] {command1; command2;...}"
+            "detail": "for [Variable] in [start]..[end] {command1; command2;...}",
+            "parser": ["for", "[+integer]", "in", "[=integer]", ".", {"value" : ".", "(isLinked)" : true}, "[=integer]", "[=cmds]"]
         }
         ,
         {
@@ -671,7 +672,8 @@
             "quickText": "Print the given string",
             "documentation": "Print the given string",
             "insertText": "print ${1:string}",
-            "detail": "print [string]"
+            "detail": "print [string]",
+            "parser": ["print", "[=string]"]
         },
         {
             "keyword": "printf",

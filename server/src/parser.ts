@@ -75,8 +75,6 @@ function getNameStruct(commandSplit : any, iStartStruct : number){
 	let name = "";
 	let slash = false;
 	let iEndStruct = iStartStruct;
-	console.log(commandSplit);
-	console.log(iStartStruct);
 	while (iEndStruct < commandSplit.length && (commandSplit[iEndStruct].subCommand == "/" || isNameStructOrPropertySyntaxeCorrect(commandSplit[iEndStruct].subCommand))){
 		if (!slash && commandSplit[iEndStruct].subCommand == "/" || slash && commandSplit[iEndStruct].subCommand != "/")
 			return {name : null, iEndStruct : iEndStruct};
@@ -264,7 +262,10 @@ function existStruct(name : string){
 
 //Implementation of of some functions, as +site:[name]
 function getCommands(){
-	let result = {};
+	let result = {
+		";" : true,
+		"(endCommand)" : true
+	};
 	
 	for (let command of commandsData){
 		let treeParcours : any = result;
@@ -272,14 +273,14 @@ function getCommands(){
 			for (let subCommand of command.parser) {
 				let issubCommandLinked = false;
 				if (typeof subCommand == "object"){
-					if (subCommand.isLinked){
-						issubCommandLinked = subCommand.isLinked;
+					if (subCommand[isLinked]){
+						issubCommandLinked = subCommand[isLinked];
 					}
 					subCommand = subCommand.value;
 
 				}
 				if (!treeParcours[subCommand]){
-					treeParcours[subCommand] = {isLinked : issubCommandLinked};
+					treeParcours[subCommand] = {"(isLinked)" : issubCommandLinked};
 				}
 				if (command.parser.indexOf(subCommand) == command.parser.length - 1){
 					treeParcours[subCommand] = {
@@ -968,7 +969,7 @@ export function parseDocument(textDocument: TextDocument) {
 				//diagnostics.push(parseComment(currentIndex, nextCommandIndex, textDocument));
 				tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "comment", [], true))
 			} else {
-				parseCommand(currentIndex, nextCommandIndex, nextCommand, diagnostics, textDocument, tokens);
+				parseCommand(splitCommand(currentIndex, nextCommand), diagnostics, textDocument, tokens);
 				/*if (!commandFound) {
 					diagnostics.push(parseUnrecognizedCommand(currentIndex, nextCommandIndex, nextCommand, textDocument));
 					tokens.push(addSemanticToken(textDocument, currentIndex - 2, nextCommandIndex, "unknown", [], true))
@@ -1019,8 +1020,7 @@ function parseComment(currentIndex: number, nextCommandIndex: number, textDocume
  * @param textDocument the TextDocument
  * @returns boolean : true if the command is recognized, false otherwise
  */
-function parseCommand(currentIndex: number, endCommandIndex: number, command: string, diagnostics: Diagnostic[], textDocument: TextDocument, tokens : any[]): boolean {
-	let commandSplit = splitCommand(currentIndex, command);
+function parseCommand(commandSplit : any, diagnostics: Diagnostic[], textDocument: TextDocument, tokens : any[]): boolean {
 	let iSubCommand = 0;
 	let thereIsAPlusOrMinus = false;
 	let curDicCommand : any = commandList; //List of commands (It is imbricated dictionnary, see the function getCommandsTest to get an example)
@@ -1059,7 +1059,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 				//	if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
 				//		typesVariablesPossible.push(subCommand);
 				if (typesVariablesPossible.length > 0){
-					const vari = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, textDocument);
+					const vari = parseVariable(typesVariablesPossible, iSubCommand, commandSplit, textDocument, diagnostics, tokens);
 					if (vari.actionType != null){
 						if (vari.diagnostic != null)
 							diagnostics.push(vari.diagnostic);
@@ -1069,6 +1069,7 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 						iSubCommand = vari.iEndVar;
 					} else{
 						let cmds = Object.keys(curDicCommand).filter((key : any) => Object.keys(key).length > 0 && key.charAt(0) != "[" && key != isLinked && key != endCommand)
+						console.log(cmds);
 						if (cmds.length <=0)
 							diagnostics.push(vari.diagnostic);
 						else
@@ -1077,9 +1078,9 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 					}
 				}
 				else{
-					const {isLinked, endCommand, ...newDicCommand} = curDicCommand;
-					if (Object.keys(newDicCommand).length == 1)
-						diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument, Object.keys(newDicCommand)[0]));
+					const lstCommand = Object.keys(curDicCommand).filter((key : any) => Object.keys(key).length > 0 && key != isLinked && key != endCommand);
+					if (lstCommand.length == 1)
+						diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument, lstCommand[0]));
 					else
 						diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand].indexStart, commandSplit[iSubCommand].indexEnd, textDocument));
 					return false;
@@ -1091,12 +1092,13 @@ function parseCommand(currentIndex: number, endCommandIndex: number, command: st
 	}
 
 	if (!curDicCommand?.[endCommand]){
-		if (Object.keys(curDicCommand).length == 2){
-			diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument, Array.from(Object.keys(curDicCommand))[0]));
+		const lstCommand = Object.keys(curDicCommand).filter((key : any) => Object.keys(key).length > 0 && key != isLinked && key != endCommand);
+		if (lstCommand.length == 1){
+			diagnostics.push(diagnosticUnexpectedCharactersExpected(commandSplit[iSubCommand - 1].indexEnd - 1, commandSplit[iSubCommand - 1].indexEnd + 1, textDocument, lstCommand[0]));
 		}
 		else
 			if (iSubCommand > 0)
-				diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand - 1].indexEnd, commandSplit[iSubCommand - 1].indexEnd, textDocument));
+				diagnostics.push(diagnosticUnexpectedCharacters(commandSplit[iSubCommand - 1].indexEnd - 1, commandSplit[iSubCommand - 1].indexEnd + 1, textDocument));
 		return false;
 	}
 	return true;
@@ -1137,14 +1139,14 @@ function splitCommand(currentIndex: number, command : string) {
  * @param textDocument The TextDocument.
  * @returns The first actionType for which it match with the subCommand, and null if no one actionType match with the subCommand.
  */
-function parseVariable(typesVariablesPossible : string[], iStartVar : number, commandSplit : any, textDocument : TextDocument){
+function parseVariable(typesVariablesPossible : string[], iStartVar : number, commandSplit : any, textDocument : TextDocument, diagnostics : Diagnostic[], tokens : any){
 	let diagnostic;
 	for (const actionType of typesVariablesPossible){
 		if (actionType.charAt(1) == "+"){
 			let type = actionType.substring(2, actionType.length - 1);
 			if (type == "var"){
 				if (iStartVar + 2 >= commandSplit.length){
-					if (iStartVar + 1 >= commandSplit)
+					if (iStartVar + 1 >= commandSplit.length)
 						diagnostic = diagnosticUnexpectedCharactersExpected(commandSplit[commandSplit.length - 1].indexStart, commandSplit[commandSplit.length - 1].indexEnd, textDocument, "A value is")
 					else{
 						diagnostic = typeVars.get("string").get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
@@ -1166,7 +1168,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 							return {actionType : actionType, iEndVar : isArr.iEndVar, diagnostic : null};
 					}
 					else {
-						let vari : any= parseVariable(["[=var]"], iStartVar + 2, commandSplit, textDocument);
+						let vari : any= parseVariable(["[=var]"], iStartVar + 2, commandSplit, textDocument, diagnostics, tokens);
 						if (vari.iEndVar == null)
 							return vari;
 						diagnostic = typeVars.get(vari.type).get("create")(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
@@ -1197,6 +1199,19 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				if (isNameStructOrPropertySyntaxeCorrect(commandSplit[iStartVar].subCommand))
 					return {actionType : actionType, iEndVar : iStartVar, diagnostic : null};
 				diagnostic = diagnosticNamePropertySyntaxe(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+			}
+			else if (type == "cmds"){
+				if (commandSplit[iStartVar].subCommand != "{")
+					diagnostic = diagnosticMissingCharacters(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexStart, textDocument, "{");
+				else {
+					let iBracket = getIBracket(commandSplit, iStartVar);
+					if (iBracket == null)
+						return {actionType : null, iEndVar : null, diagnostic : diagnosticMissingCharacters(commandSplit[commandSplit.length - 1].indexEnd, commandSplit[commandSplit.length - 1].indexEnd, textDocument, "}")};
+					if (iBracket == iStartVar + 1)
+						return {actionType : null, iEndVar : null, diagnostic : diagnosticMissingCharacters(commandSplit[iStartVar].indexEnd, commandSplit[iBracket].indexStart, textDocument, "commands")};
+					parseCommand(commandSplit.slice(iStartVar + 1, iBracket), diagnostics ,textDocument, tokens);
+					return {actionType : actionType, iEndVar : iBracket};
+				}
 			}
 			else if (type == "struct"){
 				let nameStruct = getNameStruct(commandSplit, iStartVar);
