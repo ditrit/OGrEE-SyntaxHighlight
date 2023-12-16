@@ -535,7 +535,6 @@ function isIntegerWOVar(commandSplit : any, iStartVar : number, textDocument : T
 }
 
 function isFloat(commandSplit : any, iStartVar : number, textDocument : TextDocument){
-	console.log("isFloat");
 	if (commandSplit[iStartVar].subCommand != "eval"){
 		return isFloatWOEval(commandSplit, iStartVar, textDocument)
 	}
@@ -550,7 +549,6 @@ function isFloat(commandSplit : any, iStartVar : number, textDocument : TextDocu
 }
 
 function isFloatWOEval(commandSplit : any, iStartVar : number, textDocument : TextDocument){
-	console.log("isFloatWOEval");
 	if (commandSplit[iStartVar].subCommand.charAt(0) == "$"){
 		const isVT = isVarType(commandSplit, iStartVar, "float");
 		if (isVT == null)
@@ -591,7 +589,6 @@ function isNumber(commandSplit : any, iStartVar : number, textDocument : TextDoc
 }
 
 function isNumberWOEval(commandSplit : any, iStartVar : number, textDocument : TextDocument){
-	console.log("isNumberWOEval")
 	let isFlo : any = isFloatWOEval(commandSplit, iStartVar, textDocument);
 	if (isFlo.iEndVar != null){
 		isFlo.type = "float";
@@ -610,7 +607,6 @@ function isNumberWOEval(commandSplit : any, iStartVar : number, textDocument : T
 }
 
 function isArray(commandSplit : any, iStartVar : number, textDocument : TextDocument){
-	console.log("isArray")
 	if (commandSplit[iStartVar].subCommand != "eval"){
 		return isArrayEval(commandSplit, iStartVar, textDocument, false);
 	}
@@ -618,10 +614,6 @@ function isArray(commandSplit : any, iStartVar : number, textDocument : TextDocu
 }
 
 function isArrayEval(commandSplit : any, iStartVar : number, textDocument : TextDocument, doEval : boolean){
-	console.log("isArrayEval");
-	console.log(doEval);
-	console.log(commandSplit);
-	console.log(iStartVar);
 	if (iStartVar >= commandSplit.length)
 		return {iEndVar : null, diagnostic : diagnosticMissingCharacters(commandSplit[commandSplit.length - 1].indexEnd, commandSplit[commandSplit.length - 1].indexEnd, textDocument, "array expression")}
 	if (commandSplit[iStartVar].subCommand.charAt(0) == "$"){
@@ -644,8 +636,6 @@ function isArrayEval(commandSplit : any, iStartVar : number, textDocument : Text
 			mustBeNumber = false
 			if (doEval){
 				let resEval = getEvalType(commandSplitArray, iEndVar, textDocument);
-				console.log("resEval")
-				console.log(resEval);
 				if (resEval.type == null){
 					return {iEndVar : null, diagnostic : resEval.diagnostic};
 				}
@@ -745,7 +735,6 @@ function getNameVarBracket(commandSplit : any, iStartVar : number){
 }
 
 function getEvalType(commandSplit : any, iStart : number, textDocument : TextDocument){
-	console.log("getEvalType")
 	if (iStart >= commandSplit.length)
 		return {type : "string", iEnd : iStart - 1, diagnostic : null};
 	
@@ -781,8 +770,6 @@ function getEvalType(commandSplit : any, iStart : number, textDocument : TextDoc
 						if (iBracket == isVarArr + 2)
 							return {type : null, iEnd : null, diagnostic : diagnosticMissingCharacters(commandSplit[iBracket - 1].indexStart, commandSplit[iBracket].indexEnd, textDocument, "[integer]")};
 						let resEval : any = getEvalType(commandSplit.slice(0, iBracket), isVarArr + 2, textDocument);
-						console.log(iBracket);
-						console.log(resEval);
 						if (resEval.type == null)
 							return resEval;
 						if (resEval.type != "integer")
@@ -797,8 +784,6 @@ function getEvalType(commandSplit : any, iStart : number, textDocument : TextDoc
 				}
 				else{
 					let match = matchSubCommands(commandSplit, iEnd, operators);
-					console.log(commandSplit[iEnd]);
-					console.log(match);
 					if (match != null){
 						stringEval += match;
 						iEnd = iEnd + match.length - 1;
@@ -814,8 +799,6 @@ function getEvalType(commandSplit : any, iStart : number, textDocument : TextDoc
 	}
 	try{
 		let resEval = eval(stringEval);
-		console.log(stringEval);
-		console.log(resEval);
 		if (typeof resEval == "number"){
 			if (resEval - Math.round(resEval) == 0)
 				return {type : "integer", iEnd : iEnd - 1, diagnostic : null};
@@ -878,6 +861,15 @@ function getIBracket(commandSplit : any, iStart : number){
 	if (profondeur <= 0)
 		return iEnd - 1;
 	return null;
+}
+
+function getNextApparition(commandSplit : any, iStart : number, string : string){
+	let iEnd = iStart;
+	while (iEnd < commandSplit.length && commandSplit[iEnd].subCommand != string)
+		iEnd ++;
+	if (iEnd >= commandSplit.length)
+		return null;
+	return iEnd;
 }
 
 /**
@@ -1069,7 +1061,6 @@ function parseCommand(commandSplit : any, diagnostics: Diagnostic[], textDocumen
 						iSubCommand = vari.iEndVar;
 					} else{
 						let cmds = Object.keys(curDicCommand).filter((key : any) => Object.keys(key).length > 0 && key.charAt(0) != "[" && key != isLinked && key != endCommand)
-						console.log(cmds);
 						if (cmds.length <=0)
 							diagnostics.push(vari.diagnostic);
 						else
@@ -1212,6 +1203,19 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 					parseCommand(commandSplit.slice(iStartVar + 1, iBracket), diagnostics ,textDocument, tokens);
 					return {actionType : actionType, iEndVar : iBracket};
 				}
+			}
+			else if (type == "condition"){
+				let iBracket = getNextApparition(commandSplit, iStartVar, "{");
+				if (iBracket == null)
+					iBracket = commandSplit.length;
+				let resEval = getEvalType(commandSplit.slice(0, iBracket), iStartVar, textDocument);
+				if (resEval.type != null){
+					if (resEval.type == "boolean")
+						return {actionType : actionType, iEndVar : resEval.iEnd, diagnostic : null};
+					else
+						return {actionType : actionType, iEndVar : resEval.iEnd, diagnostic : diagnosticUnexpectedExpression(commandSplit[iStartVar].indexStart, commandSplit[resEval.iEnd].indexEnd, textDocument, "[boolean condition]")}
+				}
+				return {actionType : null, iEndVar : null, diagnostic : resEval.diagnostic};
 			}
 			else if (type == "struct"){
 				let nameStruct = getNameStruct(commandSplit, iStartVar);
