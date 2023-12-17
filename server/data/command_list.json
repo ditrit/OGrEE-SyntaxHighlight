@@ -502,7 +502,8 @@
             "quickText": "Set the delay before each command",
             "documentation": "You can put delay before each command: up to 2 seconds.\n\n[time] is the time to wait in seconds",
             "insertText": "ui.delay=${1:time}",
-            "detail": "ui.delay=[time]"
+            "detail": "ui.delay=[time]",
+            "parser": [{"value": "ui", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "delay", "(isLinked)" : true}, "=", {"value" : "[=number]", "(isLinked)" : false}]
         }
         ,
         {
@@ -571,7 +572,8 @@
             "quickText": "Set the delay between two translations",
             "documentation": "You can define a delay between two camera translations.\n[time] is the time to wait in seconds",
             "insertText": "camera.wait=${1:time}",
-            "detail": "camera.wait=[time]"
+            "detail": "camera.wait=[time]",
+            "parser": [{"value": "camera", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "wait", "(isLinked)" : true}, "=", {"value" : "[=number]", "(isLinked)" : false}]
         }
         ,
         {
