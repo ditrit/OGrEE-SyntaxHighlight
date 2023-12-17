@@ -135,6 +135,7 @@ print format("2+3 equals %02d", $varTest + $varTest2)
 print $float1
 print eval $float1 + $float2
 print eval $float1 + $varTest
+print ${float1}
 
 .var:path=$(pwd)
 print $path
