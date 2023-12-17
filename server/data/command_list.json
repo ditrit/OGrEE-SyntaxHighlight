@@ -26,7 +26,7 @@
             "documentation": "For Loop from start (included) to end (included), with an increment of 1. We don't need to initialise the Variable used",
             "insertText": "for ${1:Variable} in ${2:start}..${3:end} {${0:command1; command2; ...}}",
             "detail": "for [Variable] in [start]..[end] {command1; command2;...}",
-            "parser": ["for", "[+integer]", "in", "[=integer]", ".", {"value" : ".", "(isLinked)" : true}, "[=integer]", "[=cmds]"]
+            "parser": ["for", {"value" : "[+integer]", "(isLinked)" : false}, {"value" : "in", "(isLinked)" : false}, {"value" : "[=integer]", "(isLinked)" : false}, ".", {"value" : ".", "(isLinked)" : true}, "[=integer]", "[=cmds]"]
         }
         ,
         {
@@ -36,7 +36,7 @@
             "documentation": "While Loop. While the condition is true, do an other loop of the commands",
             "insertText": "while ${1:condition} {${0:command1; command2; ...}}",
             "detail": "while [condition] {command1; command2; ...}",
-            "parser": ["while", "[=condition]", "[=cmds]"]
+            "parser": ["while",{"value" : "[=condition]", "(isLinked)" : false}, "[=cmds]"]
         }
         ,
         {
@@ -46,7 +46,7 @@
             "documentation": "If [condition] then do {command1; command2; ...}.",
             "insertText": "if ${1:condition} {${0:command1; command2; ...}}",
             "detail": "if [condition] {command1; command2; ...}",
-            "parser": ["if", "[=condition]", "[=cmds]", "[=el(if/se)]"]
+            "parser": ["if", {"value" : "[=condition]", "(isLinked)" : false}, "[=cmds]", "[=el(if/se)]"]
         }
         ,
         {
@@ -56,7 +56,7 @@
             "documentation": "Must be just after an if structure. If [condition] is false, then do the {command1; command2; ...} after the else.",
             "insertText": "else {${0:command1; command2; ...}}",
             "detail": "else {command1; command2; ...}",
-            "parser": ["if", "[=condition]", "[=cmds]", "[=el(if/se)]", "else", "[=cmds]"]
+            "parser": ["if",  {"value" : "[=condition]", "(isLinked)" : false}, "[=cmds]", "[=el(if/se)]", "else", "[=cmds]"]
         }
         ,
         {
@@ -66,7 +66,7 @@
             "documentation": "Must be just after an if structure. If [If condition] is false, then if [elif condition] do the {command1; command2; ...} after the elif.",
             "insertText": "elif ${1:condition} {${0:command1; command2; ...}}",
             "detail": "elif [elif condition] {command1; command2; ...}",
-            "parser": ["if", "[=condition]", "[=cmds]", "[=el(if/se)]", "elif", "[=condition]", "[=cmds]", "[=el(if/se)]"]
+            "parser": ["if",  {"value" : "[=condition]", "(isLinked)" : false}, "[=cmds]", "[=el(if/se)]", "elif", "[=condition]", "[=cmds]", "[=el(if/se)]"]
         }
         ,
         {
@@ -75,7 +75,18 @@
             "quickText": "Create an alias with the name [name].",
             "documentation": "Create an alias with the name [name], doing the commands [command1; command2; ...].",
             "insertText": "alias ${1:[name]} {${0:command1; command2; ...}}",
-            "detail": "alias [name] {command1; command2; ...}"
+            "detail": "alias [name] {command1; command2; ...}",
+            "parser": ["alias",  {"value" : "[+alias]", "(isLinked)" : false}, "[=cmds]"]
+        }
+        ,
+        {
+            "keyword": "useAlias",
+            "matchKeyword" : ["useAlias"],
+            "quickText": "Use an alias with the name [name].",
+            "documentation": "Use an alias with the name [name].",
+            "insertText": "${1:[name]}",
+            "detail": "[name]",
+            "parser": ["[=alias]"]
         }
         ,
         {
@@ -84,7 +95,8 @@
             "quickText": "Load commands from file",
             "documentation": "[path] path of the file",
             "insertText": ".cmds:${0:path}",
-            "detail": ".cmds:[path]"
+            "detail": ".cmds:[path]",
+            "parser": [".", {"value" : "cmds", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, "[=path]"]
         }
         ,
         {
@@ -107,22 +119,13 @@
         }
         ,
         {
-            "keyword": "-site",
-            "matchKeyword" : ["site", "st"],
-            "quickText": "Delete a Site",
-            "documentation": "[name] is the name of the site to delete",
-            "insertText": "site:${0:name}",
-            "detail": "+site:[Name]"
-        }
-        ,
-        {
             "keyword": "+building",
             "matchKeyword" : ["building","bd"],
             "quickText": "Create a Building without template",
             "documentation": "Building must be child of a Site.\n [pos] is a Vector2 [x,y] (m,m)\n [rotation] is the rotation of the building around its lower left corner, in degree\n [size] is a Vector3 [width,length,height] (m,m,m)\n [template] is the name (slug) of the building template",
             "insertText": "building:${1:name}@${2:pos}@${3:rotation}@[${4:width}, ${5:length}, ${0:height}]",
             "detail": "+building:[name]@[pos]@[rotation]@[width,length,height]",
-            "parser" : ["+", "building", ":", "[+building]"]
+            "parser" : ["+", "building", ":", "[+building]", "@", "[=array,2]", "@", "[=number]", "@", "[=array,3]"]
         }
         ,
         {
@@ -132,15 +135,6 @@
             "documentation": "Building must be child of a Site.\n [pos] is a Vector2 [x,y] (m,m)\n [rotation] is the rotation of the building around its lower left corner, in degree\n [size] is a Vector3 [width,length,height] (m,m,m)\n [template] is the name (slug) of the building template",
             "insertText": "building:${1:name}@${2:pos}@${3:rotation}@${0:template}",
             "detail" : "+building:[name]@[pos]@[rotation]@[template]"
-        }
-        ,
-        {
-            "keyword": "-building",
-            "matchKeyword" : ["building","bd"],
-            "quickText": "Delete a Building",
-            "documentation": "[name] is the name of the building to delete",
-            "insertText": "building:${1:name}",
-            "detail" : "-building:[name]"
         }
         ,
         {
@@ -162,20 +156,11 @@
         }
         ,
         {
-            "keyword": "-rack",
-            "matchKeyword" : ["rack", "rk"],
-            "quickText": "Delete a Rack",
-            "documentation": "[name] is the name of the rack to delete",
-            "insertText": "rack:${1:name}",
-            "detail" : "-rack:[name]"
-        }
-        ,
-        {
             "keyword": "+room",
             "matchKeyword" : ["room", "ro"],
             "quickText": "Create a Room without template",
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to \"t\" (tiles), can also be m (meters) or f (feet)",
-            "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x,-y,-x-y|}@${0:floorUnit}",
+            "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x+y,-x-y|}@${0:floorUnit}",
             "detail": "+room:[name]@[x, y]@[rotation]@[width, length, height]@[axisOrientation]@[floorUnit]"
         }
         ,
@@ -186,15 +171,6 @@
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to \"t\" (tiles), can also be m (meters) or f (feet)",
             "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@${0:template}",
             "detail": "+room:[name]@[x, y]@[rotation]@[template]"
-        }
-        ,
-        {
-            "keyword": "-room",
-            "matchKeyword" : ["room", "ro"],
-            "quickText": "Delete a Room",
-            "documentation": "[name] is the name of the room to delete",
-            "insertText": "room:${1:name}",
-            "detail" : "-room:[name]"
         }
         ,
         {
@@ -243,12 +219,12 @@
         }
         ,
         {
-            "keyword": "-device",
-            "matchKeyword" : ["device", "dv"],
-            "quickText": "delete device",
-            "documentation": "[name] is the name of the device to delete",
-            "insertText": "device:${0:name}",
-            "detail": "-device:[name]"
+            "keyword": "-structure",
+            "matchKeyword" : ["delete"],
+            "quickText": "delete structure",
+            "documentation": "[name] is the name of the structure to delete",
+            "insertText": "-${0:name}",
+            "detail": "-[name]"
         }
         ,
         {
@@ -258,15 +234,6 @@
             "documentation": "Corridor must be child of a room A corridor is a cold or warm corridor.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the corridor is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,cm)\n[temperature] is cold or warm.",
             "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}",
             "detail": "+corridor:[name]@[pos]@[|m,t,f|]@[orientation]@[size]@[temperature]"
-        }
-        ,
-        {
-            "keyword": "-corridor",
-            "matchKeyword" : ["corridor", "co"],
-            "quickText": "Delete a Corridor",
-            "documentation": "[name] is the name of the corridor to delete",
-            "insertText": "corridor:${0:name}",
-            "detail": "-corridor:[name]"
         }
         ,
         {
@@ -677,7 +644,7 @@
             "documentation": "Print the given string",
             "insertText": "print ${1:string}",
             "detail": "print [string]",
-            "parser": ["print", "[=string]"]
+            "parser": ["print",  {"value" : "[=string]", "(isLinked)" : false}]
         },
         {
             "keyword": "printf",
