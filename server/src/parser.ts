@@ -32,6 +32,8 @@ const temperatures = new Set(["cold", "warm"]);
 
 const typesWalls = new Set(["wireframe","plain"]);
 
+const sides = new Set(["front", "rear", "frontflipped", "rearflipped"])
+
 const endCommand = "(endCommand)";
 
 const isLinked = "(isLinked)";
@@ -135,6 +137,8 @@ function strucHasCoherentParent(type : string, name : string){
 		return false;
 	if (!listNameStruct.has(nameParent))
 		return false;
+	if (typeStructs.get(type).get("parents")[0] == "any")
+		return true;
 	for (const typeParent of typeStructs.get(type).get("parents")){
 		if (typeStructs.get(typeParent).get("exist")(nameParent))
 			return true;
@@ -386,7 +390,31 @@ function getTypeStruct(){
 	building.set("parents", ["site"]);
 	building.set("create", (commandSplit : any, iStartStruct : number, textDocument : TextDocument) => createStruc("building", commandSplit, iStartStruct, textDocument))
 	building.set("exist", (name : string) => existStrucType("building", name));
-	types.set("building", building);
+	let room = new Map<string, any>();
+	room.set("parents", ["building"]);
+	room.set("create", (commandSplit : any, iStartStruct : number, textDocument : TextDocument) => createStruc("room", commandSplit, iStartStruct, textDocument))
+	room.set("exist", (name : string) => existStrucType("room", name));
+	types.set("room", room);
+	let rack = new Map<string, any>();
+	rack.set("parents", ["room"]);
+	rack.set("create", (commandSplit : any, iStartStruct : number, textDocument : TextDocument) => createStruc("rack", commandSplit, iStartStruct, textDocument))
+	rack.set("exist", (name : string) => existStrucType("rack", name));
+	types.set("rack", rack);
+	let device = new Map<string, any>();
+	device.set("parents", ["rack"]);
+	device.set("create", (commandSplit : any, iStartStruct : number, textDocument : TextDocument) => createStruc("device", commandSplit, iStartStruct, textDocument))
+	device.set("exist", (name : string) => existStrucType("device", name));
+	types.set("device", device);
+	let corridor = new Map<string, any>();
+	corridor.set("parents", ["room"]);
+	corridor.set("create", (commandSplit : any, iStartStruct : number, textDocument : TextDocument) => createStruc("corridor", commandSplit, iStartStruct, textDocument))
+	corridor.set("exist", (name : string) => existStrucType("corridor", name));
+	types.set("corridor", corridor);
+	let orphanDevice = new Map<string, any>();
+	orphanDevice.set("parents", ["any"]);
+	orphanDevice.set("create", (commandSplit : any, iStartStruct : number, textDocument : TextDocument) => createStruc("orphan device", commandSplit, iStartStruct, textDocument))
+	orphanDevice.set("exist", (name : string) => existStrucType("orphan device", name));
+	types.set("orphan device", orphanDevice);
 	return types;
 }
 
@@ -450,6 +478,9 @@ function getTypeVars(){
 	let typeWall = new Map<string, any>();
 	typeWall.set("isType", isTypeWall);
 	types.set("typeWall", typeWall);
+	let side = new Map<string, any>();
+	side.set("isType", isSide);
+	types.set("side", side);
 	types.set("var order", ["boolean", "array", "float", "integer", "string"])
 	return types;
 }
@@ -883,6 +914,15 @@ function isTypeWall(commandSplit : any, iStartVar : number, textDocument : TextD
 	if (isString != null)
 		return {iEndVar : isString, diagnostic : null};
 	if (typesWalls.has(commandSplit[iStartVar].subCommand))
+		return {iEndVar : iStartVar, diagnostic : null};
+	return {iEndVar : null, diagnostic : diagnosticUnexpectedExpression(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument, "temperature (cold or warm)")}
+}
+
+function isSide(commandSplit : any, iStartVar : number, textDocument : TextDocument){
+	let isString = isVarType(commandSplit, iStartVar, "string");
+	if (isString != null)
+		return {iEndVar : isString, diagnostic : null};
+	if (sides.has(commandSplit[iStartVar].subCommand))
 		return {iEndVar : iStartVar, diagnostic : null};
 	return {iEndVar : null, diagnostic : diagnosticUnexpectedExpression(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument, "temperature (cold or warm)")}
 }
@@ -1464,6 +1504,18 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 				}
 				else
 					diagnostic = isType.diagnostic;
+			}
+			else if (typeStructs.has(type)){
+				let name = getNameStruct(commandSplit, iStartVar);
+				if (name != null){
+					if (typeStructs.get(type).get("exist")(name.name)){
+						return {actionType : actionType, iEndVar : name.iEndStruct, diagnostic : null};
+					}
+					else
+						diagnostic = diagnosticUnexpectedExpression(commandSplit[iStartVar].indexStart, commandSplit[name.iEndStruct].indexEnd, textDocument, type);
+				}
+				else
+					diagnostic = diagnosticUnexpectedExpression(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument, type);
 			}
 			else
 				diagnostic = diagnosticUnexpectedCharacters(commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument);

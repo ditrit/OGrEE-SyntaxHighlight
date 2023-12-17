@@ -239,7 +239,7 @@
         {
             "keyword": "+orphan device",
             "matchKeyword" : ["orphan device", "device", "dv", "stray device"],
-            "quickText": "add a stray-device zz",
+            "quickText": "add a stray-device",
             "documentation": "You can add stray-devices (devices that don't have a parent and/or don't follow the normal device data format), the bare minimum requiring to have a name and template. Note that it is possible for these devices to have subdevices.",
             "insertText": "orphan device:${1:path/to/stray-device}@${2:template}",
             "detail": "+orphan device:[path]@[template]"
@@ -302,10 +302,10 @@
         {
             "keyword": "selection",
             "matchKeyword" : ["selection","_"],
-            "quickText" : "selection to modify objects attributes",
-            "documentation": "Works with single or multi selection.\n[name] can be selection or _ for modifying selected objects attributes",
-            "insertText" : "_:${1:attribute}=${0:value}",
-            "detail": "selection:[attribute]=[value]"
+            "quickText" : "selection of one or multiples objects",
+            "documentation": "Works with single or multi selection.",
+            "insertText" : "={${1:objectName1, objectName2...}}",
+            "detail": "={[name1], [name2], ...}"
         }
         ,
         {
