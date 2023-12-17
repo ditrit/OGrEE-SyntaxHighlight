@@ -416,7 +416,7 @@
             "documentation": "Group must be child of a room or a rack If the group is a child of a room, it can contain racks and corridors. If the group is a child of a rack, it can contain devices. c1,c2,...,cN are the short names (eg. A01 instead of si/bd/ro/A01)",
             "insertText": "group:${1:name}@{${2:c1,c2,...}}",
             "detail": "+group:[name]@{[c1,c2,...,cN]}",
-            "parser": ["+", "group", ":","[+group]", "@", "[=structs]"]
+            "parser": ["+", "group", ":","[+group]", "@", "[=structs,group]"]
         }
         ,
         {
@@ -426,7 +426,7 @@
             "documentation": "Group must be child of a room or a rack If the group is a child of a room, it can contain racks and corridors. If the group is a child of a rack, it can contain devices. c1,c2,...,cN are the short names (eg. A01 instead of si/bd/ro/A01)",
             "insertText": "group:${1:name}@{${2:c1,c2,...}}",
             "detail": "+group:[name]@{[c1,c2,...,cN]}",
-            "parser": ["+", "gr", ":","[+group]", "@", "[=structs]"]
+            "parser": ["+", "gr", ":","[+group]", "@", "[=structs,group]"]
         }
         ,
         {

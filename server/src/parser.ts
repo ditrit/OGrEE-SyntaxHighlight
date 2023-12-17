@@ -205,7 +205,7 @@ function delVar(name : string, indexEndVar : number, textDocument : TextDocument
 		}
 	}
 	else {
-		return diagnosticNameNotCreated(name, indexEndVar, textDocument);
+		return diagnosticNameNotCreated(name, indexEndVar, indexEndVar + name.length, textDocument);
 	}
 }
 
@@ -245,7 +245,7 @@ function delStruc(name : string, indexEndStruct : number, textDocument : TextDoc
 			return diagnosticStructAlreadyDeleted(name, indexEndStruct, textDocument);
 		}
 	else
-		return diagnosticNameNotCreated(name, indexEndStruct, textDocument);
+		return diagnosticNameNotCreated(name, indexEndStruct, indexEndStruct + name.length, textDocument);
 }
 
 /**
@@ -311,7 +311,7 @@ function getCommands(){
 			}
 		}
 	}
-	console.log("Command list", result)
+	//console.log("Command list", result)
 	return result;
 }
 
@@ -551,7 +551,6 @@ function isPathCmd(commandSplit : any, iStartVar : number){
 }
 
 function isString(commandSplit : any, iStartVar : number, textDocument : TextDocument){
-	console.log("isString")
 	if (commandSplit[iStartVar].subCommand != "eval"){
 		return isStringWOEval(commandSplit, iStartVar, textDocument)
 	}
@@ -629,7 +628,7 @@ function isStringWOEval(commandSplit : any, iStartVar : number, textDocument : T
 						iEndVar += 3;
 					}
 					else
-						return {iEndVar : null, diagnostic : diagnosticNameNotCreated(commandSplit[iEndVar].subCommand.substring(1), commandSplit[iEndVar].indexStart + 1, textDocument)}
+						return {iEndVar : null, diagnostic : diagnosticNameNotCreated(commandSplit[iEndVar].subCommand.substring(1), commandSplit[iEndVar].indexStart + 1, commandSplit[iEndVar].indexEnd, textDocument)}
 				}
 			}
 			iEndVar ++;
@@ -657,7 +656,7 @@ function isIntegerWOEval(commandSplit : any, iStartVar : number, textDocument : 
 	if (commandSplit[iStartVar].subCommand.charAt(0) == "$"){
 		const isVT = isVarType(commandSplit, iStartVar, "integer");
 		if (isVT == null)
-			return {iEndVar : null, diagnostic : diagnosticNameNotCreated(commandSplit[iStartVar].subCommand.substring(1), commandSplit[iStartVar].indexStart + 1, textDocument)}
+			return {iEndVar : null, diagnostic : diagnosticNameNotCreated(commandSplit[iStartVar].subCommand.substring(1), commandSplit[iStartVar].indexStart + 1, commandSplit[iStartVar].indexEnd, textDocument)}
 		else
 			return {iEndVar : isVT, diagnostic : null};
 	}
@@ -957,7 +956,6 @@ function isUnit(commandSplit : any, iStartVar : number, textDocument : TextDocum
 }
 
 function isRotation(commandSplit : any, iStartVar : number, textDocument : TextDocument){
-	console.log("Rotation !")
 	if (namedRotations.has(commandSplit[iStartVar].subCommand))
 		return {iEndVar : iStartVar, diagnostic : null};
 	let isString = isVarType(commandSplit, iStartVar, "string");
@@ -1030,9 +1028,6 @@ function getNameVarBracket(commandSplit : any, iStartVar : number){
 }
 
 function getEvalType(commandSplit : any, iStart : number, textDocument : TextDocument){
-	console.log(commandSplit)
-	console.log(iStart)
-	
 	if (iStart >= commandSplit.length)
 		return {type : "string", iEnd : iStart - 1, diagnostic : null};
 	
@@ -1096,9 +1091,7 @@ function getEvalType(commandSplit : any, iStart : number, textDocument : TextDoc
 		iEnd ++;
 	}
 	try{
-		console.log(stringEval)
 		let resEval = eval(stringEval);
-		console.log(resEval)
 		if (typeof resEval == "number"){
 			if (resEval - Math.round(resEval) == 0)
 				return {type : "integer", iEnd : iEnd - 1, diagnostic : null};
@@ -1331,14 +1324,8 @@ function parseCommand(commandSplit : any, diagnostics: Diagnostic[], textDocumen
 			}
 			else{
 				curDicCommand = dicElseElif;
-				console.log("Boucle !!!!")
-				console.log(curDicCommand)
 			}
 			curDicCommand = curDicCommand[elseElif];
-		}
-		if (curDicCommand?.["[=cmds]"]){
-			console.log("cmds");
-			console.log(curDicCommand);
 		}
 		if (commandSplit[iSubCommand].subCommand in curDicCommand){
 			if (commandSplit[iSubCommand].subCommand == ";"){
@@ -1364,7 +1351,7 @@ function parseCommand(commandSplit : any, diagnostics: Diagnostic[], textDocumen
 			else
 				{
 				typesVariablesPossible = Object.keys(curDicCommand).filter((key : any) => Object.keys(key).length > 0 && key.charAt(0) == "[")
-				console.log(typesVariablesPossible)
+				//console.log(typesVariablesPossible)
 				//for (const subCommand of arrayKeys)
 				//	if (subCommand != null && subCommand != isLinked && subCommand.charAt(0) == "[")
 				//		typesVariablesPossible.push(subCommand);
@@ -1404,11 +1391,8 @@ function parseCommand(commandSplit : any, diagnostics: Diagnostic[], textDocumen
 		}
 		iSubCommand ++;
 	}
-	console.log(curDicCommand);
 	if (curDicCommand?.[elseElif])
 		curDicCommand = curDicCommand[elseElif];
-
-	console.log(curDicCommand);
 
 	if (!curDicCommand?.[endCommand]){
 		const lstCommand = Object.keys(curDicCommand).filter((key : any) => Object.keys(key).length > 0 && key != isLinked && key != endCommand);
@@ -1569,9 +1553,9 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 						return {actionType : actionType, iEndVar : nameStruct.iEndStruct, diagnostic : diagnosticStructAlreadyDeleted(nameStruct.name, commandSplit[iStartVar].indexStart, textDocument)};
 				else
 					if (nameStruct.iEndStruct > iStartVar)
-						return {actionType : actionType, iEndVar : nameStruct.iEndStruct, diagnostic : diagnosticNameNotCreated(nameStruct.name, commandSplit[iStartVar].indexStart, textDocument)};
+						return {actionType : actionType, iEndVar : nameStruct.iEndStruct, diagnostic : diagnosticNameNotCreated(nameStruct.name, commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexStart, textDocument)};
 					else
-						diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+						diagnostic = diagnosticNameNotCreated(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, commandSplit[iStartVar].indexEnd, textDocument);
 			}
 			else if (type == "structs"){
 				if (commandSplit[iStartVar].subCommand == "{"){
@@ -1579,11 +1563,26 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 					if (iBracket != null){
 						let needName = true;
 						let iEndVar = iStartVar + 1
+						let parentName = "";
+						if (actionType.substring(iComma + 1, actionType.length - 1) == "group"){
+							parentName = getNameStructParent(String(getNameStruct(commandSplit, 3).name));
+						}
 						while (iEndVar < iBracket){
 							if (needName){
 								let isName = getNameStruct(commandSplit, iEndVar);
 								if (isName.name == null)
 									return {actionType : null, iEndVar : null, diagnostic : diagnosticUnexpectedCharactersExpected(commandSplit[iEndVar].indexStart, commandSplit[isName.iEndStruct].indexEnd, textDocument, "structure")}
+								if (actionType.substring(iComma + 1, actionType.length - 1) == "group"){
+									let completeName = parentName + "/" + isName.name;
+									if (existStruct(completeName)){
+										let type = lastInstance(listNameStruct,completeName).type;
+										if (!strucHasCoherentParent(type, completeName))
+											diagnostics.push(diagnosticStructNoParent(isName.name, commandSplit[iEndVar].indexStart, textDocument))
+									}
+									else{
+										return {actionType : null, iEndVar : null, diagnostic : diagnosticNameNotCreated(isName.name, commandSplit[iEndVar].indexStart, commandSplit[isName.iEndStruct].indexStart, textDocument)};
+									}
+								}
 								iEndVar = isName.iEndStruct;
 							}
 							else{
@@ -1593,9 +1592,8 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 							needName = !needName;
 							iEndVar ++;
 						}
-						if (iComma != -1)
-							if (actionType.substring(iComma + 1, actionType.length - 1) == "selection")
-								selectionNotEmpty = true;
+						if (actionType.substring(iComma + 1, actionType.length - 1) == "selection")
+							selectionNotEmpty = true;
 						if (needName)
 							return {actionType : actionType, iEndVar : iEndVar, diagnostic : diagnosticMissingCharacters(commandSplit[iEndVar - 1].indexEnd, commandSplit[iEndVar].indexStart, textDocument, "structure name")}
 						return {actionType : actionType, iEndVar : iEndVar, diagnostic : null};
@@ -1791,12 +1789,12 @@ function diagnosticStructNameAlreadyUsed(name : string, indexStartStruct : numbe
  * @param textDocument the TextDocument
  * @returns the diagnostic
  */
-function diagnosticNameNotCreated(name : string,  indexStart : number, textDocument : TextDocument){
+function diagnosticNameNotCreated(name : string,  indexStart : number, indexEnd : number, textDocument : TextDocument){
 	const diagnostic: Diagnostic = {
 		severity: DiagnosticSeverity.Error,
 		range: {
 			start: textDocument.positionAt(indexStart),
-			end: textDocument.positionAt(indexStart + name.length)
+			end: textDocument.positionAt(indexEnd)
 		},
 		message: `The name "` + name + `" hasn't been declared before.`,
 		source: 'Ogree_parser'

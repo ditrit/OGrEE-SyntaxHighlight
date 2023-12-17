@@ -175,8 +175,8 @@ alias helloWorlds {print Hello Worlds !;}
 
 helloWorlds
 
-alias vSquare {.var:v=eval $v*$v; print $v}
 .var:v=2
+alias vSquare {.var:v=eval $v*$v; print $v}
 vSquare
 vSquare
 .var:v=10
