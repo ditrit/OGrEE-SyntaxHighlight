@@ -105,7 +105,8 @@
             "quickText": "Load template from JSON",
             "documentation": "[path] path of the file",
             "insertText": ".template:${0:path}",
-            "detail": ".template:[path]"
+            "detail": ".template:[path]",
+            "parser": [".", {"value" : "template", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, "[=path]"]
         }
         ,
         {
@@ -115,7 +116,7 @@
             "documentation": "Site must be child of a Tenant",
             "insertText": "site:${0:name}",
             "detail": "+site:[Name]",
-            "parser" : ["+", "site", ":", "[+site]"]
+            "parser": ["+", {"value" : "site", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, "[+site]"]
         }
         ,
         {
@@ -125,7 +126,7 @@
             "documentation": "Building must be child of a Site.\n [pos] is a Vector2 [x,y] (m,m)\n [rotation] is the rotation of the building around its lower left corner, in degree\n [size] is a Vector3 [width,length,height] (m,m,m)\n [template] is the name (slug) of the building template",
             "insertText": "building:${1:name}@${2:pos}@${3:rotation}@[${4:width}, ${5:length}, ${0:height}]",
             "detail": "+building:[name]@[pos]@[rotation]@[width,length,height]",
-            "parser" : ["+", "building", ":", "[+building]", "@", "[=array,2]", "@", "[=number]", "@", "[=array,3]"]
+            "parser": ["+", {"value" : "building", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+building]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,3]", "(isLinked)" : true}]
         }
         ,
         {
@@ -134,7 +135,8 @@
             "quickText": "Create a Building with template",
             "documentation": "Building must be child of a Site.\n [pos] is a Vector2 [x,y] (m,m)\n [rotation] is the rotation of the building around its lower left corner, in degree\n [size] is a Vector3 [width,length,height] (m,m,m)\n [template] is the name (slug) of the building template",
             "insertText": "building:${1:name}@${2:pos}@${3:rotation}@${0:template}",
-            "detail" : "+building:[name]@[pos]@[rotation]@[template]"
+            "detail" : "+building:[name]@[pos]@[rotation]@[template]",
+            "parser": ["+", {"value" : "building", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+building]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=template]", "(isLinked)" : true}]
         }
         ,
         {
@@ -143,7 +145,8 @@
             "quickText": "Create a Rack with size",
             "documentation": "Rack must be child of a room.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the rack is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[template] is the name of the rack template",
             "insertText": "rack:${1:name}@[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@[${6:width}, ${7:length}, ${0:height}]",
-            "detail":"+rack:[name]@[x, y]@[|m,t,f|]@[orientation]@[width, length, height]"
+            "detail":"+rack:[name]@[x, y]@[|m,t,f|]@[orientation]@[width, length, height]",
+            "parser": ["+", {"value" : "rack", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+rack]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=unit]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,3]", "(isLinked)" : true}]
         }
         ,
         {
@@ -152,7 +155,8 @@
             "quickText": "Create a Rack with template",
             "documentation": "Rack must be child of a room.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the rack is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,u)\n[template] is the name of the rack template",
             "insertText": "rack:${1:name}@[${2:x}, ${3:y}]@${4|m,t,f|}@${5|[x y z],front,rear,left,right,top,bottom|}@${0:template}",
-            "detail":"+rack:[name]@[x, y]@[|m,t,f|]@[orientation]@[template]"
+            "detail":"+rack:[name]@[x, y]@[|m,t,f|]@[orientation]@[template]",
+            "parser": ["+", {"value" : "rack", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+rack]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=unit]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=template]", "(isLinked)" : true}]
         }
         ,
         {
@@ -161,7 +165,8 @@
             "quickText": "Create a Room without template",
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to \"t\" (tiles), can also be m (meters) or f (feet)",
             "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@[${5:width}, ${6:length}, ${7:height}]@${8|+x,+y,-x,-y,+x+y,+x-y,-x+y,-x-y|}@${0:floorUnit}",
-            "detail": "+room:[name]@[x, y]@[rotation]@[width, length, height]@[axisOrientation]@[floorUnit]"
+            "detail": "+room:[name]@[x, y]@[rotation]@[width, length, height]@[axisOrientation]@[floorUnit]",
+            "parser": ["+", {"value" : "room", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+room]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,3]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=axisOrientation]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=unit]", "(isLinked)" : true}]
         }
         ,
         {
@@ -170,7 +175,8 @@
             "quickText": "Create a Room wit template",
             "documentation": "Room must be child of a building.\nIts name will be displayed in the center of the room in its local coordinates system.\n[pos] is a Vector2 [x,y] (m,m)\n[rotation] is the rotation of the building around its lower left corner, in degree\n[size] is a Vector3 [width,length,height] (m,m,m)\n[axisOrientation] defines the orientation of the rows and columns. It can be any combinason of [+/-]x[+/-]y. eg: +x+y or -x+y\n[template] is the name of the room template\n[floorUnit] is optionnal: by default set to \"t\" (tiles), can also be m (meters) or f (feet)",
             "insertText": "room:${1:name}@[${2:x},${3:y}]@${4:rotation}@${0:template}",
-            "detail": "+room:[name]@[x, y]@[rotation]@[template]"
+            "detail": "+room:[name]@[x, y]@[rotation]@[template]",
+            "parser": ["+", {"value" : "room", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+room]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=template]", "(isLinked)" : true}]
         }
         ,
         {
@@ -179,7 +185,8 @@
             "quickText": "without parent rack slots : size",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
             "insertText": "device:${1:name}@${2:posU}@${0:sizeU}",
-            "detail": "+device:[name]@[posU]@[sizeU]"
+            "detail": "+device:[name]@[posU]@[sizeU]",
+            "parser": ["+", {"value" : "device", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+device]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}]
         }
         ,
         {
@@ -188,7 +195,8 @@
             "quickText": "without parent rack slots : template",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
             "insertText": "device:${1:name}@${2:posU}@${0:template}",
-            "detail": "+device:[name]@[posU]@[template]"
+            "detail": "+device:[name]@[posU]@[template]",
+            "parser": ["+", {"value" : "device", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+device]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=template]", "(isLinked)" : true}]
         }
         ,
         {
@@ -197,7 +205,8 @@
             "quickText": "with parent rack slots : size",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
             "insertText": "device:${1:name}@${2:slot}@${0:sizeU}",
-            "detail": "+device:[name]@[slot]@[sizeU]"
+            "detail": "+device:[name]@[slot]@[sizeU]",
+            "parser": ["+", {"value" : "device", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+device]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=path]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}]
         }
         ,
         {
@@ -206,7 +215,8 @@
             "quickText": "without parent rack slots : template",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
             "insertText": "device:${1:name}@${2:slot}@${0:template}",
-            "detail": "+device:[name]@[slot]@[template]"
+            "detail": "+device:[name]@[slot]@[template]",
+            "parser": ["+", {"value" : "device", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+device]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=path]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=template]", "(isLinked)" : true}]
         }
         ,
         {
@@ -215,7 +225,8 @@
             "quickText": "with parent rack slots : template, side",
             "documentation": "A chassis is a parent device racked at a defined U position.\n[posU] is the position in U in a rack\n[sizeU] is the height in U in a rack\n[slot] is the name of the slot in which you want to place the device\n[template] is the name of the device template\n[side] is from which side you can see the device if not \"fullsize\". This value is for overriding the one defined in the template. It can be front | rear | frontflipped | rearflipped\nAll other devices (blades / components like processor, memory, adapters, disks...) have to be declared with a parent's slot and a template.",
             "insertText": "device:${1:name}@${2:slot}@${3:template}@${0:side}",
-            "detail": "+device:[name]@[slot]@[template]@[side]"
+            "detail": "+device:[name]@[slot]@[template]@[side]",
+            "parser": ["+", {"value" : "device", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+device]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=path]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=template]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=side]", "(isLinked)" : true}]
         }
         ,
         {
@@ -224,7 +235,8 @@
             "quickText": "delete structure",
             "documentation": "[name] is the name of the structure to delete",
             "insertText": "-${0:name}",
-            "detail": "-[name]"
+            "detail": "-[name]",
+            "parser": ["-", {"value" : "[-struct]", "(isLinked)" : false}]
         }
         ,
         {
@@ -233,7 +245,8 @@
             "quickText": "Create a Corridor",
             "documentation": "Corridor must be child of a room A corridor is a cold or warm corridor.\n[pos] is a Vector2 [x,y] (tile,tile) or a Vector3 [x,y,z] (tile,tile,cm) if the corridor is wall mounted. It can be decimal or fraction. Can also be negative\n[unit] is t(tiles), m(meters) or f(feet)\n[rotation] is a Vector3 of angles or one of following keywords :\n\"front\": [0, 0, 180]\n\"rear\": [0, 0, 0]\n\"left\": [0, 90, 0]\n\"right\": [0, -90, 0]\n\"top\": [90, 0, 0]\n\"bottom\": [-90, 0, 0]\n[size] is a Vector3 [width,length,height] (cm,cm,cm)\n[temperature] is cold or warm.",
             "insertText": "corridor:${1:name}@${2|[x,y],[x,y,z]|}@${3|m,t,f|}@${4|[x y z],front,rear,left,right,top,bottom|}@${5|[width,length,height]|}@${6|cold,warm|}",
-            "detail": "+corridor:[name]@[pos]@[|m,t,f|]@[orientation]@[size]@[temperature]"
+            "detail": "+corridor:[name]@[pos]@[|m,t,f|]@[orientation]@[size]@[temperature]",
+            "parser": ["+", {"value" : "corridor", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+corridor]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=unit]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,3]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,3]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=temperature]", "(isLinked)" : true}]
         }
         ,
         {
@@ -242,7 +255,8 @@
             "quickText": "add a stray-device",
             "documentation": "You can add stray-devices (devices that don't have a parent and/or don't follow the normal device data format), the bare minimum requiring to have a name and template. Note that it is possible for these devices to have subdevices.",
             "insertText": "orphan device:${1:path/to/stray-device}@${2:template}",
-            "detail": "+orphan device:[path]@[template]"
+            "detail": "+orphan device:[path]@[template]",
+            "parser": ["+", {"value" : "orphan", "(isLinked)" : true},{"value": "device", "(isLinked)": false}, {"value" : ":", "(isLinked)" : true}, {"value" : "[=path]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=template]", "(isLinked)" : true}]
         }
         ,
         {
@@ -251,7 +265,8 @@
             "quickText": "Create a group",
             "documentation": "Group must be child of a room or a rack If the group is a child of a room, it can contain racks and corridors. If the group is a child of a rack, it can contain devices. c1,c2,...,cN are the short names (eg. A01 instead of tn.si.bd.ro.A01)",
             "insertText": "group:${1:name}@{${2:c1,c2,...}}",
-            "detail": "+group:[name]@{[c1,c2,...,cN]}"
+            "detail": "+group:[name]@{[c1,c2,...,cN]}",
+            "parser": ["+", {"value" : "group", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[+group]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "{", "(isLinked)" : true}, {"value" : "[=array]", "(isLinked)" : true}, {"value" : "}", "(isLinked)" : true}]
         }
         ,
         {
@@ -260,7 +275,8 @@
             "quickText": "Set the usable color",
             "documentation": "[color] is the color to use for datacenter",
             "insertText": "usableColor=${0:color}",
-            "detail": ":usableColor=[color]"
+            "detail": ":usableColor=[color]",
+            "parser": [":", {"value" : "usableColor", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=color]", "(isLinked)" : false}]
         }
         ,
         {
@@ -269,7 +285,8 @@
             "quickText": "Set the reserved color",
             "documentation": "[color] is the color to use for datacenter",
             "insertText": "reservedColor=${0:color}",
-            "detail": ":reservedColor=[color]"
+            "detail": ":reservedColor=[color]",
+            "parser": [":", {"value" : "reservedColor", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=color]", "(isLinked)" : false}]
         }
         ,
         {
@@ -278,7 +295,8 @@
             "quickText": "Set the technical color",
             "documentation": "[color] is the color to use for datacenter",
             "insertText": "technicalColor=${0:color}",
-            "detail": ":technicalColor=[color]"
+            "detail": ":technicalColor=[color]",
+            "parser": [":", {"value" : "technicalColor", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=color]", "(isLinked)" : false}]
         }
         ,
         {
@@ -287,7 +305,8 @@
             "quickText": "Add separator to a room",
             "documentation": "Add a separator (wired or plain wall) inside a room.\n[name] is an identifier for the separator\n[startPos] is a vector2: [x,y] (m,m)\n[endPos] is a vector2: [x,y] (m,m)\n[type] is the type of wall: wireframe or plain\nIt will add the given coordinates to [room].attributes[separators] witch is a list of all its separators parameters",
             "insertText" : "separator=${1:name}@[${2:startX},${3:startY}]@[${4:endX},${5:endY}]@${6|wireframe,plain|}",
-            "detail": ":separator=[name]@[startPos]@[endPos]@[type]"
+            "detail": ":separator=[name]@[startPos]@[endPos]@[type]",
+            "parser": [":", {"value" : "separator", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[+separator]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : false}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : false}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=typeWall]", "(isLinked)" : false}]
         }
         ,
         {
@@ -296,7 +315,8 @@
             "quickText": "Add pillar to a room",
             "documentation": "Add a pillar inside a room.\n[name] is an identifier for the pillar\n[centerXY] is a vector2: [x,y] (m,m)\n[sizeXY] is a vector2: [x,y] (m,m)\n[rotation] is the angle of the pillar, in degree\nIt will add the given coordinates to [room].attributes[pillars] witch is a list of all its pillars parameters",
             "insertText": "pillar=${1:name}@[${2:centerX},${3:centerY}]@[${4:sizeX},${5:sizeY}]@${0:rotation}",
-            "detail": ":pillar=[name]@[centerXY]@[sizeXY]@[rotation]"
+            "detail": ":pillar=[name]@[centerXY]@[sizeXY]@[rotation]",
+            "parser": [":", {"value" : "pillar", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[+pillar]", "(isLinked)" : true}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : false}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : false}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : false}]
         }
         ,
         {
@@ -314,7 +334,8 @@
             "quickText": "recursively change object's domain and children's domain",
             "documentation":"Object's domain can be changed recursively for changing all it's children's domains at the same time.",
             "insertText": "domain=${0:value}@recursive",
-            "detail": ":domain:[value]@recursive"
+            "detail": ":domain:[value]@recursive",
+            "parser": [":", {"value" : "domain", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=string]", "(isLinked)" : false}, {"value" : "@", "(isLinked)" : true}, {"value" : "recursive", "(isLinked)" : true}]
         }
         ,
         {
@@ -323,7 +344,8 @@
             "quickText": "Modify attribute if it is a list",
             "documentation": "Object's description attribute is a list: you have to use an index to fill one.\nwhere [N] is an index, starting at 1",
             "insertText": "description${1:N}=${0:value}",
-            "detail": ":description[N]=[value]"
+            "detail": ":description[N]=[value]",
+            "parser": [":", {"value" : "description", "(isLinked)" : true}, {"value" : "[=number]", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=string]", "(isLinked)" : true}]
         }
         ,
         {
@@ -341,7 +363,8 @@
             "quickText": "Change label by a string without using an attribute",
             "documentation": "Change the label by the string string",
             "insertText": "label=${0:string}",
-            "detail": ":label=[string]"
+            "detail": ":label=[string]",
+            "parser": [":", {"value" : "label", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=string]", "(isLinked)" : false}]
         }
         ,
         {
@@ -350,7 +373,8 @@
             "quickText": "Make the font bold",
             "documentation":"",
             "insertText": "labelFont=bold",
-            "detail": ":labelFont=bold"
+            "detail": ":labelFont=bold",
+            "parser": [":", {"value" : "labelFont", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "bold", "(isLinked)" : false}]
         }
         ,
         {
@@ -359,7 +383,8 @@
             "quickText": "Make the font italic",
             "documentation":"",
             "insertText": "labelFont=italic",
-            "detail": ":labelFont=italic"
+            "detail": ":labelFont=italic",
+            "parser": [":", {"value" : "labelFont", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "italic", "(isLinked)" : false}]
         }
         ,
         {
@@ -368,7 +393,8 @@
             "quickText": "Change font color",
             "documentation":"",
             "insertText": "labelFont=color@${0:color}",
-            "detail": ":labelFont=color@[color]"
+            "detail": ":labelFont=color@[color]",
+            "parser": [":", {"value" : "labelFont", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "color", "(isLinked)" : false}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=color]", "(isLinked)" : true}]
         }
         ,
         {
@@ -377,7 +403,8 @@
             "quickText": "Change label background color",
             "documentation": "You can change the label's background color when it is hovering over the object.",
             "insertText": "labelBackground=${0:color}",
-            "detail": ":labelBackground=[color]"
+            "detail": ":labelBackground=[color]",
+            "parser": [":", {"value" : "labelBackground", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=color]", "(isLinked)" : false}]
         }
         ,
         {
@@ -386,7 +413,8 @@
             "quickText": "Display or hide tiles name",
             "documentation": "",
             "insertText": "titlesName=${1|true,false|}",
-            "detail": ":titlesName=[|true,false|]"
+            "detail": ":titlesName=[|true,false|]",
+            "parser": [":", {"value" : "titlesName", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -395,7 +423,8 @@
             "quickText": "Display or hide colors and textures",
             "documentation": "",
             "insertText": "titlesColor=${1|true,false|}",
-            "detail": ":titlesColor=[|true,false|]"
+            "detail": ":titlesColor=[|true,false|]",
+            "parser": [":", {"value" : "titlesColor", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -404,7 +433,8 @@
             "quickText": "Display or hide rack's box",
             "documentation": "Display or hide rack's box. This will also affect its label",
             "insertText": "alpha=${1|true,false|}",
-            "detail": ":alpha=[|true,false|]"
+            "detail": ":alpha=[|true,false|]",
+            "parser": [":", {"value" : "alpha", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -413,7 +443,8 @@
             "quickText": "Display or hide rack's U",
             "documentation": "Display or hide rack's U helpers to simply identify objects in a rack.",
             "insertText": "U=${1|true,false|}",
-            "detail": ":U=[|true,false|]"
+            "detail": ":U=[|true,false|]",
+            "parser": [":", {"value" : "U", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -422,7 +453,8 @@
             "quickText": "Display or hide rack's slots",
             "documentation": "",
             "insertText": "slots=${1|true,false|}",
-            "detail": ":slots=[|true,false|]"
+            "detail": ":slots=[|true,false|]",
+            "parser": [":", {"value" : "slots", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -431,7 +463,8 @@
             "quickText": "Display or hide rack's local coordinate system",
             "documentation": "",
             "insertText": "localCS=${1|true,false|}",
-            "detail": ":localCS=[|true,false|]"
+            "detail": ":localCS=[|true,false|]",
+            "parser": [":", {"value" : "localCS", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -440,7 +473,8 @@
             "quickText": "Display or hide contained racks/devices",
             "documentation": "",
             "insertText": "content=${1|true,false|}",
-            "detail": ":content=[|true,false|]"
+            "detail": ":content=[|true,false|]",
+            "parser": [":", {"value" : "content", "(isLinked)" : true}, {"value" : "=", "(isLinked)" : true}, {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -468,7 +502,8 @@
             "quickText": "Set the delay before each command",
             "documentation": "You can put delay before each command: up to 2 seconds.\n\n[time] is the time to wait in seconds",
             "insertText": "ui.delay=${1:time}",
-            "detail": "ui.delay=[time]"
+            "detail": "ui.delay=[time]",
+            "parser": [{"value": "ui", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "delay", "(isLinked)" : true}, "=", {"value" : "[=number]", "(isLinked)" : false}]
         }
         ,
         {
@@ -477,7 +512,8 @@
             "quickText": "Enable/Disable wireframe mode",
             "documentation": "Enable/Disable wireframe mode\n[true|false]",
             "insertText": "ui.wireframe=${1|true,false|}",
-            "detail": "ui.wireframe=[|true,false|]"
+            "detail": "ui.wireframe=[|true,false|]",
+            "parser": [{"value": "ui", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "wireframe", "(isLinked)" : true}, "=", {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -486,7 +522,8 @@
             "quickText": "Set if display debug panel",
             "documentation": "Set if display debug panel\n[true|false]",
             "insertText": "ui.debug=${1|true,false|}",
-            "detail": "ui.debug=[|true,false|]"
+            "detail": "ui.debug=[|true,false|]",
+            "parser": [{"value": "ui", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "debug", "(isLinked)" : true}, "=", {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -495,7 +532,8 @@
             "quickText": "Set if display infos panel",
             "documentation": "Set if display infos panel\n[true|false]",
             "insertText": "ui.infos=${1|true,false|}",
-            "detail": "ui.infos=[|true,false|]"
+            "detail": "ui.infos=[|true,false|]",
+            "parser": [{"value": "ui", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "infos", "(isLinked)" : true}, "=", {"value" : "[=boolean]", "(isLinked)" : false}]
         }
         ,
         {
@@ -504,7 +542,8 @@
             "quickText": "\"Toggle\" command to turn on/off the highlighting of an object",
             "documentation": "This is a \"toggle\" command: use it to turn on/off the highlighting of an object.\nIf given object is hidden in its parent, the parent will be highlighted.\n[name] is the name of the object",
             "insertText": "ui.highlight=${1:name}",
-            "detail": "ui.highlight=[name]"
+            "detail": "ui.highlight=[name]",
+            "parser": [{"value": "ui", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "highlight", "(isLinked)" : true}, "=", {"value" : "[=string]", "(isLinked)" : false}]
         }
         ,
         {
@@ -513,7 +552,8 @@
             "quickText": "Move the camera",
             "documentation": "Move the camera to the given point\n[position] is a Vector3 [x, y, z] : the new position of the camera\n[rotation] is a Vector2 [u, v]: the rotation of the camera",
             "insertText": "camera.move=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]",
-            "detail": "camera.move=[position]@[rotation]"
+            "detail": "camera.move=[position]@[rotation]",
+            "parser": [{"value": "camera", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "move", "(isLinked)" : true}, "=", {"value" : "[=array,3]", "(isLinked)" : false}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : true}]
         }
         ,
         {
@@ -522,7 +562,8 @@
             "quickText": "Translate the camera",
             "documentation": "Move the camera to the given destination. You can stack several destinations, the camera will move to each point in the given order.\n[position] is a Vector3 [x, y, z]: the position of the camera's destination\n[rotation] is a Vector2 [u, v]: the rotation of the camera's destination",
             "insertText": "camera.translate=[${1:x}, ${2:y}, ${3:z}]@[${4:u}, ${5:v}]",
-            "detail": "camera.translate=[position]@[rotation]"
+            "detail": "camera.translate=[position]@[rotation]",
+            "parser": [{"value": "camera", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "translate", "(isLinked)" : true}, "=", {"value" : "[=array,3]", "(isLinked)" : false}, {"value" : "@", "(isLinked)" : true}, {"value" : "[=array,2]", "(isLinked)" : true}]
         }
         ,
         {
@@ -531,7 +572,8 @@
             "quickText": "Set the delay between two translations",
             "documentation": "You can define a delay between two camera translations.\n[time] is the time to wait in seconds",
             "insertText": "camera.wait=${1:time}",
-            "detail": "camera.wait=[time]"
+            "detail": "camera.wait=[time]",
+            "parser": [{"value": "camera", "(isLinked)": true}, {"value": ".", "(isLinked)": true}, {"value" : "wait", "(isLinked)" : true}, "=", {"value" : "[=number]", "(isLinked)" : false}]
         }
         ,
         {
@@ -540,7 +582,8 @@
             "quickText": "You can indicate to Unity to focus on an object",
             "documentation": "If the path is empty it will 'unfocus' all objects. This command will change the current path according to the given argument",
             "insertText": "> ${1:path/to/object}",
-            "detail": "focus [path]"
+            "detail": "focus [path]",
+            "parser": [{ "value": ">", "(isLinked)": true }, { "value": "[=struct]", "(isLinked)": false }]
         }
         ,
         {
@@ -549,7 +592,8 @@
             "quickText": "Draw an existing object on Unity",
             "documentation": "Unity can't draw already existing objects unless instructed to do so.\n[k] an integer value of 0 or greater",
             "insertText": "draw ${1:path/to/object} ${2:k}",
-            "detail": "draw [path] [k]"
+            "detail": "draw [path] [k]",
+            "parser": [{ "value": "draw", "(isLinked)": true }, { "value": "[=struct]", "(isLinked)": false }, { "value": "[=number]", "(isLinked)": false }]
         }
         ,
         {
@@ -558,7 +602,8 @@
             "quickText": "Draw an existing object on Unity with -FLAG ARGUMENT",
             "documentation": "Unity can't draw already existing objects unless instructed to do so.\n[k] an integer value of 0 or greater\nThe '-FLAG ARGUMENT' option is there to allow the user to optionally ignore the draw threshold automatically (the number of objects that can be drawn in Unity, defined as drawThreshold and found in .env file) which is useful for scripting. Usually if the number of objects to draw exceeds this threshold, then the user will be asked if they want to continue. The possible values for '-FLAG ARGUMENT' are '-f y' or '-f n' respectively. 'y' means yes and 'n' means no",
             "insertText": "draw ${1:path/to/object} ${2:k} -f ${3:y}",
-            "detail": "draw [path] [k] -f [y,n]"
+            "detail": "draw [path] [k] -f [y,n]",
+            "parser": [{ "value": "draw", "(isLinked)": true }, { "value": "[=struct]", "(isLinked)": false }, { "value": "[=number]", "(isLinked)": false }, { "value": "-f", "(isLinked)": false }, { "value": "[=boolean]", "(isLinked)": false }]
         }
         ,
         {
@@ -567,7 +612,8 @@
             "quickText": "Undraw an object",
             "documentation": "undraw an existing object at the path path/to/object",
             "insertText": "undraw ${1:path/to/object}",
-            "detail": "undraw [path]"
+            "detail": "undraw [path]",
+            "parser": [{ "value": "undraw", "(isLinked)": true }, { "value": "[=struct]", "(isLinked)": false }]
         }
         ,
         {
@@ -576,7 +622,8 @@
             "quickText": "Link a stray-device without slot",
             "documentation": "If the parent is a device, the slot number must be specified. This command will fail if the stray-device or its hierarchy does not satisfy the schema requirements of device.",
             "insertText": "link:${1:PATH/TO/STRAY-DEVICE}@${2:PATH/TO/RACK/OR/DEVICE}",
-            "detail": "link:[path/to/stray-device]@[path/to/rack/or/device]"
+            "detail": "link:[path/to/stray-device]@[path/to/rack/or/device]",
+            "parser": [{"value" : "link", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[=path]", "(isLinked)" : true}, "@", {"value" : "[=path]", "(isLinked)" : true}]
         }
         ,
         {
@@ -585,7 +632,8 @@
             "quickText": "Link a stray-device with slot",
             "documentation": "If the parent is a device, the slot number must be specified. This command will fail if the stray-device or its hierarchy does not satisfy the schema requirements of device.",
             "insertText": "link:${1:PATH/TO/STRAY-DEVICE}@${2:PATH/TO/RACK/OR/DEVICE}@${3:Slot}",
-            "detail": "link:[path/to/stray-device]@[path/to/rack/or/device]@[slot]"
+            "detail": "link:[path/to/stray-device]@[path/to/rack/or/device]@[slot]",
+            "parser": [{"value" : "link", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[=path]", "(isLinked)" : true}, "@", {"value" : "[=path]", "(isLinked)" : true}, "@", {"value" : "[=path]", "(isLinked)" : true}]
         }
         ,
         {
@@ -594,7 +642,8 @@
             "quickText": "Unlink a device without stray-device parent",
             "documentation": "The schema requirements for stray-device are much less restrictive than other objects. The device must have size dimensions and a name. If this device or its hierarchy does not satisfy the stray-device schema requirement, this command will fail.",
             "insertText": "unlink:${1:PATH/TO/DEVICE}",
-            "detail": "unlink:[path/to/device]"
+            "detail": "unlink:[path/to/device]",
+            "parser": [{"value" : "unlink", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[=path]", "(isLinked)" : true}]
         }
         ,
         {
@@ -603,7 +652,8 @@
             "quickText": "Unlink a device with stray-device parent",
             "documentation": "The schema requirements for stray-device are much less restrictive than other objects. The device must have size dimensions and a name. If this device or its hierarchy does not satisfy the stray-device schema requirement, this command will fail.",
             "insertText": "unlink:${1:PATH/TO/DEVICE}@${2:PATH/TO/STRAY-DEVICE-PARENT}",
-            "detail": "unlink:[path/to/device]@[path/to/stray-device-parent]"
+            "detail": "unlink:[path/to/device]@[path/to/stray-device-parent]",
+            "parser": [{"value" : "unlink", "(isLinked)" : true}, {"value" : ":", "(isLinked)" : true}, {"value" : "[=path]", "(isLinked)" : true}, "@", {"value" : "[=path]", "(isLinked)" : true}]
         },
         {
             "keyword": "ls",
@@ -611,7 +661,8 @@
             "quickText": "Display children of specified object",
             "documentation": "Display the children of the specified path. If the path is empty, it will display all structures",
             "insertText":"ls ${1:PATH/TO/DEVICES}",
-            "detail": "ls [path/to/devices]"
+            "detail": "ls [path/to/devices]",
+            "parser": ["ls", {"value" : "[=struct]", "(isLinked)" : false}]
         },
         {
             "keyword": "get",
@@ -619,7 +670,8 @@
             "quickText": "Display information of specified objects",
             "documentation": "Display the information of the specified objects. If the path is empty, it will display the information of all structures",
             "insertText":"get ${1:PATH/TO/DEVICES}",
-            "detail": "get [path/to/devices]"
+            "detail": "get [path/to/devices]",
+            "parser": ["get", {"value" : "[=struct]", "(isLinked)" : false}]
         },
         {
             "keyword": "env",
@@ -627,7 +679,8 @@
             "quickText": "Display all namespaces",
             "documentation": "Display an overview of all namespaces within the file",
             "insertText": "env",
-            "detail": "env"
+            "detail": "env",
+            "parser": ["env"]
         },
         {
             "keyword": "man",
@@ -635,7 +688,8 @@
             "quickText": "Display all CLI shortcuts",
             "documentation": "Display all CLI shortcuts",
             "insertText": "man",
-            "detail": "man"
+            "detail": "man",
+            "parser": ["man"]
         },
         {
             "keyword": "print",
@@ -660,7 +714,8 @@
             "quickText": "Print the hierarchy below a path, at a certain depth",
             "documentation": "Print the hierarchy below a path, at a certain depth",
             "insertText": "tree ${1:path} ${2:depth}",
-            "detail": "tree [path] [depth]"
+            "detail": "tree [path] [depth]",
+            "parser": ["tree", {"value" : "[=struct]", "(isLinked)" : false}, {"value" : "[=number]", "(isLinked)" : false}]
         }
     ]
 }
