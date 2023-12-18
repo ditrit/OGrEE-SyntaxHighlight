@@ -16,11 +16,11 @@ import { MessagePort } from 'worker_threads';
 
 const commandSeparators = ["\r\n", "//"];
 
-const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "[", "]", "\"", ":", ".", ",", "*", "/", "%", "<", ">", "!", "|", "&", "#"]);
+const signCommand = new Set(["+", "-", "=", "@", ";", "{", "}", "(", ")", "[", "]", "\"", ":", ".", ",", "*", "/", "%", "<", ">", "!", "|", "&", "#", "\\"]);
 
 const operators = new Set(["+", "-", "*", "/", "%", "<", ">", "<=", ">=", "==", "!=", "||", "&&", "(", ")", "!"])
 
-const blankChar = new Set([" ", "\\", "\n", "\t", "\r"]);
+const blankChar = new Set([" ", "\n", "\t", "\r"]);
 
 const bracketsOpAndCl = getBracketsOpAndCl();
 
@@ -1050,6 +1050,9 @@ function getEvalType(commandSplit : commandSplit, iStart : number, textDocument 
 			stringEval += match;
 			iEnd = iEnd + match.length - 1;
 		}
+		else if (commandSplit[iEnd].subCommand == "\\"){
+			stringEval += "/";
+		}
 		else {
 			let isNum = isNumberWOEval(commandSplit, iEnd, textDocument);
 			if (isNum.iEndVar != null){
@@ -1099,7 +1102,10 @@ function getEvalType(commandSplit : commandSplit, iStart : number, textDocument 
 		iEnd ++;
 	}
 	try{
+		console.log(commandSplit);
+		console.log(stringEval);
 		let resEval = eval(stringEval);
+		console.log(resEval)
 		if (typeof resEval == "number"){
 			if (resEval - Math.round(resEval) == 0)
 				return {type : "integer", iEnd : iEnd - 1, diagnostic : null};
@@ -1223,6 +1229,7 @@ export function countCharactersOnLines(lines: number) {
  */
 export function parseDocument(textDocument: TextDocument) {
 	getCommands()
+	console.log()
 	listNameVar = new Map<string, any>();
 	listNameStruct = new Map<string, any>();
 	selectionNotEmpty = false;
@@ -1242,13 +1249,15 @@ export function parseDocument(textDocument: TextDocument) {
 		let nextCommand = text.substring(currentIndex, nextCommandIndex);
 		let nextCommandTrim = nextCommand.trimEnd()
 		// While the command line finishe by \, add the line after as it must be read as a single line.
-		while (isNewLineSeparator(endSeparator) && nextCommandTrim != "" && nextCommandTrim.charAt(nextCommandTrim.length - 1) == "\\" ){
+		while (isNewLineSeparator(endSeparator) && nextCommandTrim != "" && nextCommandTrim.charAt(nextCommandTrim.length - 1) == "\\"){
+			nextCommand = nextCommandTrim.substring(0, nextCommandTrim.length - 1) + createBlankString(nextCommand.length - nextCommandTrim.length + 1);
 			nextPart = getNextPart(nextCommandIndex + endSeparator.length, text, commandSeparators);
 			nextCommand += text.substring(nextCommandIndex, nextPart.index);
 			nextCommandTrim = nextCommand.trimEnd();
 			nextCommandIndex = nextPart.index;
 			endSeparator = nextPart.separator;
 		}
+		console.log(nextCommand);
 
 		//Place currentIndex to the beginning of the command, i.e. without taking into account whiteSpaces before the beginning of the command
 		if (isNewLineSeparator(startSeparator)) {
@@ -1277,6 +1286,12 @@ export function parseDocument(textDocument: TextDocument) {
 
 function isNewLineSeparator(separator : string){
 	return separator == "\n" || separator == "\r\n";
+}
+
+function createBlankString(len : number){
+	let string = "";
+	for (;string.length < len; string += " ");
+	return string;
 }
 
 function addSemanticToken(textDocument : TextDocument, startIndex : integer, endIndex : integer, tokenType : string, tokenModifiers : string[], genericToken = false){
@@ -1427,6 +1442,7 @@ function parseCommand(commandSplit : commandSplit, diagnostics: Diagnostic[], te
 function splitCommand(currentIndex: number, command : string) : commandSplit{
 	let commandSplit = [];
 	let indexStart = 0;
+	let inEval = false;
 	while (indexStart < command.length){
 		if (blankChar.has(command.charAt(indexStart)))
 			indexStart += 1
@@ -1443,6 +1459,7 @@ function splitCommand(currentIndex: number, command : string) : commandSplit{
 	}
 	return commandSplit;
 }
+
 
 /**
  * Parse a subCommand when it's a variable or a structure.
