@@ -38,6 +38,7 @@
 	"elif": "operator",
 	"rack": "device",
 	"device": "device",
-	"orphan device": "device"
+	"orphan device": "device",
+	"string" : "string"
 }
 }
