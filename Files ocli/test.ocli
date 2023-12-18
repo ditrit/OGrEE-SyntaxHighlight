@@ -136,6 +136,8 @@ print $float1
 print eval $float1 + $float2
 print eval $float1 + $varTest
 print ${float1}
+.var:string = C'est un string
+print $string
 
 .var:path=$(pwd)
 print $path
