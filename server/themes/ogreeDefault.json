@@ -8,7 +8,7 @@
 				"entity.name.structure"
 			],
 			"settings": {
-				"foreground": "#BA0BFF" //violet
+				"foreground": "#ba0bff" //violet
 			}
 		},
 		{
@@ -76,7 +76,7 @@
 				"entity.name.device"
 			],
 			"settings":{
-				"foreground": "#C7C7C7" //gris
+				"foreground": "#c7c7c7" //gris
 			}
 		}
 	]
