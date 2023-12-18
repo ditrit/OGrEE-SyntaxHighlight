@@ -1661,12 +1661,15 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 		else if (actionType.charAt(1) == "-"){
 			let type = actionType.substring(2, actionType.length - 1);
 			if (type == "struct"){
-				diagnostic = delStruc(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
+				let isName = getNameStruct(commandSplit, iStartVar);
+				if (isName.name == null)
+					return {actionType : null, iEndVar : null, diagnostic : diagnosticUnexpectedExpression(commandSplit[iStartVar].indexStart, commandSplit[isName.iEndStruct].indexEnd, textDocument, "structure (except pillar and separators)")}
+				diagnostic = delStruc(isName.name, commandSplit[iStartVar].indexStart, textDocument);
 				if (diagnostic == null){
-					return {actionType : actionType, iEndVar : iStartVar, diagnostic : null};
+					return {actionType : actionType, iEndVar : isName.iEndStruct, diagnostic : null};
 				}
 			}
-			if (type == "separator" || type == "pillar"){
+			else if (type == "separator" || type == "pillar"){
 				diagnostic = delStruc(getNameStruct(commandSplit, 0).name + "/" + commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 				if (diagnostic == null){
 					return {actionType : actionType, iEndVar : iStartVar, diagnostic : null};

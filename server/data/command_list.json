@@ -872,7 +872,7 @@
             "matchKeyword": ["ls"],
             "quickText": "Display children of specified object",
             "documentation": "Display the children of the specified path. If the path is empty, it will display all structures",
-            "insertText":"ls {1:PATH/TO/DEVICES}",
+            "insertText":"ls ${1:PATH/TO/DEVICES}",
             "detail": "ls [path/to/devices]",
             "parser": ["ls", {"value" : "[=struct]", "(isLinked)" : false}]
         },
