@@ -29,7 +29,7 @@
 	"building": "building",
 	"corridor": "building",
 	"room": "building",
-	"pilar": "building",
+	"pilars": "building",
 	"separator": "building",
 	"for": "operator",
 	"while": "operator",
