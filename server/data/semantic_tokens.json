@@ -24,11 +24,14 @@
 "types":
 	{
 	"site": "building",
+	"si": "building",
 	"struct": "building",
 	"tenant": "building",
 	"building": "building",
+	"bd": "building",
 	"corridor": "building",
 	"room": "building",
+	"ro": "building",
 	"pillar": "building",
 	"separator": "building",
 	"for": "operator",
@@ -37,7 +40,11 @@
 	"else": "operator",
 	"elif": "operator",
 	"rack": "device",
+	"rk": "device",
 	"device": "device",
+	"dv": "device",
+	"group": "device",
+	"gr": "device",
 	"orphan device": "device",
 	"string" : "string"
 }
