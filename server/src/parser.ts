@@ -78,7 +78,7 @@ function createStruc(type : string, commandSplit : commandSplit, iStartStruct : 
 	if (nameStruct.name == null)
 		return {iEnd : null, diagnostic : diagnosticNameStructSyntaxe(commandSplit[iStartStruct].indexStart, commandSplit[nameStruct.iEndStruct].indexEnd, textDocument)};
 	if (localName == null)
-		localName = "";
+		localName = "";''
 	let name = localName + nameStruct.name;
 	if (!strucHasCoherentParent(type, name))
 		diagnostic = diagnosticStructNoParentFound(name, commandSplit[iStartStruct].indexStart, textDocument);
@@ -1391,8 +1391,15 @@ function parseCommand(commandSplit : commandSplit, diagnostics: Diagnostic[], te
 							variableType = vari.actionType.substring(2, vari.actionType.length - 1);
 						if (vari.actionType == "[+var]")
 							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand + 1].indexEnd, commandSplit[vari.iEndVar].indexEnd, lastInstance(listNameVar, commandSplit[iSubCommand].subCommand).type, []))
+						else if (vari.actionType == "[=struct]"){
+							let nameStruct = getNameStruct(commandSplit, iSubCommand).name
+							if (nameStruct == "_")
+							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[vari.iEndVar].indexEnd, variableType, []));
+							else
+								tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[vari.iEndVar].indexEnd, lastInstance(listNameStruct, String(getNameStruct(commandSplit, iSubCommand).name)).type, []));
+						}
 						else
-							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[vari.iEndVar].indexEnd, variableType, []))
+							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand].indexStart, commandSplit[vari.iEndVar].indexEnd, variableType, []));
 						curDicCommand = curDicCommand[vari.actionType];
 						iSubCommand = vari.iEndVar;
 					} else{
