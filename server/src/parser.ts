@@ -1102,10 +1102,7 @@ function getEvalType(commandSplit : commandSplit, iStart : number, textDocument 
 		iEnd ++;
 	}
 	try{
-		console.log(commandSplit);
-		console.log(stringEval);
 		let resEval = eval(stringEval);
-		console.log(resEval)
 		if (typeof resEval == "number"){
 			if (resEval - Math.round(resEval) == 0)
 				return {type : "integer", iEnd : iEnd - 1, diagnostic : null};
@@ -1229,7 +1226,6 @@ export function countCharactersOnLines(lines: number) {
  */
 export function parseDocument(textDocument: TextDocument) {
 	getCommands()
-	console.log()
 	listNameVar = new Map<string, any>();
 	listNameStruct = new Map<string, any>();
 	selectionNotEmpty = false;
@@ -1257,7 +1253,6 @@ export function parseDocument(textDocument: TextDocument) {
 			nextCommandIndex = nextPart.index;
 			endSeparator = nextPart.separator;
 		}
-		console.log(nextCommand);
 
 		//Place currentIndex to the beginning of the command, i.e. without taking into account whiteSpaces before the beginning of the command
 		if (isNewLineSeparator(startSeparator)) {
