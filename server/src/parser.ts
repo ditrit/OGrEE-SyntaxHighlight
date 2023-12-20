@@ -81,7 +81,7 @@ function createStruc(type : string, commandSplit : commandSplit, iStartStruct : 
 		localName = "";
 	let name = localName + nameStruct.name;
 	if (!strucHasCoherentParent(type, name))
-		diagnostic = diagnosticStructNoParent(name, commandSplit[iStartStruct].indexStart, textDocument);
+		diagnostic = diagnosticStructNoParentFound(name, commandSplit[iStartStruct].indexStart, textDocument);
 	if (!listNameStruct.has(name)){
 		listNameStruct.set(name, [createMapInstance(type, commandSplit[iStartStruct].indexStart)]);
 		return {iEnd : nameStruct.iEndStruct, diagnostic : diagnostic};
@@ -1605,7 +1605,7 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 									if (existStruct(completeName)){
 										let type = lastInstance(listNameStruct,completeName).type;
 										if (!strucHasCoherentParent(type, completeName))
-											diagnostics.push(diagnosticStructNoParent(isName.name, commandSplit[iEndVar].indexStart, textDocument))
+											diagnostics.push(diagnosticStructNoParentFound(isName.name, commandSplit[iEndVar].indexStart, textDocument))
 									}
 									else{
 										return {actionType : null, iEndVar : null, diagnostic : diagnosticNameNotCreated(isName.name, commandSplit[iEndVar].indexStart, commandSplit[isName.iEndStruct].indexStart, textDocument)};
@@ -1767,14 +1767,14 @@ function diagnosticNameStructSyntaxe(indexStartStruct : number, indexEndStruct :
  * @param textDocument the TextDocument
  * @returns the diagnostic
  */
-function diagnosticStructNoParent(name : string, indexStartStruct : number, textDocument : TextDocument){
+function diagnosticStructNoParentFound(name : string, indexStartStruct : number, textDocument : TextDocument){
 	let diagnostic : Diagnostic = {
 		severity: DiagnosticSeverity.Warning,
 		range: {
 			start: textDocument.positionAt(indexStartStruct),
 			end: textDocument.positionAt(indexStartStruct + name.length)
 		},
-		message: `The name "` + name + `" isn't valid, Because he doesn't have a parent.`,
+		message: `The name "` + name + `" may be not valid : No valid parent found.`,
 		source: 'Ogree_parser'
 	};
 	return diagnostic;
