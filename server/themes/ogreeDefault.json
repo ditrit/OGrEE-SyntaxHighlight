@@ -5,10 +5,18 @@
 	"tokenColors": [
 		{
 			"scope": [
+				"entity.name.structure"
+			],
+			"settings": {
+				"foreground": "#ba0bff" //violet
+			}
+		},
+		{
+			"scope": [
 				"unknown"
 			],
 			"settings": {
-				"foreground": "#ff0000"
+				"foreground": "#ff0000" //rouge
 			}
 		},
 		{
@@ -17,7 +25,8 @@
 				"comment.block.documentation"
 			],
 			"settings": {
-				"foreground": "#06A841"
+				"foreground": "#047b00", //vert
+				"fontStyle": "italic"
 			}
 		},
 		{
@@ -27,7 +36,7 @@
 				"string.quoted.double"
 			],
 			"settings": {
-				"foreground": "#f48322"
+				"foreground": "#ff7600" //orange
 			}
 		},
 		{
@@ -35,7 +44,7 @@
 				"entity.name.variable"
 			],
 			"settings": {
-				"foreground": "#0064b1"
+				"foreground": "#0064b1" //bleu foncé 
 			}
 		},		
 		{
@@ -43,7 +52,7 @@
 				"entity.name.type.enum"
 			],
 			"settings": {
-				"foreground": "#8c2b86"
+				"foreground": "#8c2bff" //violet
 			}
 		},
 		{
@@ -51,7 +60,23 @@
 				"entity.name.operator"
 			],
 			"settings": {
-				"foreground": "#cccccc"
+				"foreground": "#cccccc" //blanc
+			}
+		},
+		{
+			"scope": [
+				"entity.name.building"
+			],
+			"settings":{
+				"foreground": "#fff58c" //jaune
+			}
+		},
+		{
+			"scope": [
+				"entity.name.device"
+			],
+			"settings":{
+				"foreground": "#ade305" //jaune vert
 			}
 		}
 	]

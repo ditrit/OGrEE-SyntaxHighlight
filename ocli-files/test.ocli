@@ -2,7 +2,7 @@
     test2S:description="This is a demo..."
     test2S:address=1 rue bidule
     test2S:zipcode=42000
-    test2S:city=Truc
+    test2S:city=Truc 
     test2S:country=FRANCE
     test2S:gps=[1,2,0]
     test2S:usableColor=5BDCFF
@@ -48,9 +48,9 @@
     test2S/test2B2/R2:areas=[3,1,1,3]@[5,0,0,0]
     test2S/test2B2/R2:description="Second room, owned by Marcus"
     test2S/test2B2/R2:tenant=Marcus
-    test2S/test2B2/R2:separator=separator1@[25,20]@[30,25]@wireframe
-    test2S/test2B2/R2:pillar=pillar1@[25,25]@[1,1]@0
-
+    test2S/test2B2/R2:separator+=Sep1@[25,20]@[30,25]@wireframe
+    test2S/test2B2/R2:pillars+=Pillar1@[25,25]@[1,1]@0
+    test2S/test2B2/R2:separator-=Sep1
 // Racks for R1
 
 +rk:test2S/test2B2/R1/A01@[1,1]@t@[0,0,180]@[60,120,42]
@@ -115,7 +115,7 @@
     test2S/test2B2/R2/B01:U=true
     test2S/test2B2/R2/B01:slots=true
     test2S/test2B2/R2/B01:localCS=true
-    test2S/test2B2/R2/B01:labelBackground=FFFFFF
+    test2S/test2B2/R2/B01 :labelBackground=FFFFFF
 
 // Edit description of several racks in R1
 ={test2S/test2B2/R1/B05,test2S/test2B2/R1/B09,test2S/test2B2/R1/B010,test2S/test2B2/R1/B011,test2S/test2B2/R1/B012}
@@ -125,6 +125,70 @@ _:description=Row B
 print $varTest
 .var:varTest=20
 print $varTest
+.var:varTest2=18
+print eval $varTest + $varTest2
+print $(($varTest + $varTest2))
+print format("2+3 equals %02d", $varTest + $varTest2)
+
+.var:float1=0.1
+.var:float2=0.5
+print $float1
+print eval $float1 + $float2
+print eval $float1 + $varTest
+print ${float1}
+.var:string = C'est un string
+print $string
+
+.var:path=$(pwd)
+print $path
+
+.var:bool=false
+if (!$bool) {print bool is false;}
+
+.var:vector=[1, 2, 3]
+
+print eval $vector[0]
+print eval $vector[2]
+
+.var:vec=eval [1 + 1, $varTest, $vector[0]]
+
+print $vec[0]
+
+for varLoop in 0..3 {print $varLoop;} //0 and 3 are included
+print $varLoop
+
+for i in 0..2 {print eval $vector[$i];}
+
+for varL in 2..5 {if $varL < 4 {print $varL < 4} elif $varL == 4 {print $varL = 4} else {print $varL > 4}}
+
+.var:varW=15
+while ($varW >10) {print $varW;\
+    \        
+    .var:varW= \
+    eval $varW - 2;}
+
+//We can't put commentary inside the expression of a while/for/if/alias.
+
+ls
+cd test2S
++bd:test@[-30,10]@0@[25,29.4,5]
+cd ..
+
+alias helloWorlds {print Hello Worlds !;}
+
+helloWorlds
+
+.var:v=2
+alias vSquare {.var:v=eval $v*$v; print $v}
+vSquare
+vSquare
+.var:v=10
+vSquare
+
+print "fefe \
+ffe"
+print zdzd \
+efe
 
 ui.delay=5
 ui.wireframe=true

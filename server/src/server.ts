@@ -35,6 +35,9 @@ let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
 let hasDiagnosticRelatedInformationCapability = false;
 
+var semanticTokens : any;
+
+
 connection.onInitialize((params: InitializeParams) => {
 	const capabilities = params.capabilities;
 
@@ -136,6 +139,8 @@ function getDocumentSettings(resource: string): Thenable<Settings> {
 	return result;
 }
 
+connection.onRequest('custom/semanticTokens', ([textDocument, text]) => {/*console.log(semanticTokens);*/return semanticTokens})//{return semanticTokenProvider(doc)})
+
 // Only keep settings for open documents
 documents.onDidClose(e => {
 	documentSettings.delete(e.document.uri);
@@ -148,15 +153,13 @@ documents.onDidChangeContent(change => {
 });
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-	const diagnostics = parseDocument(textDocument, await getDocumentSettings(textDocument.uri));
+	let diagnostics : any
+	[diagnostics, semanticTokens] = parseDocument(textDocument);
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 
 // This handler provides the initial list of the completion items.
-connection.onCompletion(autoCompletion());
-
-connection.onRequest('custom/semanticTokens', (doc) => {return semanticTokenProvider(doc)})
-
+connection.onCompletion(autoCompletion(documents));
 
 connection.onDocumentColor(docColor(documents));
 

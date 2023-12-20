@@ -1,13 +1,13 @@
 const tokensConfig = require("../data/semantic_tokens.json");
 
-function encodeTokenType(tokenType) {
-	if (tokensConfig.tokenTypes.includes(tokenType)) {
-		return tokensConfig.tokenTypes.indexOf(tokenType);
+export function encodeTokenType(tokenType, genericToken = false) {
+	if (tokensConfig.tokenTypes.includes(genericToken ? tokenType : tokensConfig.types[tokenType])) {
+		return tokensConfig.tokenTypes.indexOf(genericToken ? tokenType : tokensConfig.types[tokenType]);
 	}
 	return 0;
 }
 
-function encodeTokenModifiers(strTokenModifiers) {
+export function encodeTokenModifiers(strTokenModifiers) {
 	let result = 0;
 	for (let i = 0; i < strTokenModifiers.length; i++) {
 		const tokenModifier = strTokenModifiers[i];
@@ -28,7 +28,7 @@ function parseText(text){
 		let currentOffset = 0;
 		do {
 			const openOffset = line.indexOf('[', currentOffset);
-			console.log("Token trouvé, ")
+			//console.log("Token trouvé, ")
 			if (openOffset === -1) {
 				break;
 			}
@@ -68,4 +68,4 @@ export function semanticTokenProvider(document){
 	return result
 }
 
-module.exports = {semanticTokenProvider}
+module.exports = {semanticTokenProvider, encodeTokenType, encodeTokenModifiers}
