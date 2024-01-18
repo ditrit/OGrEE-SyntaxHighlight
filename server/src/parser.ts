@@ -11,7 +11,6 @@ const commandsData = require('../data/command_list.json').commands;
 import {
 	TextDocument
 } from 'vscode-languageserver-textdocument';
-import { resolveTxt } from 'dns';
 
 const commandSeparators = ["\r\n", "//"];
 
@@ -1825,6 +1824,9 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 			if (type == "attribute"){
 				if (isNameStructOrAttributeSyntaxeCorrect(commandSplit[iStartVar].subCommand))
 					return {actionType : actionType, iEndVar : iStartVar, diagnostic : null};
+				let isString = isVarType(commandSplit, iStartVar, "string")
+				if (isString != null)
+					return {actionType : isString, iEndVar : iStartVar, diagnostic : null};
 				diagnostic = diagnosticNameAttributeSyntaxe(commandSplit[iStartVar].subCommand, commandSplit[iStartVar].indexStart, textDocument);
 			}
 			else if (type == "cmds"){
@@ -1906,8 +1908,12 @@ function parseVariable(typesVariablesPossible : string[], iStartVar : number, co
 							needName = !needName;
 							iEndVar ++;
 						}
-						if (actionType.substring(iComma + 1, actionType.length - 1) == "selection")
-							selectionNotEmpty = true;
+						if (actionType.substring(iComma + 1, actionType.length - 1) == "selection"){
+							if (iBracket == iStartVar + 1)
+								selectionNotEmpty = false;
+							else
+								selectionNotEmpty = true;
+						}
 						if (needName)
 							return {actionType : actionType, iEndVar : iEndVar, diagnostic : diagnosticMissingCharacters(commandSplit[iEndVar - 1].indexEnd, commandSplit[iEndVar].indexStart, textDocument, "structure name")}
 						return {actionType : actionType, iEndVar : iEndVar, diagnostic : null};

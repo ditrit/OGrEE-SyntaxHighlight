@@ -38,3 +38,8 @@ $ vsce publish
 ### Webstorm
 
 The Webstorm plugin is currently abandonned, as the LSP support of Webstorm is not good enough to support the OGrEE-CLI language. You can still find the code in the webstorm folder of this repository.
+
+## Modifying the extension
+
+You can modify the commands in server/data/command_list.json.
+More details in server/data/README.md.
