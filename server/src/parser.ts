@@ -1666,8 +1666,10 @@ function parseCommand(commandSplit : commandSplit, diagnostics: Diagnostic[], te
 							variableType = vari.actionType.substring(2, iComma);
 						else
 							variableType = vari.actionType.substring(2, vari.actionType.length - 1);
-						if (vari.actionType == "[+var]")
+						if (vari.actionType == "[+var]"){
 							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand + 1].indexEnd, commandSplit[vari.iEndVar].indexEnd, lastInstance(listNameVar, commandSplit[iSubCommand].subCommand).type, []))
+							tokens.push(addSemanticToken(textDocument, commandSplit[iSubCommand - 3].indexStart, commandSplit[iSubCommand - 1].indexEnd, "variable", [], true));
+						}
 						else if (vari.actionType == "[=struct]"){
 							let nameStruct = getNameStruct(commandSplit, iSubCommand).name
 							if (nameStruct == "_")
