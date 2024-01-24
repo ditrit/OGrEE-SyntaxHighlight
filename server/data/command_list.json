@@ -615,7 +615,7 @@
             "documentation": "",
             "insertText": "${1:struct}:titlesColor=${2|true,false|}",
             "detail": "[struct]:titlesColor=[|true,false|]",
-            "parser": [":", "titlesColor", "=", "[=boolean]"]
+            "parser": ["[=struct]", ":", "titlesColor", "=", "[=boolean]"]
         }
         ,
         {
