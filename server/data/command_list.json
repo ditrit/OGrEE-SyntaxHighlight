@@ -775,7 +775,7 @@
             "documentation": "If the path is empty it will 'unfocus' all objects. This command will change the current path according to the given argument",
             "insertText": "> ${1:path/to/object}",
             "detail": "focus [path]",
-            "parser": [">", { "value": "[=struct]", "(isLinked)": false }]
+            "parser": [">", "[=struct]"]
         }
         ,
         {
