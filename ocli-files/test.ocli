@@ -189,6 +189,8 @@ print "fefe \
 ffe"
 print zdzd \
 efe
+print a $((1+1\
+))
 
 ui.delay=5
 ui.wireframe=true
